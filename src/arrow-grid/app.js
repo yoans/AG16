@@ -220,6 +220,51 @@ export class Application extends React.Component {
 
     _resizeTimer = null;
 
+    // ── Channel drag-to-select (slider-like) ──
+    _channelDragging = false;
+    _channelListRef = null;
+
+    _setChannelListRef = (el) => { this._channelListRef = el; };
+
+    _channelFromPointer = (clientY) => {
+        const el = this._channelListRef;
+        if (!el) return null;
+        const rect = el.getBoundingClientRect();
+        const ratio = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
+        return Math.min(MAX_CHANNELS, Math.max(1, Math.floor(ratio * MAX_CHANNELS) + 1));
+    };
+
+    _onChannelPointerDown = (e) => {
+        // Start drag from the ch-num-btn or the arrow indicator
+        if (!e.target.closest('.ch-num-btn') && !e.target.closest('.ch-select-arrow')) return;
+        this._channelDragging = true;
+        const ch = this._channelFromPointer(e.clientY);
+        if (ch !== null && ch !== this.state.arrowChannel) {
+            this.setState({ arrowChannel: ch });
+        }
+        // Capture pointer for smooth dragging beyond element bounds
+        if (this._channelListRef && this._channelListRef.setPointerCapture) {
+            this._channelListRef.setPointerCapture(e.pointerId);
+        }
+        e.preventDefault();
+    };
+
+    _onChannelPointerMove = (e) => {
+        if (!this._channelDragging) return;
+        const ch = this._channelFromPointer(e.clientY);
+        if (ch !== null && ch !== this.state.arrowChannel) {
+            this.setState({ arrowChannel: ch });
+        }
+    };
+
+    _onChannelPointerUp = (e) => {
+        if (!this._channelDragging) return;
+        this._channelDragging = false;
+        if (this._channelListRef && this._channelListRef.releasePointerCapture) {
+            try { this._channelListRef.releasePointerCapture(e.pointerId); } catch(_) {}
+        }
+    };
+
     _closeVolumePopup = (e) => {
         if (this.state.activePopup !== null
             && !e.target.closest('.popup-trigger-wrap')
@@ -902,12 +947,13 @@ export class Application extends React.Component {
             <div className="app-container">
                 <div className="console-wrapper" style={{
                     '--ch-color': `rgb(${(CHANNEL_COLORS[this.state.arrowChannel] || CHANNEL_COLORS[1]).join(',')})`,
+                    '--ch-color-rgb': (CHANNEL_COLORS[this.state.arrowChannel] || CHANNEL_COLORS[1]).join(','),
                     '--ch-color-glow': `rgba(${(CHANNEL_COLORS[this.state.arrowChannel] || CHANNEL_COLORS[1]).join(',')}, 0.25)`,
                 }}>
                     {/* ── Header ── */}
                     <header className="console-header">
                         <h1 className="app-title">
-                            <span className="title-arrow">➤</span>
+                            <img src="/images/logo.svg" alt="AG16" className="app-logo" width="70" height="70" />
                             AG16
                         </h1>
 
@@ -952,7 +998,7 @@ export class Application extends React.Component {
                             <button className="nav-btn" onClick={this.nextPreset} title="Next Preset (→)">
                                 <svg viewBox="0 0 24 24" width="14" height="14"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/></svg>
                             </button>
-                            <button className="hdr-btn" onClick={this.randomizeGrid} title="Randomize grid">
+                            <button className="hdr-btn ch-colored" onClick={this.randomizeGrid} title="Randomize grid">
                                 <svg viewBox="0 0 24 24" width="14" height="14"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm-.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.79-3.13z" fill="currentColor"/></svg>
                                 <span>Randomize</span>
                             </button>
@@ -1080,7 +1126,14 @@ export class Application extends React.Component {
                                     <h3>Channels</h3>
                                 </div>
                                 {/* Channel buttons */}
-                                <div className="channel-list-body">
+                                <div className="channel-list-body"
+                                    ref={this._setChannelListRef}
+                                    onPointerDown={this._onChannelPointerDown}
+                                    onPointerMove={this._onChannelPointerMove}
+                                    onPointerUp={this._onChannelPointerUp}
+                                    onPointerCancel={this._onChannelPointerUp}
+                                    style={{ touchAction: 'none' }}
+                                >
                                 <div className="ch-select-arrow" style={{
                                     top: `${((this.state.arrowChannel - 1) / MAX_CHANNELS) * 100 + (100 / MAX_CHANNELS / 2)}%`,
                                     color: `rgb(${(CHANNEL_COLORS[this.state.arrowChannel] || CHANNEL_COLORS[1]).join(',')})`
@@ -1817,7 +1870,14 @@ export class Application extends React.Component {
                 {this.state.showIntro && (
                     <div className="intro-overlay" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); const el = document.querySelector('.intro-sound-choice'); el.classList.remove('highlight'); void el.offsetWidth; el.classList.add('highlight'); }}>
                         <div className="intro-modal" onClick={(e) => e.stopPropagation()}>
-                            <h2><span className="title-arrow">➤</span> AG16</h2>
+                            <div className="intro-header">
+                                <img src="/images/logo.svg" alt="" className="modal-logo" width="70" height="70" />
+                                <div className="modal-branding-text">
+                                    <h2 className="modal-title">AG16</h2>
+                                    <span className="modal-subtitle">Arrow Grid: 16 Channel</span>
+                                </div>
+                                <div style={{width:'70px'}}></div>
+                            </div>
                             <p className="intro-tagline">An audio-visual instrument that creates rhythms and melodies from bouncing arrows on a grid.</p>
 
                             <div className="intro-steps-visual">
@@ -1881,7 +1941,11 @@ export class Application extends React.Component {
                     <div className="info-overlay" onClick={() => this.setState({ showInfo: false })}>
                         <div className="info-modal" onClick={(e) => e.stopPropagation()}>
                             <div className="info-modal-header">
-                                <h2><span className="title-arrow">➤</span> AG16</h2>
+                                <img src="/images/logo.svg" alt="" className="modal-logo" width="70" height="70" />
+                                <div className="modal-branding-text">
+                                    <h2 className="modal-title">AG16</h2>
+                                    <span className="modal-subtitle">Arrow Grid: 16 Channel</span>
+                                </div>
                                 <button className="info-modal-close" onClick={() => this.setState({ showInfo: false })}>×</button>
                             </div>
                             <div className="info-modal-body">

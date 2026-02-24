@@ -57,15 +57,38 @@ body {
 /* ── HEADER ── */
 .console-header {
   display:flex; justify-content:space-between; align-items:center;
+  gap: 12px;
   padding-bottom: 14px;
   border-bottom: 1px solid var(--border-subtle);
 }
 
 .app-title {
-  font-size:1.15em; font-weight:700; margin:0;
+  font-size:0.85em; font-weight:700; margin:0;
   display:flex; align-items:center; gap:8px;
-  color: var(--text-primary);
+  color: var(--ch-color, var(--text-primary));
+  font-family: 'Press Start 2P', monospace;
   letter-spacing: -0.01em;
+}
+.app-logo {
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
+  margin: -25px -10px -25px -15px;
+  pointer-events: none;
+}
+.modal-title {
+  font-family: 'Press Start 2P', monospace;
+  color: var(--ch-color, var(--accent));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.modal-logo {
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
+  margin: -20px -5px -20px -10px;
+  pointer-events: none;
 }
 .title-arrow {
   color: var(--accent);
@@ -102,6 +125,17 @@ body {
   background: var(--bg-hover);
   border-color: var(--border-hover);
   color: var(--text-primary);
+}
+.hdr-btn.ch-colored {
+  background: rgba(var(--ch-color-rgb, 100,100,255), 0.15);
+  color: var(--ch-color);
+  border-color: var(--ch-color);
+}
+.hdr-btn.ch-colored:hover {
+  background: rgba(var(--ch-color-rgb, 100,100,255), 0.3);
+  border-color: var(--ch-color);
+  color: var(--ch-color);
+  filter: brightness(1.1);
 }
 .hdr-btn.active {
   background: var(--accent-glow);
@@ -163,15 +197,15 @@ body {
 .nav-btn {
   display:flex; align-items:center; justify-content:center;
   width: 28px; height: 28px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  background: var(--ch-color);
+  border: 1px solid var(--ch-color);
   border-radius: var(--r-sm);
-  color: var(--text-secondary);
+  color: #fff;
   cursor: pointer;
   transition: all 0.15s;
   flex-shrink: 0;
 }
-.nav-btn:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--border-hover); }
+.nav-btn:hover { filter: brightness(1.2); }
 .nav-btn.danger { color: var(--text-muted); }
 .nav-btn.danger:hover { background: rgba(255,60,60,0.15); color: rgb(255,100,100); border-color: rgba(255,60,60,0.4); }
 
@@ -596,14 +630,25 @@ body {
 /* Animated right-pointing triangle that slides to the selected channel */
 .ch-select-arrow {
   position: absolute;
-  left: 0px;/*keep at 0 until we work around this arrow not rendering right */
+  left: -14px;
   transform: translateY(-50%);
-  font-size: 8px;
+  font-size: 12px;
   line-height: 1;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: grab;
   z-index: 2;
   transition: top 0.25s cubic-bezier(0.4, 0, 0.2, 1),
               color 0.25s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.ch-select-arrow:active {
+  cursor: grabbing;
+}
+/* Hide channel arrow when a slider overlay is open in the side panel */
+.side-panel:has(.slider-overlay) .ch-select-arrow {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .channel-header {
@@ -1707,7 +1752,7 @@ body {
   }
 
   .side-panel {
-    overflow: hidden;
+    overflow: visible;
     max-height: 100%;
   }
 }
@@ -1745,7 +1790,7 @@ body {
     padding-bottom: 8px;
   }
   .app-title {
-    font-size: 0.95em;
+    font-size: 0.7em;
     order: 0;
   }
   .play-btn-hero {
@@ -1822,6 +1867,9 @@ body {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr);
     gap: 4px;
+  }
+  .ch-select-arrow {
+    display: none;
   }
   .channel-header {
     grid-column: 1 / -1;
@@ -2096,12 +2144,46 @@ input:focus-visible {
 }
 .intro-modal h2 {
   font-size: 1.5em;
-  margin: 0 0 6px 0;
+  margin: 0;
   background: linear-gradient(135deg, #667eea, #764ba2);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
+}
+.modal-branding {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.intro-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.intro-header > .modal-logo {
+  flex-shrink: 0;
+}
+.intro-header > .modal-branding-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.modal-branding-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.modal-subtitle {
+  font-size: 0.55em;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+  font-family: 'Press Start 2P', monospace;
+  opacity: 0.6;
 }
 .intro-tagline {
   color: var(--text-dim);
@@ -2300,7 +2382,7 @@ input:focus-visible {
   height: 18px;
 }
 .undo-redo-btn span {
-  font-size: 0.6em;
+  font-size: 0.75em;
   line-height: 1;
   color: var(--text-muted);
 }
@@ -2636,9 +2718,21 @@ select.sel option:checked {
 .info-modal-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 18px 22px 14px;
+  padding: 28px 22px 14px;
   border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+}
+.info-modal-header > .modal-logo {
+  flex-shrink: 0;
+}
+.info-modal-header > .modal-branding-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.info-modal-header > .info-modal-close {
+  flex-shrink: 0;
 }
 .info-modal-header h2 {
   margin: 0;

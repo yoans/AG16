@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AG16 Logo Prototypes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&family=Press+Start+2P&family=VT323&family=Silkscreen:wght@400;700&family=Black+Ops+One&family=Audiowide&family=Russo+One&family=Bungee&family=Major+Mono+Display&display=swap" rel="stylesheet">
+<style>
+  body {
+    background: #1a1a2e;
+    color: #fff;
+    font-family: 'Inter', -apple-system, sans-serif;
+    margin: 0;
+    padding: 40px 20px;
+  }
+  h1 { text-align: center; font-size: 1.8em; margin-bottom: 8px; color: #667eea; }
+  .subtitle { text-align: center; color: rgba(255,255,255,0.4); font-size: 0.8em; margin-bottom: 40px; }
+  .ideas {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .idea {
+    background: #12121f;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .idea-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .idea-header h2 { font-size: 1em; color: #667eea; margin: 0; }
+  .idea-header .ver-label { font-size: 0.7em; color: rgba(255,255,255,0.4); }
+  .idea-body {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .logo-display {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    height: 200px;
+  }
+  .logo-display svg { display: block; }
+  .ver-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+  }
+  .ver-btns {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .ver-btn {
+    background: #1a1a2e;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.6);
+    padding: 6px 14px;
+    font-size: 0.75em;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .ver-btn:hover { border-color: #667eea; color: #fff; }
+  .ver-btn.active { background: rgba(102,126,234,0.2); border-color: #667eea; color: #fff; }
+  .ver-desc {
+    font-size: 0.75em;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.5;
+    min-height: 2.5em;
+  }
+  .sizes {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 12px;
+  }
+  .sizes span { font-size: 0.6em; color: rgba(255,255,255,0.25); }
+  .size-preview { border: 1px solid rgba(255,255,255,0.06); border-radius: 4px; padding: 2px; }
+
+  /* ─── Builder ─── */
+  #builder {
+    max-width: 900px; margin: 0 auto 48px; background: #12121f;
+    border: 2px solid rgba(102,126,234,0.3); border-radius: 16px; padding: 28px;
+  }
+  #builder h2 { color: #667eea; margin: 0 0 4px; font-size: 1.2em; }
+  #builder .bldr-sub { color: rgba(255,255,255,0.4); font-size: 0.75em; margin-bottom: 20px; }
+  .bldr-row { display: flex; gap: 28px; margin-bottom: 20px; flex-wrap: wrap; }
+  .bldr-preview { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .bldr-preview svg { display: block; }
+  .bldr-sizes { display: flex; gap: 8px; align-items: center; }
+  .bldr-sizes span { font-size: 0.6em; color: rgba(255,255,255,0.25); }
+  .bldr-sizes .size-preview { border: 1px solid rgba(255,255,255,0.06); border-radius: 4px; padding: 2px; }
+  .bldr-controls { flex: 1; min-width: 300px; }
+  .ctl-group { margin-bottom: 14px; }
+  .ctl-group label { display: block; font-size: 0.7em; color: rgba(255,255,255,0.5); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .ctl-group select, .ctl-group input[type=range], .ctl-group input[type=color], .ctl-group input[type=number] {
+    background: #1a1a2e; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px;
+    color: #fff; padding: 4px 8px; font-size: 0.8em;
+  }
+  .ctl-group select { width: 200px; }
+  .ctl-group input[type=range] { width: 180px; vertical-align: middle; }
+  .ctl-group input[type=number] { width: 60px; }
+  .ctl-group input[type=color] { width: 36px; height: 24px; padding: 1px 2px; cursor: pointer; border-radius: 4px; }
+  .ctl-inline { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .ctl-val { font-size: 0.7em; color: rgba(255,255,255,0.5); min-width: 30px; }
+  .dir-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 3px; }
+  .dir-grid button { background: #1a1a2e; border: 1px solid rgba(255,255,255,0.12); border-radius: 4px;
+    color: rgba(255,255,255,0.5); font-size: 0.7em; padding: 3px; cursor: pointer; text-align: center; }
+  .dir-grid button:hover { border-color: #667eea; }
+  .dir-grid button.diag { background: rgba(102,126,234,0.15); border-color: rgba(102,126,234,0.3); pointer-events: none; color: rgba(255,255,255,0.25); }
+  .color-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .color-swatch { width: 22px; height: 22px; border-radius: 4px; cursor: pointer; border: 2px solid transparent; }
+  .color-swatch.active { border-color: #fff; }
+  .ctl-check { display: flex; align-items: center; gap: 6px; }
+  .ctl-check input { accent-color: #667eea; }
+  .bldr-export { margin-top: 12px; }
+  .bldr-export button { background: rgba(102,126,234,0.2); border: 1px solid #667eea; border-radius: 8px;
+    color: #fff; padding: 6px 16px; font-size: 0.75em; cursor: pointer; }
+  .bldr-export button:hover { background: rgba(102,126,234,0.4); }
+</style>
+</head>
+<body>
+<h1>AG16 Logo Prototypes</h1>
+<p class="subtitle">Click version buttons to browse iterations. Arrows match in-app filled triangles.</p>
+
+<div id="builder">
+  <h2>Logo Builder</h2>
+  <p class="bldr-sub">Parametric editor — tweak every detail, see it live.</p>
+  <div class="bldr-row">
+    <div class="bldr-preview">
+      <div id="bldr-svg"></div>
+      <div class="bldr-sizes" id="bldr-sizes"></div>
+    </div>
+    <div class="bldr-controls">
+
+      <div class="ctl-group">
+        <label>Font Family</label>
+        <select id="ctl-font">
+          <optgroup label="Blocky / Techy">
+            <option value="'Orbitron',sans-serif">Orbitron</option>
+            <option value="'Share Tech Mono',monospace">Share Tech Mono</option>
+            <option value="'Press Start 2P',monospace">Press Start 2P (pixel)</option>
+            <option value="'VT323',monospace">VT323 (terminal)</option>
+            <option value="'Silkscreen',monospace">Silkscreen (pixel)</option>
+            <option value="'Black Ops One',sans-serif">Black Ops One</option>
+            <option value="'Audiowide',sans-serif">Audiowide</option>
+            <option value="'Russo One',sans-serif">Russo One</option>
+            <option value="'Bungee',sans-serif">Bungee</option>
+            <option value="'Major Mono Display',monospace">Major Mono Display</option>
+          </optgroup>
+          <optgroup label="System Fonts">
+            <option value="monospace">monospace</option>
+            <option value="'Courier New',monospace">Courier New</option>
+            <option value="Arial Black,Impact,sans-serif">Arial Black</option>
+            <option value="Impact,'Arial Narrow',sans-serif">Impact (condensed)</option>
+            <option value="Georgia,'Times New Roman',serif">Georgia (serif)</option>
+            <option value="'Trebuchet MS',Verdana,sans-serif">Trebuchet MS</option>
+            <option value="system-ui,'Segoe UI',sans-serif">System UI</option>
+            <option value="Verdana,sans-serif">Verdana</option>
+            <option value="'Lucida Console',monospace">Lucida Console</option>
+            <option value="Tahoma,sans-serif">Tahoma</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="ctl-group">
+        <label>Font Weight</label>
+        <div class="ctl-inline">
+          <input type="range" id="ctl-weight" min="100" max="900" step="100" value="800">
+          <span class="ctl-val" id="ctl-weight-val">800</span>
+        </div>
+      </div>
+
+      <div class="ctl-group">
+        <label>Font Size (% of cell)</label>
+        <div class="ctl-inline">
+          <input type="range" id="ctl-fsize" min="20" max="200" step="5" value="100">
+          <span class="ctl-val" id="ctl-fsize-val">100%</span>
+        </div>
+      </div>
+
+      <div class="ctl-group">
+        <label>Letter Colors (A G 1 6)</label>
+        <div class="color-row">
+          <input type="color" id="ctl-col-a" value="#667eea"> A
+          <input type="color" id="ctl-col-g" value="#43e97b"> G
+          <input type="color" id="ctl-col-1" value="#fa709a"> 1
+          <input type="color" id="ctl-col-6" value="#f7971e"> 6
+        </div>
+      </div>
+
+      <div class="ctl-group">
+        <label>Grid Line Color, Opacity &amp; Thickness</label>
+        <div class="ctl-inline">
+          <input type="color" id="ctl-grid-col" value="#ffffff">
+          <span style="font-size:0.7em;color:rgba(255,255,255,0.4)">Opacity:</span>
+          <input type="range" id="ctl-grid-op" min="0" max="100" step="1" value="8">
+          <span class="ctl-val" id="ctl-grid-op-val">8%</span>
+        </div>
+        <div class="ctl-inline" style="margin-top:6px">
+          <span style="font-size:0.7em;color:rgba(255,255,255,0.4)">Thickness:</span>
+          <input type="range" id="ctl-grid-thick" min="0.25" max="5" step="0.25" value="1">
+          <span class="ctl-val" id="ctl-grid-thick-val">1px</span>
+        </div>
+      </div>
+
+      <div class="ctl-group">
+        <label>Background</label>
+        <div class="ctl-inline">
+          <input type="color" id="ctl-bg" value="#0d0d1a">
+          <div class="ctl-check"><input type="checkbox" id="ctl-bg-box" checked> <span style="font-size:0.8em">Rounded rect</span></div>
+        </div>
+      </div>
+
+      <div class="ctl-group">
+        <label>Ghost Arrows in Empty Cells</label>
+        <div class="ctl-inline">
+          <div class="ctl-check"><input type="checkbox" id="ctl-ghosts" checked> <span style="font-size:0.8em">Show</span></div>
+          <span style="font-size:0.7em;color:rgba(255,255,255,0.4)">Opacity:</span>
+          <input type="range" id="ctl-ghost-op" min="0" max="100" step="1" value="15">
+          <span class="ctl-val" id="ctl-ghost-op-val">15%</span>
+        </div>
+      </div>
+
+      <div class="ctl-group">
+        <label>Ghost Arrow Colors</label>
+        <div class="ctl-inline">
+          <select id="ctl-ghost-color">
+            <option value="channel">Channel colors (1-16)</option>
+            <option value="text">Same as letter colors</option>
+            <option value="grid">Grid line color</option>
+            <option value="custom">Custom single color</option>
+          </select>
+          <input type="color" id="ctl-ghost-custom" value="#667eea" style="display:none">
+        </div>
+      </div>
+
+      <div class="ctl-group">
+        <label>Bright Corner Arrows (anti-diagonal)</label>
+        <div class="ctl-inline">
+          <div class="ctl-check"><input type="checkbox" id="ctl-corners"> <span style="font-size:0.8em">Show</span></div>
+          <span style="font-size:0.7em;color:rgba(255,255,255,0.4)">Opacity:</span>
+          <input type="range" id="ctl-corner-op" min="10" max="100" step="5" value="60">
+          <span class="ctl-val" id="ctl-corner-op-val">60%</span>
+        </div>
+      </div>
+
+      <div class="ctl-group">
+        <label>Arrow Directions (click cells to cycle: ▲►▼◄)</label>
+        <div class="dir-grid" id="dir-grid"></div>
+        <div style="margin-top:4px;font-size:0.65em;color:rgba(255,255,255,0.3)">Diagonal cells = letters (grey). Other cells = click to change direction.</div>
+      </div>
+
+      <div class="ctl-group">
+        <label>Edge Bloom (glow around outer edges)</label>
+        <div class="ctl-inline">
+          <div class="ctl-check"><input type="checkbox" id="ctl-bloom"> <span style="font-size:0.8em">Show</span></div>
+          <span style="font-size:0.7em;color:rgba(255,255,255,0.4)">Radius:</span>
+          <input type="range" id="ctl-bloom-r" min="1" max="60" step="1" value="10">
+          <span class="ctl-val" id="ctl-bloom-r-val">10</span>
+        </div>
+        <div class="ctl-inline" style="margin-top:6px">
+          <span style="font-size:0.7em;color:rgba(255,255,255,0.4)">Bloom color:</span>
+          <input type="color" id="ctl-bloom-col" value="#667eea">
+          <span style="font-size:0.7em;color:rgba(255,255,255,0.4)">Opacity:</span>
+          <input type="range" id="ctl-bloom-op" min="0" max="100" step="1" value="25">
+          <span class="ctl-val" id="ctl-bloom-op-val">25%</span>
+        </div>
+      </div>
+
+      <div class="bldr-export">
+        <button id="btn-copy-svg">Copy SVG</button>
+        <span id="copy-msg" style="font-size:0.7em;color:#43e97b;margin-left:8px;display:none">Copied!</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ideas" id="ideas"></div>
+
+<script>
+// Channel colors from the app
+const CH = [
+  null,
+  '#667eea','#764ba2','#43e97b','#f7971e',
+  '#fa709a','#00c6fb','#f87171','#a8edea',
+  '#ffd89b','#7f5af0','#2cb67d','#e2b0ff',
+  '#ff6b6b','#48dbfb','#feca57','#ff9ff3'
+];
+
+// Arrow polygon: cell at (x,y), size s, direction 0=up 1=right 2=down 3=left
+// Matches app's triangleDrawingArray exactly
+function arrow(x, y, s, dir) {
+  const pts = [
+    [[x+s/2,y],[x+s,y+s],[x,y+s]],       // up
+    [[x+s,y+s/2],[x,y],[x,y+s]],          // right
+    [[x+s/2,y+s],[x,y],[x+s,y]],          // down
+    [[x,y+s/2],[x+s,y],[x+s,y+s]]         // left
+  ];
+  return pts[dir].map(p=>p.join(',')).join(' ');
+}
+
+function arrowPad(cx, cy, s, dir, pad) {
+  // inset by half grid-line width so arrows don't overlap the lines
+  const lw=0.5;
+  return arrow(cx+lw, cy+lw, s-lw*2, dir);
+}
+
+function wall(x1, y1, x2, y2, color='#667eea') {
+  return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="3" stroke-linecap="round"/>`;
+}
+
+function gridLines(x0, y0, cols, rows, cs, op=0.1) {
+  let s='';
+  for(let c=0;c<=cols;c++) s+=`<line x1="${x0+c*cs}" y1="${y0}" x2="${x0+c*cs}" y2="${y0+rows*cs}" stroke="rgba(255,255,255,${op})" stroke-width="1"/>`;
+  for(let r=0;r<=rows;r++) s+=`<line x1="${x0}" y1="${y0+r*cs}" x2="${x0+cols*cs}" y2="${y0+r*cs}" stroke="rgba(255,255,255,${op})" stroke-width="1"/>`;
+  return s;
+}
+
+function fadingGrid(x0,y0,cols,rows,cs,maskId,op=0.12){
+  return `<g mask="url(#${maskId})">${gridLines(x0,y0,cols,rows,cs,op)}</g>`;
+}
+
+// ═══════════════════════════════════════
+//  BUILDER ENGINE
+// ═══════════════════════════════════════
+(function initBuilder() {
+  const S=40, G=20; // cell size, grid offset
+  const DIR_LABELS=['▲','►','▼','◄','✕'];
+
+  // default arrow directions for the 16 cells (same as idea 1)
+  // -1 = no arrow
+  const dirs=[0,1,2,3, 3,0,1,2, 1,2,3,0, 2,3,0,1];
+
+  // corner arrow positions (anti-diagonal)
+  const cornerCells=[{r:0,c:3},{r:1,c:0},{r:2,c:3},{r:3,c:0}];
+  const cornerDirs=[1,3,0,2];
+  const cornerCh=[5,6,8,9];
+
+  // Build arrow direction grid
+  const dgEl=document.getElementById('dir-grid');
+  for(let i=0;i<16;i++){
+    const r=Math.floor(i/4),c=i%4;
+    const btn=document.createElement('button');
+    if(r===c){
+      btn.className='diag';
+      btn.textContent=['A','G','1','6'][r];
+    } else {
+      btn.textContent=DIR_LABELS[dirs[i]];
+      btn.onclick=()=>{
+        // cycle: 0→1→2→3→-1→0
+        dirs[i]=dirs[i]>=3?-1:(dirs[i]+1);
+        btn.textContent=dirs[i]===-1?DIR_LABELS[4]:DIR_LABELS[dirs[i]];
+        btn.style.opacity=dirs[i]===-1?'0.35':'1';
+        render();
+      };
+    }
+    dgEl.appendChild(btn);
+  }
+
+  // Color helper: hex to rgba
+  function hexRgba(hex,a){
+    const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+
+  // Colored grid lines helper
+  function coloredGrid(x0,y0,cols,rows,cs,color,op,thick){
+    let s='';
+    const c=hexRgba(color,op);
+    const w=thick||1;
+    for(let col=0;col<=cols;col++) s+=`<line x1="${x0+col*cs}" y1="${y0}" x2="${x0+col*cs}" y2="${y0+rows*cs}" stroke="${c}" stroke-width="${w}"/>`;
+    for(let row=0;row<=rows;row++) s+=`<line x1="${x0}" y1="${y0+row*cs}" x2="${x0+cols*cs}" y2="${y0+row*cs}" stroke="${c}" stroke-width="${w}"/>`;
+    return s;
+  }
+
+  function ghostColor(i,r,c){
+    const mode=document.getElementById('ctl-ghost-color').value;
+    if(mode==='channel') return CH[i+1];
+    if(mode==='text'){
+      const letterCols=[el('ctl-col-a').value,el('ctl-col-g').value,el('ctl-col-1').value,el('ctl-col-6').value];
+      return letterCols[c%4]; // cycle through letter colors
+    }
+    if(mode==='grid') return el('ctl-grid-col').value;
+    return el('ctl-ghost-custom').value;
+  }
+
+  function el(id){return document.getElementById(id);}
+
+  function render(){
+    const font=el('ctl-font').value;
+    const weight=el('ctl-weight').value;
+    const fsize=parseInt(el('ctl-fsize').value);
+    const colA=el('ctl-col-a').value, colG=el('ctl-col-g').value, col1=el('ctl-col-1').value, col6=el('ctl-col-6').value;
+    const letterCols=[colA,colG,col1,col6];
+    const chars=['A','G','1','6'];
+    const gridCol=el('ctl-grid-col').value;
+    const gridOp=parseInt(el('ctl-grid-op').value)/100;
+    const gridThick=parseFloat(el('ctl-grid-thick').value);
+    const bg=el('ctl-bg').value;
+    const bgBox=el('ctl-bg-box').checked;
+    const showGhosts=el('ctl-ghosts').checked;
+    const ghostOp=parseInt(el('ctl-ghost-op').value)/100;
+    const showCorners=el('ctl-corners').checked;
+    const cornerOp=parseInt(el('ctl-corner-op').value)/100;
+    const showBloom=el('ctl-bloom').checked;
+    const bloomR=parseInt(el('ctl-bloom-r').value);
+    const bloomCol=el('ctl-bloom-col').value;
+    const bloomOp=parseInt(el('ctl-bloom-op').value)/100;
+
+    // update value displays
+    el('ctl-weight-val').textContent=weight;
+    el('ctl-fsize-val').textContent=fsize+'%';
+    el('ctl-grid-op-val').textContent=Math.round(gridOp*100)+'%';
+    el('ctl-ghost-op-val').textContent=Math.round(ghostOp*100)+'%';
+    el('ctl-corner-op-val').textContent=Math.round(cornerOp*100)+'%';
+    el('ctl-bloom-r-val').textContent=bloomR;
+    el('ctl-bloom-op-val').textContent=Math.round(bloomOp*100)+'%';
+    el('ctl-grid-thick-val').textContent=gridThick+'px';
+
+    // show/hide custom ghost color
+    el('ctl-ghost-custom').style.display=el('ctl-ghost-color').value==='custom'?'inline':'none';
+
+    let svg=`<svg viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">`;
+
+    // defs for bloom
+    if(showBloom){
+      svg+=`<defs><filter id="bloom-f" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${bloomR}" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+    }
+
+    // background
+    if(bgBox) svg+=`<rect x="8" y="8" width="184" height="184" rx="14" fill="${bg}"/>`;
+
+    // grid
+    svg+=coloredGrid(G,G,4,4,S,gridCol,gridOp,gridThick);
+    const lw=gridThick/2; // half grid thickness for arrow inset
+
+    // bloom layer (glow behind content)
+    if(showBloom){
+      svg+=`<g filter="url(#bloom-f)" opacity="${bloomOp}">`;
+      for(let i=0;i<4;i++){
+        const cx=G+i*S,cy=G+i*S;
+        svg+=`<text x="${cx+S/2}" y="${cy+S/2}" text-anchor="middle" dominant-baseline="central" font-family="${font}" font-weight="${weight}" font-size="${S*fsize/100}" fill="${letterCols[i]}">${chars[i]}</text>`;
+      }
+      svg+=`</g>`;
+    }
+
+    // ghost arrows
+    if(showGhosts){
+      for(let i=0;i<16;i++){
+        const r=Math.floor(i/4),c=i%4;
+        if(r===c) continue;
+        if(dirs[i]===-1) continue; // removed arrow
+        // skip corner cells if corners are shown
+        if(showCorners && cornerCells.some(cc=>cc.r===r&&cc.c===c)) continue;
+        const cx=G+c*S,cy=G+r*S;
+        const gc=ghostColor(i,r,c);
+        svg+=`<polygon points="${arrow(cx+lw,cy+lw,S-lw*2,dirs[i])}" fill="${gc}" opacity="${ghostOp}"/>`;
+      }
+    }
+
+    // bright corner arrows
+    if(showCorners){
+      for(let ci=0;ci<4;ci++){
+        const cc=cornerCells[ci];
+        const cx=G+cc.c*S, cy=G+cc.r*S;
+        svg+=`<polygon points="${arrow(cx+lw,cy+lw,S-lw*2,cornerDirs[ci])}" fill="${CH[cornerCh[ci]]}" opacity="${cornerOp}"/>`;
+      }
+    }
+
+    // diagonal text
+    for(let i=0;i<4;i++){
+      const cx=G+i*S,cy=G+i*S;
+      svg+=`<text x="${cx+S/2}" y="${cy+S/2}" text-anchor="middle" dominant-baseline="central" font-family="${font}" font-weight="${weight}" font-size="${S*fsize/100}" fill="${letterCols[i]}">${chars[i]}</text>`;
+    }
+
+    svg+=`</svg>`;
+
+    el('bldr-svg').innerHTML=svg;
+
+    // size previews
+    const sizesEl=el('bldr-sizes');
+    sizesEl.innerHTML='';
+    const parser=new DOMParser();
+    const svgDoc=parser.parseFromString(svg,'image/svg+xml');
+    const svgEl=svgDoc.documentElement;
+    [64,32,16].forEach(sz=>{
+      const clone=svgEl.cloneNode(true);
+      clone.setAttribute('width',sz);clone.setAttribute('height',sz);
+      const wrap=document.createElement('span');wrap.className='size-preview';
+      wrap.appendChild(clone);sizesEl.appendChild(wrap);
+      const lbl=document.createElement('span');lbl.textContent=sz+'px';sizesEl.appendChild(lbl);
+    });
+
+    // store for copy
+    el('bldr-svg').dataset.raw=svg;
+  }
+
+  // Wire up all controls
+  const inputs=['ctl-font','ctl-weight','ctl-fsize','ctl-col-a','ctl-col-g','ctl-col-1','ctl-col-6',
+    'ctl-grid-col','ctl-grid-op','ctl-grid-thick','ctl-bg','ctl-bg-box','ctl-ghosts','ctl-ghost-op','ctl-ghost-color','ctl-ghost-custom',
+    'ctl-corners','ctl-corner-op','ctl-bloom','ctl-bloom-r','ctl-bloom-col','ctl-bloom-op'];
+  inputs.forEach(id=>{const e=el(id);if(e){e.addEventListener('input',render);e.addEventListener('change',render);}});
+
+  // Copy SVG
+  el('btn-copy-svg').onclick=()=>{
+    const raw=el('bldr-svg').dataset.raw||'';
+    navigator.clipboard.writeText(raw).then(()=>{
+      const msg=el('copy-msg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',1500);
+    });
+  };
+
+  render();
+})();
+
+// ─── IDEA 1: 16 Arrows in Motion ───
+const idea1 = {
+  name: '16 Arrows in Motion',
+  versions: [
+    {
+      label: 'v1 — Full grid',
+      desc: '4x4 grid, all 16 channel-colored arrows, each pointing a different direction.',
+      svg: () => {
+        const s=40,g=20,pad=6;
+        const dirs=[0,1,2,3, 3,0,1,2, 1,2,3,0, 2,3,0,1];
+        let a='';
+        for(let i=0;i<16;i++){const r=Math.floor(i/4),c=i%4;a+=`<polygon points="${arrowPad(g+c*s,g+r*s,s,dirs[i],pad)}" fill="${CH[i+1]}"/>`;}
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="14" fill="#0d0d1a"/>${gridLines(20,20,4,4,40,0.1)}${a}</svg>`;
+      }
+    },
+    {
+      label: 'v2 — 6 arrows',
+      desc: 'Same grid, only 6 arrows placed with breathing room. More memorable silhouette.',
+      svg: () => {
+        const s=40,g=20,pad=6;
+        const placed=[{r:0,c:1,d:0,ch:1},{r:0,c:3,d:1,ch:5},{r:1,c:2,d:1,ch:3},{r:2,c:0,d:2,ch:4},{r:2,c:3,d:3,ch:6},{r:3,c:1,d:0,ch:2}];
+        let a='';placed.forEach(p=>{a+=`<polygon points="${arrowPad(g+p.c*s,g+p.r*s,s,p.d,pad)}" fill="${CH[p.ch]}"/>`;});
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="14" fill="#0d0d1a"/>${gridLines(20,20,4,4,40,0.1)}${a}</svg>`;
+      }
+    },
+    {
+      label: 'v3 — 4 diagonal',
+      desc: '4 arrows on the diagonal, each a different direction. Clean, rhythmic, easy to draw from memory.',
+      svg: () => {
+        const s=40,g=20,pad=5;
+        const placed=[{r:0,c:0,d:0,ch:1},{r:1,c:1,d:1,ch:3},{r:2,c:2,d:2,ch:5},{r:3,c:3,d:3,ch:4}];
+        let a='';placed.forEach(p=>{a+=`<polygon points="${arrowPad(g+p.c*s,g+p.r*s,s,p.d,pad)}" fill="${CH[p.ch]}"/>`;});
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="14" fill="#0d0d1a"/>${gridLines(20,20,4,4,40,0.1)}${a}</svg>`;
+      }
+    },
+    {
+      label: 'v4 — No rounded rect',
+      desc: 'Same 4-diagonal but with just the grid, no background box. Raw and clean.',
+      svg: () => {
+        const s=40,g=20,pad=5;
+        const placed=[{r:0,c:0,d:0,ch:1},{r:1,c:1,d:1,ch:3},{r:2,c:2,d:2,ch:5},{r:3,c:3,d:3,ch:4}];
+        let a='';placed.forEach(p=>{a+=`<polygon points="${arrowPad(g+p.c*s,g+p.r*s,s,p.d,pad)}" fill="${CH[p.ch]}"/>`;});
+        return `<svg viewBox="0 0 200 200" width="190" height="190">${gridLines(20,20,4,4,40,0.12)}${a}</svg>`;
+      }
+    }
+  ]
+};
+
+// ─── IDEA 2: Fading Grid ───
+const idea2 = {
+  name: 'Fading Grid',
+  versions: [
+    {
+      label: 'v1 — Radial fade, 3 arrows',
+      desc: 'Grid fades from center. 3 channel-colored arrows floating in the void.',
+      svg: () => {
+        const s=40,g=20,pad=6;
+        return `<svg viewBox="0 0 200 200" width="190" height="190">
+          <defs><radialGradient id="f2a" cx="0.35" cy="0.35" r="0.65"><stop offset="0%" stop-color="white" stop-opacity="1"/><stop offset="100%" stop-color="white" stop-opacity="0"/></radialGradient><mask id="m2a"><rect width="200" height="200" fill="url(#f2a)"/></mask></defs>
+          ${fadingGrid(20,20,4,4,40,'m2a')}
+          <polygon points="${arrowPad(g+0*s,g+0*s,s,1,pad)}" fill="#667eea"/>
+          <polygon points="${arrowPad(g+1*s,g+1*s,s,2,pad)}" fill="#fa709a"/>
+          <polygon points="${arrowPad(g+2*s,g+0*s,s,1,pad)}" fill="#43e97b"/>
+        </svg>`;
+      }
+    },
+    {
+      label: 'v2 — Corner fade, 2 arrows',
+      desc: 'Grid fades from top-left. 2 arrows only — maximum breathing room.',
+      svg: () => {
+        const s=40,g=20,pad=6;
+        return `<svg viewBox="0 0 200 200" width="190" height="190">
+          <defs><linearGradient id="f2c" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="white" stop-opacity="1"/><stop offset="70%" stop-color="white" stop-opacity="0.5"/><stop offset="100%" stop-color="white" stop-opacity="0"/></linearGradient><mask id="m2c"><rect width="200" height="200" fill="url(#f2c)"/></mask></defs>
+          ${fadingGrid(20,20,4,4,40,'m2c')}
+          <polygon points="${arrowPad(g+0*s,g+0*s,s,0,pad)}" fill="#764ba2"/>
+          <polygon points="${arrowPad(g+1*s,g+1*s,s,1,pad)}" fill="#fa709a"/>
+        </svg>`;
+      }
+    },
+    {
+      label: 'v3 — Fade + 4 diagonal',
+      desc: 'Fading grid with 4 diagonal arrows. Combines ideas 1 and 2.',
+      svg: () => {
+        const s=40,g=20,pad=5;
+        const placed=[{r:0,c:0,d:0,ch:1},{r:1,c:1,d:1,ch:3},{r:2,c:2,d:2,ch:5},{r:3,c:3,d:3,ch:4}];
+        let a='';placed.forEach(p=>{a+=`<polygon points="${arrowPad(g+p.c*s,g+p.r*s,s,p.d,pad)}" fill="${CH[p.ch]}"/>`;});
+        return `<svg viewBox="0 0 200 200" width="190" height="190">
+          <defs><radialGradient id="f2d" cx="0.45" cy="0.45" r="0.6"><stop offset="0%" stop-color="white" stop-opacity="1"/><stop offset="100%" stop-color="white" stop-opacity="0"/></radialGradient><mask id="m2d"><rect width="200" height="200" fill="url(#f2d)"/></mask></defs>
+          ${fadingGrid(20,20,4,4,40,'m2d')}
+          ${a}
+        </svg>`;
+      }
+    }
+  ]
+};
+
+// ─── IDEA 3: Arrow Cascade (filled triangles, no grid) ───
+const idea3 = {
+  name: 'Arrow Cascade',
+  versions: [
+    {
+      label: 'v1 — Staircase right',
+      desc: '4 arrows stepping diagonally, all pointing right. Simple rhythm.',
+      svg: () => {
+        const sz=36,pad=3;
+        const items=[{x:30,y:25,ch:1},{x:60,y:55,ch:3},{x:90,y:85,ch:5},{x:120,y:115,ch:4}];
+        let a='';items.forEach(i=>{a+=`<polygon points="${arrowPad(i.x,i.y,sz,1,pad)}" fill="${CH[i.ch]}"/>`;});
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="18" fill="#0d0d1a"/>${a}</svg>`;
+      }
+    },
+    {
+      label: 'v2 — Spread outward',
+      desc: '4 arrows pointing out from center in 4 directions. Starburst.',
+      svg: () => {
+        const sz=38,pad=4;
+        const items=[{x:81,y:20,d:0,ch:1},{x:130,y:81,d:1,ch:3},{x:81,y:140,d:2,ch:5},{x:30,y:81,d:3,ch:4}];
+        let a='';items.forEach(i=>{a+=`<polygon points="${arrowPad(i.x,i.y,sz,i.d,pad)}" fill="${CH[i.ch]}"/>`;});
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="18" fill="#0d0d1a"/>${a}</svg>`;
+      }
+    },
+    {
+      label: 'v3 — Converge inward',
+      desc: '4 arrows pointing toward center. Tight, iconic.',
+      svg: () => {
+        const sz=38,pad=4;
+        const items=[{x:81,y:20,d:2,ch:1},{x:130,y:81,d:3,ch:3},{x:81,y:140,d:0,ch:5},{x:30,y:81,d:1,ch:4}];
+        let a='';items.forEach(i=>{a+=`<polygon points="${arrowPad(i.x,i.y,sz,i.d,pad)}" fill="${CH[i.ch]}"/>`;});
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="18" fill="#0d0d1a"/>${a}</svg>`;
+      }
+    },
+    {
+      label: 'v4 — Mixed directions',
+      desc: '4 arrows, each pointing a unique direction, asymmetric placement. Dynamic.',
+      svg: () => {
+        const items=[{x:35,y:30,s:42,d:0,ch:1},{x:100,y:45,s:38,d:1,ch:5},{x:55,y:110,s:44,d:3,ch:3},{x:120,y:120,s:36,d:2,ch:4}];
+        let a='';items.forEach(i=>{a+=`<polygon points="${arrowPad(i.x,i.y,i.s,i.d,3)}" fill="${CH[i.ch]}"/>`;});
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="18" fill="#0d0d1a"/>${a}</svg>`;
+      }
+    }
+  ]
+};
+
+// ─── IDEA 4: AG16 Diagonal ───
+const idea4 = {
+  name: 'AG16 Diagonal',
+  versions: [
+    {
+      label: 'v1 — Mono 800, fits cell',
+      desc: 'Monospace bold 800. Letters sized to fill the full cell height.',
+      svg: () => {
+        const s=40,g=20;
+        const chars=['A','G','1','6'],cols=[CH[1],CH[3],CH[5],CH[4]];
+        let a='';
+        for(let i=0;i<4;i++){const cx=g+i*s,cy=g+i*s;a+=`<text x="${cx+s/2}" y="${cy+s*0.85}" text-anchor="middle" font-family="monospace" font-weight="800" font-size="${s}" fill="${cols[i]}">${chars[i]}</text>`;}
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="14" fill="#0d0d1a"/>${gridLines(20,20,4,4,40,0.1)}${a}</svg>`;
+      }
+    },
+    {
+      label: 'v2 — Sans 900, full cell',
+      desc: 'Sans-serif black weight. Maximum cell fill.',
+      svg: () => {
+        const s=40,g=20;
+        const chars=['A','G','1','6'],cols=[CH[1],CH[3],CH[5],CH[4]];
+        let a='';
+        for(let i=0;i<4;i++){const cx=g+i*s,cy=g+i*s;a+=`<text x="${cx+s/2}" y="${cy+s*0.85}" text-anchor="middle" font-family="Arial Black,Impact,sans-serif" font-weight="900" font-size="${s}" fill="${cols[i]}">${chars[i]}</text>`;}
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="14" fill="#0d0d1a"/>${gridLines(20,20,4,4,40,0.1)}${a}</svg>`;
+      }
+    },
+    {
+      label: 'v3 — Serif 700',
+      desc: 'Georgia/serif bold. Classical feel at full cell size.',
+      svg: () => {
+        const s=40,g=20;
+        const chars=['A','G','1','6'],cols=[CH[1],CH[3],CH[5],CH[4]];
+        let a='';
+        for(let i=0;i<4;i++){const cx=g+i*s,cy=g+i*s;a+=`<text x="${cx+s/2}" y="${cy+s*0.85}" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="${s}" fill="${cols[i]}">${chars[i]}</text>`;}
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="14" fill="#0d0d1a"/>${gridLines(20,20,4,4,40,0.1)}${a}</svg>`;
+      }
+    },
+    {
+      label: 'v4 — Narrow condensed',
+      desc: 'Impact / narrow condensed font. Tall and tight.',
+      svg: () => {
+        const s=40,g=20;
+        const chars=['A','G','1','6'],cols=[CH[1],CH[3],CH[5],CH[4]];
+        let a='';
+        for(let i=0;i<4;i++){const cx=g+i*s,cy=g+i*s;a+=`<text x="${cx+s/2}" y="${cy+s*0.85}" text-anchor="middle" font-family="Impact,'Arial Narrow',sans-serif" font-weight="400" font-size="${s*1.1}" fill="${cols[i]}" letter-spacing="-2">${chars[i]}</text>`;}
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="14" fill="#0d0d1a"/>${gridLines(20,20,4,4,40,0.1)}${a}</svg>`;
+      }
+    },
+    {
+      label: 'v5 — Rounded sans, 60%',
+      desc: 'Trebuchet / rounded sans at 60% cell. Playful, lighter.',
+      svg: () => {
+        const s=40,g=20;
+        const chars=['A','G','1','6'],cols=[CH[1],CH[3],CH[5],CH[4]];
+        let a='';
+        for(let i=0;i<4;i++){const cx=g+i*s,cy=g+i*s;a+=`<text x="${cx+s/2}" y="${cy+s*0.72}" text-anchor="middle" font-family="'Trebuchet MS',Verdana,sans-serif" font-weight="700" font-size="${s*0.6}" fill="${cols[i]}">${chars[i]}</text>`;}
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="14" fill="#0d0d1a"/>${gridLines(20,20,4,4,40,0.1)}${a}</svg>`;
+      }
+    },
+    {
+      label: 'v6 — Mono 400, thin',
+      desc: 'Monospace regular weight. Thin lines, techy look, full cell.',
+      svg: () => {
+        const s=40,g=20;
+        const chars=['A','G','1','6'],cols=[CH[1],CH[3],CH[5],CH[4]];
+        let a='';
+        for(let i=0;i<4;i++){const cx=g+i*s,cy=g+i*s;a+=`<text x="${cx+s/2}" y="${cy+s*0.85}" text-anchor="middle" font-family="'Courier New',monospace" font-weight="400" font-size="${s}" fill="${cols[i]}">${chars[i]}</text>`;}
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="14" fill="#0d0d1a"/>${gridLines(20,20,4,4,40,0.1)}${a}</svg>`;
+      }
+    },
+    {
+      label: 'v7 — System-UI 900',
+      desc: 'System UI (Segoe/SF Pro) black weight. Modern OS feel, full cell.',
+      svg: () => {
+        const s=40,g=20;
+        const chars=['A','G','1','6'],cols=[CH[1],CH[3],CH[5],CH[4]];
+        let a='';
+        for(let i=0;i<4;i++){const cx=g+i*s,cy=g+i*s;a+=`<text x="${cx+s/2}" y="${cy+s*0.85}" text-anchor="middle" font-family="system-ui,'Segoe UI',sans-serif" font-weight="900" font-size="${s}" fill="${cols[i]}">${chars[i]}</text>`;}
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="14" fill="#0d0d1a"/>${gridLines(20,20,4,4,40,0.1)}${a}</svg>`;
+      }
+    },
+    {
+      label: 'v8 — Mono + ghost arrows',
+      desc: 'Monospace bold diagonal, ghost arrows in other cells. Full cell text.',
+      svg: () => {
+        const s=40,g=20;
+        const chars=['A','G','1','6'],cols=[CH[1],CH[3],CH[5],CH[4]];
+        const dirs=[0,1,2,3, 3,0,1,2, 1,2,3,0, 2,3,0,1];
+        let a='';
+        for(let i=0;i<16;i++){const r=Math.floor(i/4),c=i%4;const cx=g+c*s,cy=g+r*s;if(r===c){a+=`<text x="${cx+s/2}" y="${cy+s*0.85}" text-anchor="middle" font-family="monospace" font-weight="800" font-size="${s}" fill="${cols[r]}">${chars[r]}</text>`;}else{a+=`<polygon points="${arrowPad(cx,cy,s,dirs[i],0)}" fill="${CH[i+1]}" opacity="0.15"/>`;}}
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="14" fill="#0d0d1a"/>${gridLines(20,20,4,4,40,0.08)}${a}</svg>`;
+      }
+    },
+    {
+      label: 'v9 — Impact + arrows',
+      desc: 'Impact condensed diagonal with ghost arrows. Tall letters dominate.',
+      svg: () => {
+        const s=40,g=20;
+        const chars=['A','G','1','6'],cols=[CH[1],CH[3],CH[5],CH[4]];
+        const dirs=[0,1,2,3, 3,0,1,2, 1,2,3,0, 2,3,0,1];
+        let a='';
+        for(let i=0;i<16;i++){const r=Math.floor(i/4),c=i%4;const cx=g+c*s,cy=g+r*s;if(r===c){a+=`<text x="${cx+s/2}" y="${cy+s*0.85}" text-anchor="middle" font-family="Impact,'Arial Narrow',sans-serif" font-weight="400" font-size="${s*1.1}" fill="${cols[r]}">${chars[r]}</text>`;}else{a+=`<polygon points="${arrowPad(cx,cy,s,dirs[i],0)}" fill="${CH[i+1]}" opacity="0.12"/>`;}}
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="14" fill="#0d0d1a"/>${gridLines(20,20,4,4,40,0.08)}${a}</svg>`;
+      }
+    },
+    {
+      label: 'v10 — No bg, bare grid',
+      desc: 'Sans-serif 900 on bare grid, no background box. Raw.',
+      svg: () => {
+        const s=40,g=20;
+        const chars=['A','G','1','6'],cols=[CH[1],CH[3],CH[5],CH[4]];
+        let a='';
+        for(let i=0;i<4;i++){const cx=g+i*s,cy=g+i*s;a+=`<text x="${cx+s/2}" y="${cy+s*0.85}" text-anchor="middle" font-family="Arial Black,sans-serif" font-weight="900" font-size="${s}" fill="${cols[i]}">${chars[i]}</text>`;}
+        return `<svg viewBox="0 0 200 200" width="190" height="190">${gridLines(20,20,4,4,40,0.12)}${a}</svg>`;
+      }
+    },
+    {
+      label: 'v11 — Sans + 4 arrows',
+      desc: 'Sans black diagonal + 4 bright arrows in anti-diagonal corners.',
+      svg: () => {
+        const s=40,g=20;
+        const chars=['A','G','1','6'],cols=[CH[1],CH[3],CH[5],CH[4]];
+        const arrows=[{r:0,c:3,d:1,ch:5},{r:1,c:0,d:3,ch:6},{r:2,c:3,d:0,ch:8},{r:3,c:0,d:2,ch:9}];
+        let a='';
+        for(let i=0;i<4;i++){const cx=g+i*s,cy=g+i*s;a+=`<text x="${cx+s/2}" y="${cy+s*0.85}" text-anchor="middle" font-family="Arial Black,sans-serif" font-weight="900" font-size="${s}" fill="${cols[i]}">${chars[i]}</text>`;}
+        arrows.forEach(p=>{a+=`<polygon points="${arrowPad(g+p.c*s,g+p.r*s,s,p.d,0)}" fill="${CH[p.ch]}" opacity="0.6"/>`;});
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="14" fill="#0d0d1a"/>${gridLines(20,20,4,4,40,0.08)}${a}</svg>`;
+      }
+    }
+  ]
+};
+
+// ─── COMBO: Arrows + Cascade ───
+const combo2 = {
+  name: 'Combo: Arrows + Cascade',
+  versions: [
+    {
+      label: 'v1 — Diagonal bright',
+      desc: '16 arrows in grid, diagonal ones large + bright, rest dimmed. Cascade through grid.',
+      svg: () => {
+        const s=40,g=20;
+        const dirs=[0,1,2,3, 3,0,1,2, 1,2,3,0, 2,3,0,1];
+        let a='';
+        for(let i=0;i<16;i++){const r=Math.floor(i/4),c=i%4;const diag=r===c;a+=`<polygon points="${arrowPad(g+c*s,g+r*s,s,dirs[i],diag?4:9)}" fill="${CH[i+1]}" opacity="${diag?1:0.2}"/>`;}
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="14" fill="#0d0d1a"/>${gridLines(20,20,4,4,40,0.07)}${a}</svg>`;
+      }
+    },
+    {
+      label: 'v2 — 4 bright over ghost grid',
+      desc: '4 stepping arrows (all right-pointing) over ghost 16-arrow grid.',
+      svg: () => {
+        const s=40,g=20;
+        const dirs=[0,1,2,3, 3,0,1,2, 1,2,3,0, 2,3,0,1];
+        let dim='';for(let i=0;i<16;i++){const r=Math.floor(i/4),c=i%4;dim+=`<polygon points="${arrowPad(g+c*s,g+r*s,s,dirs[i],9)}" fill="${CH[i+1]}" opacity="0.12"/>`;}
+        const b=[{r:0,c:0,ch:1},{r:1,c:1,ch:3},{r:2,c:2,ch:5},{r:3,c:3,ch:4}];
+        let bright='';b.forEach(p=>{bright+=`<polygon points="${arrowPad(g+p.c*s,g+p.r*s,s,1,4)}" fill="${CH[p.ch]}"/>`;});
+        return `<svg viewBox="0 0 200 200" width="190" height="190"><rect x="8" y="8" width="184" height="184" rx="14" fill="#0d0d1a"/>${gridLines(20,20,4,4,40,0.06)}${dim}${bright}</svg>`;
+      }
+    }
+  ]
+};
+
+// ─── COMBO: Cascade + Fade ───
+const combo3 = {
+  name: 'Combo: Cascade + Fade',
+  versions: [
+    {
+      label: 'v1 — Staircase in fog',
+      desc: 'Fading grid, 4 arrows stepping diagonally, emerging from the mist.',
+      svg: () => {
+        const s=40,g=20,pad=5;
+        let a='';
+        [{r:0,c:0,d:1,ch:1},{r:1,c:1,d:1,ch:3},{r:2,c:2,d:1,ch:5},{r:3,c:3,d:1,ch:4}].forEach(p=>{a+=`<polygon points="${arrowPad(g+p.c*s,g+p.r*s,s,p.d,pad)}" fill="${CH[p.ch]}"/>`;});
+        return `<svg viewBox="0 0 200 200" width="190" height="190">
+          <defs><linearGradient id="fc3a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="white" stop-opacity="1"/><stop offset="100%" stop-color="white" stop-opacity="0"/></linearGradient><mask id="mc3a"><rect width="200" height="200" fill="url(#fc3a)"/></mask></defs>
+          ${fadingGrid(20,20,4,4,40,'mc3a')}
+          ${a}
+        </svg>`;
+      }
+    },
+    {
+      label: 'v2 — 4 outward in fog',
+      desc: 'Fading grid, 4 arrows pointing outward from center. Energy radiating.',
+      svg: () => {
+        const s=40,g=20,pad=5;
+        return `<svg viewBox="0 0 200 200" width="190" height="190">
+          <defs><radialGradient id="fc3b" cx="0.5" cy="0.5" r="0.55"><stop offset="0%" stop-color="white" stop-opacity="1"/><stop offset="100%" stop-color="white" stop-opacity="0"/></radialGradient><mask id="mc3b"><rect width="200" height="200" fill="url(#fc3b)"/></mask></defs>
+          ${fadingGrid(20,20,4,4,40,'mc3b')}
+          <polygon points="${arrowPad(g+1*s,g+0*s,s,0,pad)}" fill="${CH[1]}"/>
+          <polygon points="${arrowPad(g+3*s,g+1*s,s,1,pad)}" fill="${CH[3]}"/>
+          <polygon points="${arrowPad(g+2*s,g+3*s,s,2,pad)}" fill="${CH[5]}"/>
+          <polygon points="${arrowPad(g+0*s,g+2*s,s,3,pad)}" fill="${CH[4]}"/>
+        </svg>`;
+      }
+    }
+  ]
+};
+
+// ─── ALL COMBINED ───
+const comboAll = {
+  name: 'All Combined',
+  versions: [
+    {
+      label: 'v1 — Full composition',
+      desc: 'Fading grid, dim 16 arrows, bright diagonal cascade. Everything together.',
+      svg: () => {
+        const s=40,g=20;
+        const dirs=[0,1,2,3, 3,0,1,2, 1,2,3,0, 2,3,0,1];
+        let dim='';for(let i=0;i<16;i++){const r=Math.floor(i/4),c=i%4;if(r!==c)dim+=`<polygon points="${arrowPad(g+c*s,g+r*s,s,dirs[i],8)}" fill="${CH[i+1]}" opacity="0.15"/>`;}
+        let bright='';[{r:0,c:0,d:0,ch:1},{r:1,c:1,d:1,ch:3},{r:2,c:2,d:2,ch:5},{r:3,c:3,d:3,ch:4}].forEach(p=>{bright+=`<polygon points="${arrowPad(g+p.c*s,g+p.r*s,s,p.d,4)}" fill="${CH[p.ch]}"/>`;});
+        return `<svg viewBox="0 0 200 200" width="190" height="190">
+          <defs><radialGradient id="fall" cx="0.45" cy="0.45" r="0.6"><stop offset="0%" stop-color="white" stop-opacity="1"/><stop offset="100%" stop-color="white" stop-opacity="0"/></radialGradient><mask id="mall"><rect width="200" height="200" fill="url(#fall)"/></mask></defs>
+          <rect x="8" y="8" width="184" height="184" rx="14" fill="#0d0d1a"/>
+          ${fadingGrid(20,20,4,4,40,'mall')}
+          <g mask="url(#mall)">${dim}</g>
+          ${bright}
+        </svg>`;
+      }
+    },
+    {
+      label: 'v2 — Minimal',
+      desc: 'Fading grid, 3 bright cascading arrows, few ghost arrows. Clean merge.',
+      svg: () => {
+        const s=40,g=20,pad=5;
+        let ghost='';[{r:0,c:2,d:2,ch:8},{r:1,c:0,d:3,ch:9},{r:3,c:1,d:0,ch:12}].forEach(p=>{ghost+=`<polygon points="${arrowPad(g+p.c*s,g+p.r*s,s,p.d,8)}" fill="${CH[p.ch]}" opacity="0.18"/>`;});
+        let bright='';[{r:0,c:0,d:1,ch:1},{r:1,c:1,d:1,ch:3},{r:2,c:2,d:1,ch:5}].forEach(p=>{bright+=`<polygon points="${arrowPad(g+p.c*s,g+p.r*s,s,p.d,pad)}" fill="${CH[p.ch]}"/>`;});
+        return `<svg viewBox="0 0 200 200" width="190" height="190">
+          <defs><radialGradient id="fall2" cx="0.4" cy="0.4" r="0.6"><stop offset="0%" stop-color="white" stop-opacity="1"/><stop offset="100%" stop-color="white" stop-opacity="0"/></radialGradient><mask id="mall2"><rect width="200" height="200" fill="url(#fall2)"/></mask></defs>
+          <rect x="8" y="8" width="184" height="184" rx="14" fill="#0d0d1a"/>
+          ${fadingGrid(20,20,4,4,40,'mall2')}
+          ${ghost}${bright}
+        </svg>`;
+      }
+    }
+  ]
+};
+
+// ─── RENDER ALL ───
+const allIdeas = [idea1, idea2, idea3, idea4, combo2, combo3, comboAll];
+const container = document.getElementById('ideas');
+
+allIdeas.forEach((idea, idx) => {
+  const div = document.createElement('div');
+  div.className = 'idea';
+  div.innerHTML = `
+    <div class="idea-header">
+      <h2>${idx+1}. ${idea.name}</h2>
+      <span class="ver-label" id="vlbl-${idx}"></span>
+    </div>
+    <div class="idea-body">
+      <div class="logo-display" id="logo-${idx}"></div>
+      <div class="ver-nav">
+        <div class="ver-btns" id="btns-${idx}"></div>
+        <div class="ver-desc" id="desc-${idx}"></div>
+        <div class="sizes" id="sizes-${idx}"></div>
+      </div>
+    </div>
+  `;
+  container.appendChild(div);
+
+  const logoEl = document.getElementById(`logo-${idx}`);
+  const btnsEl = document.getElementById(`btns-${idx}`);
+  const descEl = document.getElementById(`desc-${idx}`);
+  const labelEl = document.getElementById(`vlbl-${idx}`);
+  const sizesEl = document.getElementById(`sizes-${idx}`);
+
+  function showVer(vi) {
+    const v = idea.versions[vi];
+    const svgStr = v.svg();
+    logoEl.innerHTML = svgStr;
+    descEl.textContent = v.desc;
+    labelEl.textContent = v.label;
+    const parser = new DOMParser();
+    const svgDoc = parser.parseFromString(svgStr, 'image/svg+xml');
+    const svgEl = svgDoc.documentElement;
+    sizesEl.innerHTML = '';
+    [64,32,16].forEach(sz => {
+      const clone = svgEl.cloneNode(true);
+      clone.setAttribute('width', sz);
+      clone.setAttribute('height', sz);
+      const wrap = document.createElement('span');
+      wrap.className = 'size-preview';
+      wrap.appendChild(clone);
+      sizesEl.appendChild(wrap);
+      const lbl = document.createElement('span');
+      lbl.textContent = sz+'px';
+      sizesEl.appendChild(lbl);
+    });
+    btnsEl.querySelectorAll('.ver-btn').forEach((b,i)=>b.classList.toggle('active',i===vi));
+  }
+
+  idea.versions.forEach((v, vi) => {
+    const btn = document.createElement('button');
+    btn.className = 'ver-btn'+(vi===0?' active':'');
+    btn.textContent = v.label;
+    btn.onclick = () => showVer(vi);
+    btnsEl.appendChild(btn);
+  });
+
+  showVer(0);
+});
+</script>
+</body>
+</html>
