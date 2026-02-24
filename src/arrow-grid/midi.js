@@ -110,3 +110,20 @@ export const midiUtils = () => {
 };
 
 export const rescanMIDI = midiUtils;
+
+// Clean up MIDI handlers to prevent leaks on unmount
+export const disposeMIDI = () => {
+    if (midiAccess) {
+        const allInputs = midiAccess.inputs.values();
+        for (let input = allInputs.next(); !input.done; input = allInputs.next()) {
+            input.value.onmidimessage = null;
+        }
+    }
+    if (selectMIDIOut) {
+        selectMIDIOut.onchange = null;
+    }
+    midiOut = null;
+    midiAccess = null;
+    selectMIDIOut = null;
+    _onMidiConnected = null;
+};

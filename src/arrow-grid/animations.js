@@ -800,6 +800,17 @@ export const resizeGridCanvas = (newSize) => {
 
 export const getGridCanvasSize = () => gridCanvasSize;
 
+// Tear down the p5 sketch, cancel its rAF loop, remove canvas & listeners
+export const destroyCanvas = () => {
+    if (sketchInstance) {
+        sketchInstance.remove();
+        sketchInstance = null;
+    }
+    stateDrawing = null;
+    previousTime = null;
+    particles = [];
+};
+
 export const updateCanvas = (state, date) => {
     // Guard against being called before setUpCanvas
     if (!stateDrawing) {

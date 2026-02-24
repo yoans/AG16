@@ -1,7 +1,7 @@
 import React from 'react';
 import '../App.css';
 import {range} from 'ramda';
-import { resumeAudio, initAudio, playClick, SYNTH_PRESETS, PRESET_GROUPS, ALL_PRESET_KEYS, DEFAULT_SYNTH } from './synth-engine';
+import { resumeAudio, initAudio, playClick, SYNTH_PRESETS, PRESET_GROUPS, ALL_PRESET_KEYS, DEFAULT_SYNTH, disposeAudio } from './synth-engine';
 import {
     musicalNotes
 } from './play-notes';
@@ -15,6 +15,7 @@ import {
 import {
     updateCanvas,
     setUpCanvas,
+    destroyCanvas,
     getAdderWithMousePosition,
     setWallToggler,
     setWallPlacer,
@@ -23,7 +24,7 @@ import {
     getGridCanvasSize
 } from './animations';
 // sliders.js is no longer used (popup-trigger buttons replaced DOM sliders)
-import { rescanMIDI, midiUtils, onMidiConnected, sendProgramChange, isMidiConnected } from './midi';
+import { rescanMIDI, midiUtils, onMidiConnected, sendProgramChange, isMidiConnected, disposeMIDI } from './midi';
 import presets from './presets';
 import Chance from 'chance';
 import scales, { scaleGroups } from './scales';
@@ -195,7 +196,7 @@ export class Application extends React.Component {
         
         // Auto-play after a short delay — but wait for intro modal dismissal
         if (!this.state.showIntro) {
-            setTimeout(() => this.play(), 500);
+            this._autoPlayTimer = setTimeout(() => this.play(), 500);
         }
     }
     
@@ -210,6 +211,11 @@ export class Application extends React.Component {
         if (this._resumeAudioCleanup) this._resumeAudioCleanup();
         clearTimeout(this._timerID);
         clearTimeout(this._resizeTimer);
+        clearTimeout(this._toastTimer);
+        clearTimeout(this._autoPlayTimer);
+        destroyCanvas();
+        disposeAudio();
+        disposeMIDI();
     }
 
     _resizeTimer = null;
