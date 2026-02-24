@@ -1,0 +1,8 @@
+node_modules/
+.playwright-mcp/
+dist/
+build/
+.venv/
+.DS_Store
+*.log
+*.stackdump
