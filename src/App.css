@@ -64,10 +64,19 @@ body {
 
 .app-title {
   font-size:0.85em; font-weight:700; margin:0;
-  display:flex; align-items:center; gap:8px;
+  display:flex; align-items:center; gap:6px;
   color: var(--ch-color, var(--text-primary));
   font-family: 'Press Start 2P', monospace;
   letter-spacing: -0.01em;
+}
+.app-title-lines {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 0.6em;
+  line-height: 1.3;
+  text-transform: uppercase;
 }
 .app-logo {
   width: 70px;

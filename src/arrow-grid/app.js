@@ -972,7 +972,12 @@ export class Application extends React.Component {
                     <header className="console-header">
                         <h1 className="app-title">
                             <img src="/images/logo.svg" alt="AG16" className="app-logo" width="70" height="70" />
-                            AG16
+                            <span className="app-title-lines">
+                                <span>Arrow</span>
+                                <span>Grid</span>
+                                <span>16</span>
+                                <span>Channel</span>
+                            </span>
                         </h1>
 
                         <div className="undo-redo-group">
