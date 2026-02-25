@@ -1239,6 +1239,7 @@ body {
   border-radius: 10px;
   padding: 14px 16px;
   width: 280px;
+  max-width: calc(100vw - 24px);
   z-index: 200;
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
   animation: introFadeIn 0.2s ease-out;
@@ -1310,8 +1311,10 @@ body {
   min-width: 300px;
   max-width: 380px;
   max-height: 85vh;
+  max-height: 85dvh;
   overflow-y: auto;
   box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 20px var(--ch-color-glow, transparent);
+  width: calc(100vw - 24px);
 }
 .prog-modal-header {
   display: flex;
@@ -1750,10 +1753,13 @@ body {
 
 /* ── Landscape / wide screens: canvas fills height ── */
 @media (orientation: landscape) and (min-width: 861px) {
+  body {
+    overflow: auto;
+  }
   .console-wrapper {
     max-height: calc(100vh - 20px);
     max-width: calc(100vw - 20px);
-    overflow: hidden;
+    overflow: visible;
   }
 
   .console-body {
@@ -1790,12 +1796,17 @@ body {
     width: 100%;
   }
 
+  .app-container {
+    overflow-x: hidden;
+  }
+
   .console-wrapper {
     width: 100%;
-    max-width: 100vw;
+    max-width: 100%;
     padding: 10px;
     gap: 10px;
     border-radius: 10px;
+    overflow-x: hidden;
   }
 
   /* --- Header: wrap into two rows --- */
@@ -1852,16 +1863,16 @@ body {
   .console-body {
     flex-direction: column;
     align-items: stretch;
-    gap: 10px;
+    gap: 8px;
   }
 
-  /* Canvas full-width, capped to viewport minus chrome */
+  /* Canvas FIRST on mobile — above side panels */
   .canvas-area {
     width: 100%;
     aspect-ratio: 1 / 1;
-    max-height: calc(100vw - 32px);
+    max-height: min(calc(100vw - 24px), 55vh);
     flex: none;
-    order: 0;
+    order: -1;
     border-radius: var(--r-sm);
   }
 
@@ -1873,9 +1884,10 @@ body {
     gap: 8px;
     flex-shrink: 0;
     position: relative;
+    order: 1;
   }
 
-  /* Left panel settings row: speed / note-len / grid-size side by side */
+  /* Left panel settings row: speed / grid-size side by side */
   .side-panel > .panel-group {
     flex: 1 1 0;
     min-width: 0;
@@ -1888,15 +1900,33 @@ body {
     font-size: 0.9em;
   }
 
-  /* --- Channel row: 4-column grid --- */
+  /* --- Channel row: collapsible on mobile --- */
   .side-panel > .channel-row {
     flex: 1 1 100%;
     order: 10;
+    display: block !important;
   }
-  .channel-row {
+  .channel-list-body {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr);
     gap: 4px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .channel-row.expanded .channel-list-body {
+    max-height: 900px;
+  }
+  .channel-header {
+    cursor: pointer;
+    user-select: none;
+  }
+  .channel-header::after {
+    content: ' ▸';
+    font-size: 0.7em;
+  }
+  .channel-row.expanded .channel-header::after {
+    content: ' ▾';
   }
   .ch-select-arrow {
     display: none;
@@ -1967,7 +1997,18 @@ body {
     z-index: 1000;
     border-radius: 0;
     padding: 24px 16px;
+    padding-top: max(24px, env(safe-area-inset-top));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
     gap: 16px;
+  }
+
+  /* --- Safe area for fixed overlays --- */
+  .intro-overlay,
+  .info-overlay,
+  .save-manager-overlay,
+  .prog-modal-overlay {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
   }
   .slider-overlay-title {
     font-size: 0.85em;
@@ -2116,6 +2157,11 @@ body {
     gap: 6px;
   }
 
+  /* Canvas: cap height so it doesn't dominate the page */
+  .canvas-area {
+    max-height: min(calc(100vw - 24px), 55vh);
+  }
+
   /* Stack left-panel groups vertically for very narrow */
   .side-panel > .panel-group {
     flex: 1 1 28%;
@@ -2149,6 +2195,49 @@ body {
     flex: 1;
   }
 
+  /* Action bar: wrap on small screens */
+  .action-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+  .action-bar-buttons {
+    width: 100%;
+    justify-content: center;
+    order: 0;
+  }
+  .footer-copyright {
+    order: 1;
+    width: 100%;
+    text-align: center;
+  }
+  .footer-discover {
+    order: 2;
+    white-space: normal;
+    text-align: center;
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Midi help popup: centered on mobile */
+  .midi-help-popup {
+    position: fixed;
+    inset: auto;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100vw - 24px);
+    max-width: 320px;
+    z-index: 2000;
+  }
+
+  /* Prog modal: responsive width */
+  .prog-modal {
+    min-width: 0;
+    max-width: calc(100vw - 24px);
+    padding: 12px;
+  }
+
   /* Intro */
   .intro-how { grid-template-columns: 1fr; }
   .intro-header h1 { font-size: 1.5em; }
@@ -2167,6 +2256,13 @@ body {
     gap: 4px;
   }
   .nav-btn { width: 32px; height: 32px; }
+}
+
+/* ── Phones 360-420px: 2-col channel grid (fits better than 4-col) ── */
+@media (min-width: 361px) and (max-width: 420px) {
+  .channel-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
 }
 
 /* ── Focus-visible for keyboard accessibility ── */

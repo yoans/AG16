@@ -31,11 +31,10 @@
 - [ ] Test channel select overlay on mobile — grid layout, touch targets
 
 ### Analytics (Usage Tracking)
-- [x] Add Plausible Analytics (privacy-friendly, no cookies, GDPR-compliant) ✅
-  - [x] Script tag in index.html ✅
+- [x] Add Google Analytics (GA4) for usage tracking ✅
+  - [x] Script tag in index.html (G-TWET96RRDG) ✅
   - [x] Custom events tracked: Play, Share, Randomize, Preset-Load, Load-Shared, Sound-Toggle, MIDI-Toggle, Intro-Dismissed ✅
-  - [x] Track page views automatically (Plausible default) ✅
-  - [ ] Dashboard at plausible.io — needs Plausible account setup
+  - [x] Track page views automatically ✅
 - [ ] Verify analytics working in production
 
 ### Favicon & Icons
@@ -56,12 +55,12 @@
 
 ### Legal / Compliance
 - [x] Privacy Policy (inline modal in info section) ✅
-  - [x] Plausible analytics disclosure ✅
+  - [x] GA4 analytics disclosure ✅
   - [x] localStorage disclosure ✅
   - [x] No data sold statement ✅
 - [ ] Footer link to privacy policy
-- [ ] Copyright notice: "© 2026 Nathaniel Young" in info modal
-- [x] No cookie banner needed (Plausible is cookie-free) ✅
+- [x] Copyright notice: "© 2026 Nathaniel Young" in footer ✅
+- [x] Credits: Earslap/Otomata attribution + ArrowGrid lineage in info modal ✅
 
 ### Performance & Quality
 - [ ] Lighthouse audit (target 90+ on Performance, Accessibility, Best Practices, SEO)
@@ -148,10 +147,12 @@
 - [x] Mobile layout: iPhone 16 Pro header restructure (2-row header, icon-only buttons)
 - [x] Mobile layout: safe-area-inset padding for iOS notch
 - [x] Tablet layout: iPad 600-860px refinements (button labels, 8-col channels)
-- [x] Plausible Analytics integration (script + custom events)
+- [x] Plausible Analytics integration → replaced with Google Analytics (GA4) ✅
 - [x] Open Graph & Twitter Card meta tags
 - [x] Social preview image (og-preview.png)
 - [x] Privacy Policy modal
+- [x] Credits: Earslap/Otomata + ArrowGrid lineage in info modal
+- [x] Copyright footer
 
 ---
 
@@ -159,6 +160,6 @@
 - [ ] All P0 items complete
 - [ ] All P1 items complete
 - [ ] Manual test on: iPhone 16 Pro (Safari), iPad (Safari), Chrome desktop, Firefox
-- [ ] Plausible analytics verified
+- [ ] GA4 analytics verified
 - [ ] DNS / GitHub Pages fully working
 - [ ] Announce launch

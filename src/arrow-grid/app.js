@@ -32,9 +32,9 @@ import { CHANNEL_LABELS, CHANNEL_CSS_CLASSES, CHANNEL_COLORS, MAX_CHANNELS, crea
 
 const chance = new Chance();
 
-// Analytics — Plausible custom events (no-op if script not loaded)
+// Analytics — GA4 custom events (no-op if gtag not loaded)
 function track(event, props) {
-    if (window.plausible) window.plausible(event, props ? { props } : undefined);
+    if (window.gtag) window.gtag('event', event, props);
 }
 
 const maxSize = 20;
@@ -155,6 +155,7 @@ export class Application extends React.Component {
             progModalSnapshot: null,  // snapshot of channel settings when FX modal opens
             progInputText: '0',       // custom text input for program number
             progCloseConfirm: false,  // show close confirmation warning
+            channelsExpanded: false,  // collapsed on mobile by default
         };
     }
 
@@ -326,8 +327,8 @@ export class Application extends React.Component {
         let canvasSize;
         if (isPortrait) {
             // Portrait: canvas width = viewport width minus padding/margins
-            const padding = 40; // wrapper padding + borders
-            canvasSize = Math.min(vw - padding, vh * 0.6);
+            const padding = vw <= 480 ? 24 : 40;
+            canvasSize = Math.min(vw - padding, vh * 0.55);
         } else {
             // Landscape: canvas height = viewport height minus header/footer/padding
             const chrome = 220; // header + footer + gaps + wrapper padding
@@ -1287,8 +1288,8 @@ export class Application extends React.Component {
                             </div>
 
                                             {/* Channel selector */}
-                            <div className="channel-row">
-                                <div className="channel-header">
+                            <div className={`channel-row${this.state.channelsExpanded ? ' expanded' : ''}`}>
+                                <div className="channel-header" onClick={() => this.setState({ channelsExpanded: !this.state.channelsExpanded })}>
                                     <h3>Channels</h3>
                                 </div>
                                 {/* Channel buttons */}
@@ -2190,6 +2191,8 @@ export class Application extends React.Component {
                                 </section>
                                 <section className="info-credits">
                                     <p>Created by <a href="https://nathaniel-young.com" target="_blank" rel="noopener noreferrer">Nathaniel Young</a></p>
+                                    <p style={{marginTop: '8px', fontSize: '0.85em', opacity: 0.85}}>Based on <a href="https://earslap.com/page/otomata.html" target="_blank" rel="noopener noreferrer">Otomata</a> by <a href="https://earslap.com" target="_blank" rel="noopener noreferrer">Earslap</a></p>
+                                    <p style={{fontSize: '0.85em', opacity: 0.85}}>Evolved from <a href="https://arrowgrid.sagaciasoft.com/" target="_blank" rel="noopener noreferrer">Arrowgrid</a></p>
                                     <p style={{marginTop: '8px'}}><a href="#" onClick={(e) => { e.preventDefault(); this.setState({ showPrivacy: true }); }}>Privacy Policy</a></p>
                                 </section>
                             </div>
@@ -2209,19 +2212,18 @@ export class Application extends React.Component {
                             </div>
                             <div className="info-modal-body">
                                 <section>
-                                    <h3>No Cookies, No Tracking</h3>
-                                    <p>AG16 respects your privacy. We do not use cookies, do not collect personal information, and do not track you across the web.</p>
+                                    <h3>Your Privacy</h3>
+                                    <p>AG16 respects your privacy. We do not collect personal information and do not track you across the web. Google Analytics uses standard cookies for anonymous usage statistics only.</p>
                                 </section>
                                 <section>
                                     <h3>Analytics</h3>
-                                    <p>We use <a href="https://plausible.io" target="_blank" rel="noopener noreferrer">Plausible Analytics</a>, a privacy-friendly, cookie-free analytics service. Plausible collects:</p>
+                                    <p>We use <a href="https://analytics.google.com" target="_blank" rel="noopener noreferrer">Google Analytics 4</a> to understand how the app is used. GA4 collects:</p>
                                     <ul>
-                                        <li>Anonymous page views (no personal data)</li>
+                                        <li>Anonymous page views and usage statistics</li>
                                         <li>Anonymous custom events (e.g., "Play", "Share") to understand feature usage</li>
-                                        <li>No IP addresses are stored</li>
-                                        <li>No fingerprinting or cross-site tracking</li>
+                                        <li>Basic device and browser information</li>
                                     </ul>
-                                    <p>Plausible is GDPR, CCPA, and PECR compliant. No cookie consent banner is needed because no cookies are used.</p>
+                                    <p>Google Analytics uses cookies for session tracking. No personally identifiable information is collected by AG16.</p>
                                 </section>
                                 <section>
                                     <h3>Local Storage</h3>
