@@ -378,6 +378,24 @@ export class Application extends React.Component {
                     this.saveToLocalStorage();
                 }
                 break;
+            case 'Equal':
+            case 'NumpadAdd': {
+                e.preventDefault();
+                const curBpm = 60000 / this.state.noteLength;
+                const newBpm = Math.min(1200, curBpm + 10);
+                const newLen = Math.round(60000 / newBpm);
+                this.setState({ noteLength: Math.max(50, newLen) }, () => this._scheduleNextTick());
+                break;
+            }
+            case 'Minus':
+            case 'NumpadSubtract': {
+                e.preventDefault();
+                const curBpm2 = 60000 / this.state.noteLength;
+                const newBpm2 = Math.max(120, curBpm2 - 10);
+                const newLen2 = Math.round(60000 / newBpm2);
+                this.setState({ noteLength: Math.min(500, newLen2) }, () => this._scheduleNextTick());
+                break;
+            }
             default:
                 break;
         }
@@ -998,15 +1016,16 @@ export class Application extends React.Component {
                             <button className="nav-btn" onClick={this.nextPreset} title="Next Preset (→)">
                                 <svg viewBox="0 0 24 24" width="14" height="14"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/></svg>
                             </button>
-                            <button className="hdr-btn ch-colored" onClick={this.randomizeGrid} title="Randomize grid">
-                                <svg viewBox="0 0 24 24" width="14" height="14"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm-.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.79-3.13z" fill="currentColor"/></svg>
-                                <span>Randomize</span>
-                            </button>
-                            <button className="hdr-btn danger" onClick={this.emptyGrid} title="Clear Grid (Delete)">
-                                <svg viewBox="0 0 24 24" width="14" height="14"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/></svg>
-                                <span>Clear</span>
-                            </button>
                         </div>
+
+                        <button className="hdr-btn ch-colored" onClick={this.randomizeGrid} title="Randomize grid">
+                            <svg viewBox="0 0 24 24" width="14" height="14"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm-.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.79-3.13z" fill="currentColor"/></svg>
+                            <span>Randomize</span>
+                        </button>
+                        <button className="hdr-btn danger" onClick={this.emptyGrid} title="Clear Grid (Delete)">
+                            <svg viewBox="0 0 24 24" width="14" height="14"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/></svg>
+                            <span>Clear</span>
+                        </button>
 
                         <div className="header-actions">
                             <button
@@ -2013,6 +2032,7 @@ export class Application extends React.Component {
                                             <tr><td><kbd>Ctrl+Shift+Z</kbd> / <kbd>Ctrl+Y</kbd></td><td>Redo</td></tr>
                                             <tr><td><kbd>Ctrl+S</kbd></td><td>Save</td></tr>
                                             <tr><td><kbd>Delete</kbd></td><td>Clear grid</td></tr>
+                                            <tr><td><kbd>+ / -</kbd></td><td>Speed up / slow down (±10 BPM)</td></tr>
                                         </tbody>
                                     </table>
                                 </section>
