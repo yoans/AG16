@@ -17,38 +17,25 @@
   - [ ] Hide text labels on all header buttons (icon-only on mobile)
   - [ ] Undo/redo group: icon-only, no text labels on mobile
   - [ ] Randomize/Clear buttons: icon-only on mobile, move into actions row
-  - [ ] Ensure safe-area-inset for notch/dynamic island
+  - [x] Ensure safe-area-inset for notch/dynamic island ✅
   - [ ] Canvas should fill available width with no horizontal scroll
   - [ ] Side panels: fluid grid, no overflow, stacked vertically
   - [ ] Footer selects: full-width stacked on narrow screens
   - [ ] Touch targets: minimum 44×44px for all interactive elements
-- [ ] Fix iPad (820×1180 portrait, 1180×820 landscape) layout
-  - [ ] Portrait: use phone-style stacked layout but with more breathing room
+- [x] Fix iPad (820×1180 portrait, 1180×820 landscape) layout ✅
+  - [x] Portrait: tablet breakpoint (600-860px) restores button labels, 8-col channels
   - [ ] Landscape: use desktop 3-column layout (panel–canvas–panel)
   - [ ] Test both orientations with rotation
-- [ ] Add `env(safe-area-inset-*)` padding for iOS notch/home indicator
+- [x] Add `env(safe-area-inset-*)` padding for iOS notch/home indicator ✅
 - [ ] Test slider overlays on mobile — fullscreen touch interaction
 - [ ] Test channel select overlay on mobile — grid layout, touch targets
 
 ### Analytics (Usage Tracking)
-- [ ] Add Plausible Analytics (privacy-friendly, no cookies, GDPR-compliant)
-  - [ ] Script tag in index.html: `<script defer data-domain="ag16.sagaciasoft.com" src="https://plausible.io/js/script.js"></script>`
-  - [ ] Custom events to track:
-    - `Play` — user hits play
-    - `Share` — user shares a grid
-    - `Randomize` — user randomizes
-    - `Preset-Load` — user loads a preset (with preset name)
-    - `Save` — user saves a grid
-    - `Load-Shared` — user opens a shared link
-    - `Sound-Toggle` — sound on/off
-    - `MIDI-Toggle` — MIDI on/off
-    - `Channel-Change` — channel selected (with channel number)
-    - `Synth-Preset-Change` — synth preset changed
-    - `Grid-Size-Change` — grid size adjusted
-    - `Speed-Change` — speed adjusted
-    - `Intro-Dismissed` — intro modal closed (with sound choice)
-  - [ ] Track page views automatically (Plausible default)
-  - [ ] Dashboard at plausible.io — no login or self-hosting needed
+- [x] Add Plausible Analytics (privacy-friendly, no cookies, GDPR-compliant) ✅
+  - [x] Script tag in index.html ✅
+  - [x] Custom events tracked: Play, Share, Randomize, Preset-Load, Load-Shared, Sound-Toggle, MIDI-Toggle, Intro-Dismissed ✅
+  - [x] Track page views automatically (Plausible default) ✅
+  - [ ] Dashboard at plausible.io — needs Plausible account setup
 - [ ] Verify analytics working in production
 
 ### Favicon & Icons
@@ -61,26 +48,20 @@
 ## 🟡 P1 — Important (Pre-Launch Polish)
 
 ### SEO & Social
-- [ ] Open Graph meta tags in index.html
-  - [ ] `og:title` — "AG16 — Arrow Grid: 16 Channel"
-  - [ ] `og:description` — "Create rhythms and melodies with bouncing arrows on a grid. Free audio-visual instrument."
-  - [ ] `og:image` — social preview image (1200×630px, logo + dark bg + tagline)
-  - [ ] `og:url` — https://ag16.sagaciasoft.com
-  - [ ] `og:type` — website
-  - [ ] `twitter:card` — summary_large_image
-  - [ ] `twitter:image` — same preview image
-- [ ] Generate social preview image (1200×630) with pixel logo and tagline
+- [x] Open Graph meta tags in index.html ✅
+- [x] Twitter Card meta tags ✅
+- [x] Generate social preview image (1200×630) with pixel logo and tagline ✅
 - [ ] Meta description tag (already exists, refine copy)
 - [ ] Canonical URL tag
 
 ### Legal / Compliance
-- [ ] Privacy Policy page (inline modal or /privacy route)
-  - What's collected: anonymous page views and events via Plausible (no cookies, no PII)
-  - localStorage: saves grids locally on user's device only
-  - No data sold, no third-party tracking, no ads
+- [x] Privacy Policy (inline modal in info section) ✅
+  - [x] Plausible analytics disclosure ✅
+  - [x] localStorage disclosure ✅
+  - [x] No data sold statement ✅
 - [ ] Footer link to privacy policy
 - [ ] Copyright notice: "© 2026 Nathaniel Young" in info modal
-- [ ] No cookie banner needed (Plausible is cookie-free)
+- [x] No cookie banner needed (Plausible is cookie-free) ✅
 
 ### Performance & Quality
 - [ ] Lighthouse audit (target 90+ on Performance, Accessibility, Best Practices, SEO)
@@ -163,6 +144,14 @@
 - [x] Header restructure (logo + 4-line title)
 - [x] Speed shortcuts (+/-)
 - [x] Share URL compression (binary encoding)
+- [x] MIDI program change sends preview note
+- [x] Mobile layout: iPhone 16 Pro header restructure (2-row header, icon-only buttons)
+- [x] Mobile layout: safe-area-inset padding for iOS notch
+- [x] Tablet layout: iPad 600-860px refinements (button labels, 8-col channels)
+- [x] Plausible Analytics integration (script + custom events)
+- [x] Open Graph & Twitter Card meta tags
+- [x] Social preview image (og-preview.png)
+- [x] Privacy Policy modal
 
 ---
 

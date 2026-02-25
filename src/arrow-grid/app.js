@@ -32,6 +32,11 @@ import { CHANNEL_LABELS, CHANNEL_CSS_CLASSES, CHANNEL_COLORS, MAX_CHANNELS, crea
 
 const chance = new Chance();
 
+// Analytics — Plausible custom events (no-op if script not loaded)
+function track(event, props) {
+    if (window.plausible) window.plausible(event, props ? { props } : undefined);
+}
+
 const maxSize = 20;
 const minSize = 2;
 const minNoteLength = -500;
@@ -145,6 +150,7 @@ export class Application extends React.Component {
             confirmDeleteIndex: null,
             saveNameInput: '',
             showInfo: false,
+            showPrivacy: false,
             showMidiHelp: false,
             progModalSnapshot: null,  // snapshot of channel settings when FX modal opens
             progInputText: '0',       // custom text input for program number
@@ -210,6 +216,7 @@ export class Application extends React.Component {
             const encoded = hash.slice(3);
             const grid = this._decodeGrid(encoded);
             if (grid) {
+                track('Load-Shared');
                 this.setState({ grid, showIntro: false, currentPreset: -1 }, () => {
                     // Clean up URL
                     window.history.replaceState(null, '', window.location.pathname);
@@ -226,6 +233,7 @@ export class Application extends React.Component {
             try {
                 const parsed = JSON.parse(window.atob(data));
                 if (parsed.grid) {
+                    track('Load-Shared');
                     this.setState({ grid: parsed.grid, showIntro: false, currentPreset: -1 }, () => {
                         window.history.replaceState(null, '', window.location.pathname);
                         this._showToast('Shared grid loaded!');
@@ -603,6 +611,7 @@ export class Application extends React.Component {
 
     // ── Randomize ──
     randomizeGrid = () => {
+        track('Randomize');
         this._pushUndo();
         const tonalKeys = ALL_PRESET_KEYS.filter(k => !SYNTH_PRESETS[k].isPercussion);
         const RAND_ICON_MAP = {
@@ -636,6 +645,7 @@ export class Application extends React.Component {
         if (nextPresetIndex < 0) {
             nextPresetIndex = this.state.presets.length - 1;
         }
+        track('Preset-Load', { name: this.state.presets[nextPresetIndex]?.name });
         this.setState({
             grid: this.state.presets[nextPresetIndex],
             currentPreset: nextPresetIndex
@@ -648,6 +658,7 @@ export class Application extends React.Component {
         if (nextPresetIndex >= this.state.presets.length) {
             nextPresetIndex = 0;
         }
+        track('Preset-Load', { name: this.state.presets[nextPresetIndex]?.name });
         this.setState({
             grid: this.state.presets[nextPresetIndex],
             currentPreset: nextPresetIndex
@@ -671,6 +682,7 @@ export class Application extends React.Component {
     }
 
     play = () => {
+        track('Play');
         this._lastTickTime = Date.now();
         this.setState({ playing: true }, () => this._scheduleNextTick());
     }
@@ -680,6 +692,7 @@ export class Application extends React.Component {
     }
     muteToggle = async () => {
         const willEnable = !this.state.soundOn;
+        track('Sound-Toggle', { state: willEnable ? 'on' : 'off' });
         if (willEnable) {
             try {
                 await resumeAudio();
@@ -692,6 +705,7 @@ export class Application extends React.Component {
         });
     }
     midiToggle = () => {
+        track('MIDI-Toggle', { state: this.state.midiOn ? 'off' : 'on' });
         if (!isMidiConnected() && !this.state.midiOn) {
             this.setState({ showMidiHelp: true });
         } else {
@@ -1043,6 +1057,7 @@ export class Application extends React.Component {
     }
 
     share = async () => {
+        track('Share');
         const encoded = this._encodeGrid(this.state.grid);
         const shareUrl = `${window.location.origin}${window.location.pathname}#g=${encoded}`;
 
@@ -1139,24 +1154,25 @@ export class Application extends React.Component {
                             )}
                         </button>
 
-                        <div className="header-presets">
-                            <button className="nav-btn" onClick={this.prevPreset} title="Previous Preset (←)">
-                                <svg viewBox="0 0 24 24" width="14" height="14"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/></svg>
+                        <div className="header-row-2">
+                            <button className="hdr-btn ch-colored" onClick={this.randomizeGrid} title="Randomize grid">
+                                <svg viewBox="0 0 24 24" width="14" height="14"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm-.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.79-3.13z" fill="currentColor"/></svg>
+                                <span>Randomize</span>
                             </button>
-                            <span className="preset-label">{this.state.currentPreset >= 0 ? (this.state.presets[this.state.currentPreset]?.name || 'Preset') : 'Custom'}</span>
-                            <button className="nav-btn" onClick={this.nextPreset} title="Next Preset (→)">
-                                <svg viewBox="0 0 24 24" width="14" height="14"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/></svg>
+                            <div className="header-presets">
+                                <button className="nav-btn" onClick={this.prevPreset} title="Previous Preset (←)">
+                                    <svg viewBox="0 0 24 24" width="14" height="14"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/></svg>
+                                </button>
+                                <span className="preset-label">{this.state.currentPreset >= 0 ? (this.state.presets[this.state.currentPreset]?.name || 'Preset') : 'Custom'}</span>
+                                <button className="nav-btn" onClick={this.nextPreset} title="Next Preset (→)">
+                                    <svg viewBox="0 0 24 24" width="14" height="14"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/></svg>
+                                </button>
+                            </div>
+                            <button className="hdr-btn danger" onClick={this.emptyGrid} title="Clear Grid (Delete)">
+                                <svg viewBox="0 0 24 24" width="14" height="14"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/></svg>
+                                <span>Clear</span>
                             </button>
                         </div>
-
-                        <button className="hdr-btn ch-colored" onClick={this.randomizeGrid} title="Randomize grid">
-                            <svg viewBox="0 0 24 24" width="14" height="14"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm-.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.79-3.13z" fill="currentColor"/></svg>
-                            <span>Randomize</span>
-                        </button>
-                        <button className="hdr-btn danger" onClick={this.emptyGrid} title="Clear Grid (Delete)">
-                            <svg viewBox="0 0 24 24" width="14" height="14"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/></svg>
-                            <span>Clear</span>
-                        </button>
 
                         <div className="header-actions">
                             <button
@@ -2080,10 +2096,10 @@ export class Application extends React.Component {
                             </div>
 
                             <div className="intro-sound-choice">
-                                <button className="intro-close-btn sound-on" onClick={() => { localStorage.setItem('arrowgrid-seen', '1'); localStorage.setItem('arrowgrid-sound', 'on'); this.setState({ showIntro: false, soundOn: true }, () => this.play()); }}>
+                                <button className="intro-close-btn sound-on" onClick={() => { track('Intro-Dismissed', { sound: 'on' }); localStorage.setItem('arrowgrid-seen', '1'); localStorage.setItem('arrowgrid-sound', 'on'); this.setState({ showIntro: false, soundOn: true }, () => this.play()); }}>
                                     🔊 Start with Sound
                                 </button>
-                                <button className="intro-close-btn sound-off" onClick={() => { localStorage.setItem('arrowgrid-seen', '1'); localStorage.setItem('arrowgrid-sound', 'off'); this.setState({ showIntro: false, soundOn: false }, () => this.play()); }}>
+                                <button className="intro-close-btn sound-off" onClick={() => { track('Intro-Dismissed', { sound: 'off' }); localStorage.setItem('arrowgrid-seen', '1'); localStorage.setItem('arrowgrid-sound', 'off'); this.setState({ showIntro: false, soundOn: false }, () => this.play()); }}>
                                     🔇 Start without Sound
                                 </button>
                             </div>
@@ -2174,6 +2190,56 @@ export class Application extends React.Component {
                                 </section>
                                 <section className="info-credits">
                                     <p>Created by <a href="https://nathaniel-young.com" target="_blank" rel="noopener noreferrer">Nathaniel Young</a></p>
+                                    <p style={{marginTop: '8px'}}><a href="#" onClick={(e) => { e.preventDefault(); this.setState({ showPrivacy: true }); }}>Privacy Policy</a></p>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ── Privacy Policy Modal ── */}
+                {this.state.showPrivacy && (
+                    <div className="info-overlay" onClick={() => this.setState({ showPrivacy: false })}>
+                        <div className="info-modal" onClick={(e) => e.stopPropagation()}>
+                            <div className="info-modal-header">
+                                <div className="modal-branding-text">
+                                    <h2 style={{fontSize: '1em'}}>Privacy Policy</h2>
+                                </div>
+                                <button className="info-modal-close" onClick={() => this.setState({ showPrivacy: false })}>×</button>
+                            </div>
+                            <div className="info-modal-body">
+                                <section>
+                                    <h3>No Cookies, No Tracking</h3>
+                                    <p>AG16 respects your privacy. We do not use cookies, do not collect personal information, and do not track you across the web.</p>
+                                </section>
+                                <section>
+                                    <h3>Analytics</h3>
+                                    <p>We use <a href="https://plausible.io" target="_blank" rel="noopener noreferrer">Plausible Analytics</a>, a privacy-friendly, cookie-free analytics service. Plausible collects:</p>
+                                    <ul>
+                                        <li>Anonymous page views (no personal data)</li>
+                                        <li>Anonymous custom events (e.g., "Play", "Share") to understand feature usage</li>
+                                        <li>No IP addresses are stored</li>
+                                        <li>No fingerprinting or cross-site tracking</li>
+                                    </ul>
+                                    <p>Plausible is GDPR, CCPA, and PECR compliant. No cookie consent banner is needed because no cookies are used.</p>
+                                </section>
+                                <section>
+                                    <h3>Local Storage</h3>
+                                    <p>AG16 uses your browser's localStorage to remember:</p>
+                                    <ul>
+                                        <li>Whether you've seen the intro modal</li>
+                                        <li>Your sound preference (on/off)</li>
+                                        <li>Saved grid creations (stored entirely on your device)</li>
+                                    </ul>
+                                    <p>This data never leaves your browser. You can clear it at any time via your browser settings.</p>
+                                </section>
+                                <section>
+                                    <h3>No Data Sold</h3>
+                                    <p>We do not sell, share, or monetize any user data. AG16 is a free creative tool with no ads and no data harvesting.</p>
+                                </section>
+                                <section>
+                                    <h3>Contact</h3>
+                                    <p>Questions? Reach out at <a href="https://nathaniel-young.com" target="_blank" rel="noopener noreferrer">nathaniel-young.com</a>.</p>
                                 </section>
                             </div>
                         </div>
