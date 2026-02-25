@@ -24,7 +24,7 @@ import {
     getGridCanvasSize
 } from './animations';
 // sliders.js is no longer used (popup-trigger buttons replaced DOM sliders)
-import { rescanMIDI, midiUtils, onMidiConnected, sendProgramChange, isMidiConnected, disposeMIDI } from './midi';
+import { rescanMIDI, midiUtils, onMidiConnected, sendProgramChange, makeMIDImessage, isMidiConnected, disposeMIDI } from './midi';
 import presets from './presets';
 import Chance from 'chance';
 import scales, { scaleGroups } from './scales';
@@ -197,6 +197,42 @@ export class Application extends React.Component {
         // Auto-play after a short delay — but wait for intro modal dismissal
         if (!this.state.showIntro) {
             this._autoPlayTimer = setTimeout(() => this.play(), 500);
+        }
+
+        // Load shared grid from URL hash (#g=...) or legacy query (?data=...)
+        this._loadFromUrl();
+    }
+
+    _loadFromUrl = () => {
+        // New compact format: #g=...
+        const hash = window.location.hash;
+        if (hash.startsWith('#g=')) {
+            const encoded = hash.slice(3);
+            const grid = this._decodeGrid(encoded);
+            if (grid) {
+                this.setState({ grid, showIntro: false, currentPreset: -1 }, () => {
+                    // Clean up URL
+                    window.history.replaceState(null, '', window.location.pathname);
+                    this._showToast('Shared grid loaded!');
+                    setTimeout(() => this.play(), 300);
+                });
+                return;
+            }
+        }
+        // Legacy format: ?data=...
+        const params = new URLSearchParams(window.location.search);
+        const data = params.get('data');
+        if (data) {
+            try {
+                const parsed = JSON.parse(window.atob(data));
+                if (parsed.grid) {
+                    this.setState({ grid: parsed.grid, showIntro: false, currentPreset: -1 }, () => {
+                        window.history.replaceState(null, '', window.location.pathname);
+                        this._showToast('Shared grid loaded!');
+                        setTimeout(() => this.play(), 300);
+                    });
+                }
+            } catch (e) { /* invalid data, ignore */ }
         }
     }
     
@@ -913,22 +949,112 @@ export class Application extends React.Component {
             });
         }
     }
+    // ── Binary grid encoding for share URLs ──
+    // Each arrow = 2 bytes: [x(5)|y(5)|vector(2)|channel(4)]
+    // Each wall  = 2 bytes: [type(1)|row(5)|col(5)|padding(5)]
+    // Header: [version(4)|size(6)] [numArrows(8)] [numWalls(8)]
+    _encodeGrid = (grid) => {
+        const { size, arrows, walls = [] } = grid;
+        const numArrows = arrows.length;
+        const numWalls = walls.length;
+        // 3 header bytes + 2 per arrow + 2 per wall
+        const buf = new Uint8Array(3 + numArrows * 2 + numWalls * 2);
+        // Header
+        buf[0] = (2 << 6) | (size & 0x3F);      // version=2, size 0-63
+        buf[1] = numArrows & 0xFF;
+        buf[2] = numWalls & 0xFF;
+        // Arrows
+        for (let i = 0; i < numArrows; i++) {
+            const a = arrows[i];
+            const hi = (a.x << 3) | (a.y >> 2);
+            const lo = ((a.y & 0x3) << 6) | ((a.vector & 0x3) << 4) | ((a.channel - 1) & 0xF);
+            buf[3 + i * 2] = hi;
+            buf[3 + i * 2 + 1] = lo;
+        }
+        // Walls
+        const wallOffset = 3 + numArrows * 2;
+        for (let i = 0; i < numWalls; i++) {
+            const parts = walls[i].split(':');
+            const type = parts[0] === 'h' ? 0 : 1;
+            const row = parseInt(parts[1], 10);
+            const col = parseInt(parts[2], 10);
+            const hi = (type << 7) | ((row & 0x1F) << 2) | (col >> 3);
+            const lo = ((col & 0x7) << 5);
+            buf[wallOffset + i * 2] = hi;
+            buf[wallOffset + i * 2 + 1] = lo;
+        }
+        // Convert to URL-safe base64
+        let b64 = '';
+        for (let i = 0; i < buf.length; i++) b64 += String.fromCharCode(buf[i]);
+        return window.btoa(b64).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+
+    _decodeGrid = (encoded) => {
+        try {
+            // Restore standard base64
+            let b64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+            while (b64.length % 4) b64 += '=';
+            const raw = window.atob(b64);
+            const buf = new Uint8Array(raw.length);
+            for (let i = 0; i < raw.length; i++) buf[i] = raw.charCodeAt(i);
+
+            const version = (buf[0] >> 6) & 0x3;
+            if (version === 2) {
+                // Binary v2 format
+                const size = buf[0] & 0x3F;
+                const numArrows = buf[1];
+                const numWalls = buf[2];
+                const arrows = [];
+                for (let i = 0; i < numArrows; i++) {
+                    const hi = buf[3 + i * 2];
+                    const lo = buf[3 + i * 2 + 1];
+                    arrows.push({
+                        x: hi >> 3,
+                        y: ((hi & 0x7) << 2) | (lo >> 6),
+                        vector: (lo >> 4) & 0x3,
+                        channel: (lo & 0xF) + 1,
+                    });
+                }
+                const walls = [];
+                const wallOffset = 3 + numArrows * 2;
+                for (let i = 0; i < numWalls; i++) {
+                    const hi = buf[wallOffset + i * 2];
+                    const lo = buf[wallOffset + i * 2 + 1];
+                    const type = (hi >> 7) ? 'v' : 'h';
+                    const row = (hi >> 2) & 0x1F;
+                    const col = ((hi & 0x3) << 3) | (lo >> 5);
+                    walls.push(`${type}:${row}:${col}`);
+                }
+                return { size, arrows, walls, muted: true };
+            }
+            // Legacy text v1: size|arrows|walls
+            const text = raw;
+            const [sizeStr, arrowStr, wallStr] = text.split('|');
+            const size = parseInt(sizeStr, 10);
+            const arrows = arrowStr ? arrowStr.split(',').map(a => {
+                const [x, y, vector, channel] = a.split('.').map(Number);
+                return { x, y, vector, channel };
+            }) : [];
+            const walls = wallStr ? wallStr.split(',') : [];
+            return { size, arrows, walls, muted: true };
+        } catch (e) {
+            return null;
+        }
+    }
+
     share = async () => {
-        const gridString = window.btoa(JSON.stringify({
-            grid: this.state.grid,
-        }));
-        const shareUrl = `${window.location.origin}${window.location.pathname}?data=${gridString}`;
-        
+        const encoded = this._encodeGrid(this.state.grid);
+        const shareUrl = `${window.location.origin}${window.location.pathname}#g=${encoded}`;
+
         if (navigator.share) {
             try {
-                await navigator.share({ title: 'AG16', url: shareUrl });
+                await navigator.share({ title: 'AG16 — Arrow Grid', url: shareUrl });
             } catch (e) { /* cancelled */ }
         } else {
             try {
                 await navigator.clipboard.writeText(shareUrl);
-                this._showToast('Link copied to clipboard — paste to share!');
+                this._showToast('Link copied!');
             } catch (e) {
-                // Fallback: prompt
                 window.prompt('Copy this link:', shareUrl);
             }
         }
@@ -1305,6 +1431,11 @@ export class Application extends React.Component {
                                     const newSettings = { ...this.state.channelSettings };
                                     newSettings[ch] = { ...settings, program: clamped };
                                     sendProgramChange(ch, clamped);
+                                    // Send a short preview note so user can hear the new program
+                                    setTimeout(() => {
+                                        const msg = makeMIDImessage(60, 300, 0.8, ch);
+                                        msg.play();
+                                    }, 50);
                                     this.setState({ channelSettings: newSettings, progInputText: String(clamped) });
                                 };
                                 const applyInputText = () => {
