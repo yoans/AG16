@@ -327,17 +327,19 @@ export class Application extends React.Component {
         let canvasSize;
         if (isPortrait) {
             // Portrait: canvas width = viewport width minus padding/margins
-            const padding = vw <= 480 ? 24 : 40;
-            canvasSize = Math.min(vw - padding, vh * 0.55);
+            // Tighter padding on phones, more room on tablets
+            const padding = vw <= 360 ? 12 : vw <= 480 ? 16 : vw <= 860 ? 28 : 40;
+            const maxH = vw <= 360 ? vh * 0.44 : vw <= 480 ? vh * 0.46 : vh * 0.50;
+            canvasSize = Math.min(vw - padding, maxH);
         } else {
-            // Landscape: canvas height = viewport height minus header/footer/padding
-            const chrome = 220; // header + footer + gaps + wrapper padding
+            // Landscape: canvas height = viewport height minus header/footer/padding/labels
+            const chrome = 240; // header + footer + gaps + wrapper padding + note labels
             const sidePanelWidth = 116 * 2 + 40 + 48 + 30; // both panels + gaps + wrapper padding + note labels
             canvasSize = Math.min(vh - chrome, vw - sidePanelWidth);
         }
 
         // Clamp to reasonable range
-        canvasSize = Math.max(200, Math.min(Math.floor(canvasSize), 800));
+        canvasSize = Math.max(180, Math.min(Math.floor(canvasSize), 800));
         resizeGridCanvas(canvasSize);
     }
 
@@ -1999,7 +2001,7 @@ export class Application extends React.Component {
                                 className="popup-trigger-btn popup-trigger-wrap"
                                 onClick={() => this.setState({ activePopup: this.state.activePopup === 'masterVol' ? null : 'masterVol' })}
                                 title={`Master volume: ${Math.round(this.state.globalVelocity * 100)}%`}
-                                style={{width: '70px', padding: '4px 8px', minHeight: '24px', fontSize: '0.75em'}}
+                                style={{width: '70px', padding: '4px 8px', fontSize: '0.75em'}}
                             >{Math.round(this.state.globalVelocity * 100)}%</button>
                         </div>
                     </footer>

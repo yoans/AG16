@@ -59,7 +59,6 @@ body {
   display:flex; justify-content:space-between; align-items:center;
   gap: 12px;
   padding-bottom: 14px;
-  border-bottom: 1px solid var(--border-subtle);
 }
 
 .app-title {
@@ -1085,7 +1084,6 @@ body {
   justify-content: center;
   gap: 16px;
   padding-top: 14px;
-  border-top: 1px solid var(--border-subtle);
 }
 .footer-group {
   display: flex;
@@ -1761,24 +1759,21 @@ body {
     max-width: calc(100vw - 20px);
     overflow: visible;
   }
-
   .console-body {
     flex: 1;
     min-height: 0;
   }
-
   .canvas-area {
     flex: 0 0 auto;
     align-self: stretch;
   }
-
   .side-panel {
     overflow: visible;
     max-height: 100%;
   }
 }
 
-/* ── Portrait / narrow — comprehensive mobile layout ── */
+/* ── Portrait / narrow — mobile & tablet layout ── */
 @media (max-width: 860px), (orientation: portrait) and (max-width: 1024px) {
 
   /* --- Global --- */
@@ -1786,51 +1781,44 @@ body {
     overflow: auto;
     height: auto;
     min-height: 100vh;
-    min-height: -webkit-fill-available;
+    min-height: 100dvh;
     align-items: flex-start;
   }
-
   .app-container {
     align-items: flex-start;
-    padding: 6px;
+    padding: 4px;
     width: 100%;
-  }
-
-  .app-container {
     overflow-x: hidden;
   }
-
   .console-wrapper {
     width: 100%;
     max-width: 100%;
-    padding: 10px;
-    gap: 10px;
-    border-radius: 10px;
+    padding: 8px;
+    gap: 8px;
+    border-radius: 8px;
     overflow-x: hidden;
   }
 
-  /* --- Header: wrap into two rows --- */
+  /* --- Header --- */
   .console-header {
     flex-wrap: wrap;
-    gap: 8px;
-    padding-bottom: 8px;
+    gap: 6px;
+    padding-bottom: 6px;
   }
   .app-title {
     font-size: 0.7em;
     order: 0;
   }
-  .undo-redo-group {
-    order: 1;
-  }
+  .undo-redo-group { order: 1; }
   .undo-redo-btn span { display: none; }
   .undo-redo-btn {
-    min-width: 36px;
-    min-height: 36px;
-    padding: 4px 8px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 4px 6px;
   }
   .play-btn-hero {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     order: 2;
   }
   .header-actions {
@@ -1840,67 +1828,93 @@ body {
   .header-row-2 {
     display: flex;
     width: 100%;
-    gap: 8px;
+    gap: 6px;
     order: 10;
     align-items: center;
   }
   .header-row-2 .header-presets {
     flex: 1;
     justify-content: center;
-    gap: 6px;
+    gap: 4px;
   }
   .header-presets .preset-label {
-    font-size: 0.72em;
+    font-size: 0.7em;
   }
   .hdr-btn {
-    padding: 5px 8px;
+    padding: 4px 8px;
     font-size: 0.7em;
-    min-height: 36px;
+    min-height: 44px;
+    min-width: 44px;
   }
   .hdr-btn span { display: none; }
-
-  /* --- Body: column reflow --- */
-  .console-body {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
+  .nav-btn {
+    width: 32px;
+    height: 44px;
   }
 
-  /* Canvas FIRST on mobile — above side panels */
+  /* --- Body: row-wrap so canvas spans full width, panels below --- */
+  .console-body {
+    flex-flow: row wrap;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  /* Canvas takes full row */
   .canvas-area {
-    width: 100%;
+    flex: 0 0 100%;
     aspect-ratio: 1 / 1;
-    max-height: min(calc(100vw - 24px), 55vh);
-    flex: none;
+    max-height: min(calc(100vw - 20px), 50vh);
+    max-height: min(calc(100vw - 20px), 50dvh);
     order: -1;
     border-radius: var(--r-sm);
   }
 
-  /* --- Side panels: full-width stacked sections --- */
+  /* Side panels: full-width by default (phones), side-by-side on tablets */
   .side-panel {
-    width: 100%;
+    flex: 0 0 100%;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
     flex-shrink: 0;
     position: relative;
     order: 1;
   }
 
-  /* Left panel settings row: speed / grid-size side by side */
   .side-panel > .panel-group {
     flex: 1 1 0;
     min-width: 0;
   }
-  .panel-group h3 { font-size: 0.55em; }
 
-  /* Popup trigger buttons — taller touch targets */
+  /* Draw gets more width than Erase */
+  .console-body > .side-panel:last-child > .draw-panel {
+    flex: 2 1 0;
+    min-width: 0;
+  }
+  .console-body > .side-panel:last-child > .erase-panel {
+    flex: 1 1 0;
+    min-width: 60px;
+  }
+  .panel-group h3 { font-size: 0.5em; }
+
   .popup-trigger-btn {
     min-height: 44px;
-    font-size: 0.9em;
+    font-size: 0.85em;
   }
 
-  /* --- Channel row: collapsible on mobile --- */
+  /* --- Direction + Path buttons side by side --- */
+  .tool-row {
+    flex-direction: row;
+    gap: 4px;
+  }
+  .tool-row .tool-btn-labeled {
+    flex: 1;
+    width: auto;
+  }
+  .tool-row .tool-btn-labeled .tool-btn {
+    width: 100%;
+  }
+
+  /* --- Channel row: collapsible --- */
   .side-panel > .channel-row {
     flex: 1 1 100%;
     order: 10;
@@ -1909,7 +1923,7 @@ body {
   .channel-list-body {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr);
-    gap: 4px;
+    gap: 3px;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
@@ -1928,81 +1942,63 @@ body {
   .channel-row.expanded .channel-header::after {
     content: ' ▾';
   }
-  .ch-select-arrow {
-    display: none;
-  }
-  .channel-header {
-    grid-column: 1 / -1;
-  }
-  .channel-item {
-    min-width: 0;
-  }
+  .ch-select-arrow { display: none; }
+  .channel-header { grid-column: 1 / -1; }
+  .channel-item { min-width: 0; }
   .channel-box {
-    min-height: 40px;
-    padding: 4px 4px;
+    min-height: 34px;
+    padding: 3px;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 2px;
+    gap: 1px;
   }
   .ch-num-btn {
-    width: 24px;
-    min-width: 24px;
-    height: 26px;
-    font-size: 0.55em;
-  }
-  .ch-ctrl-btn {
-    height: 26px;
-    min-width: 28px;
+    width: 22px;
+    min-width: 22px;
+    height: 22px;
     font-size: 0.5em;
   }
+  .ch-ctrl-btn {
+    height: 22px;
+    min-width: 24px;
+    font-size: 0.44em;
+  }
   .ch-vol-fixed {
-    width: 34px;
-    min-width: 34px;
+    width: 30px;
+    min-width: 30px;
   }
 
-  /* --- Draw panel: horizontal flow --- */
-  .draw-panel {
-    width: 100%;
-  }
-  .draw-mode-toggle .mode-btn {
-    height: 40px;
-    font-size: 0.75em;
-  }
-  .draw-tool-group {
-    padding: 8px;
-  }
+  /* --- Draw panel: more compact --- */
+  .draw-panel { width: 100%; gap: 4px; }
+  .draw-tool-group { padding: 6px; gap: 4px; }
   .tool-btn {
     min-width: 44px;
     height: 44px;
   }
   .wall-side-btn {
-    height: 40px;
-    font-size: 0.7em;
+    height: 44px;
+    font-size: 0.65em;
   }
   .ch-select-btn {
-    min-height: 36px;
-    font-size: 0.8em;
+    min-height: 44px;
+    font-size: 0.75em;
   }
-
-  /* Symmetry: keep 2×2 but larger targets */
   .sym-grid .tool-btn {
     min-width: 44px;
     height: 44px;
   }
 
-  /* --- Slider overlays → fixed full-screen on mobile --- */
+  /* --- Slider overlays → fixed full-screen --- */
   .slider-overlay {
     position: fixed;
     inset: 0;
     z-index: 1000;
     border-radius: 0;
-    padding: 24px 16px;
-    padding-top: max(24px, env(safe-area-inset-top));
+    padding: 20px 16px;
+    padding-top: max(20px, env(safe-area-inset-top));
     padding-bottom: max(16px, env(safe-area-inset-bottom));
-    gap: 16px;
+    gap: 14px;
   }
-
-  /* --- Safe area for fixed overlays --- */
   .intro-overlay,
   .info-overlay,
   .save-manager-overlay,
@@ -2010,38 +2006,25 @@ body {
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
   }
-  .slider-overlay-title {
-    font-size: 0.85em;
-  }
-  .slider-overlay-val {
-    font-size: 2em;
-  }
+  .slider-overlay-title { font-size: 0.85em; }
+  .slider-overlay-val { font-size: 1.8em; }
   .slider-overlay-range {
-    width: 40px;
+    width: 36px;
     max-height: 50vh;
+    max-height: 50dvh;
   }
-  .slider-overlay-range::-webkit-slider-thumb {
-    width: 40px;
-    height: 40px;
-  }
-  .slider-overlay-range::-moz-range-thumb {
-    width: 40px;
-    height: 40px;
-  }
-  .slider-overlay-close {
-    width: 44px;
-    height: 44px;
-    font-size: 1.2em;
-  }
+  .slider-overlay-range::-webkit-slider-thumb { width: 44px; height: 44px; }
+  .slider-overlay-range::-moz-range-thumb { width: 44px; height: 44px; }
+  .slider-overlay-close { width: 44px; height: 44px; font-size: 1.1em; }
+  .slider-overlay-back { width: 44px; min-height: 44px; font-size: 1.8em; }
+  .slider-overlay-done { height: 44px; font-size: 0.8em; }
 
-  /* Channel select overlay → fixed full-screen */
-  .ch-select-overlay {
-    padding-top: 20px;
-  }
+  /* Channel select overlay */
+  .ch-select-overlay { padding-top: 16px; }
   .ch-select-grid {
     grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
-    max-width: 320px;
+    gap: 5px;
+    max-width: 300px;
     margin: 0 auto;
   }
   .ch-select-item {
@@ -2050,166 +2033,280 @@ body {
     border-radius: var(--r-md);
   }
 
-  /* --- Footer: compact stacked --- */
+  /* --- Footer --- */
   .console-footer {
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
     justify-content: center;
-    padding-top: 10px;
+    padding-top: 8px;
   }
   .footer-group {
-    gap: 6px;
+    gap: 4px;
+    padding: 3px 8px;
   }
-  .footer-group label {
-    font-size: 0.6em;
-  }
+  .footer-group label { font-size: 0.58em; }
   .sel {
-    font-size: 0.75em;
-    padding: 6px 8px;
-    min-height: 36px;
+    font-size: 0.72em;
+    padding: 5px 22px 5px 6px;
+    min-height: 44px;
+  }
+  .key-nudge-btn {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 0.7em;
+    padding: 4px;
+  }
+
+  /* Action bar */
+  .action-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+    padding-top: 6px;
+  }
+  .action-bar-buttons {
+    width: 100%;
+    justify-content: center;
   }
 
   /* Intro modal */
   .intro-splash {
-    padding: 24px 16px;
+    padding: 20px 14px;
     max-width: 95vw;
   }
   .intro-how {
     grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
-  .intro-card { padding: 12px; }
+  .intro-card { padding: 10px; }
   .intro-start {
-    padding: 12px 32px;
+    padding: 10px 28px;
     font-size: 1em;
   }
 }
 
-/* ── Tablets (600-860px) — iPad Air portrait is 820px ── */
+/* ── Tablets (≥601px portrait/narrow) — iPads get side-by-side panels ── */
 @media (min-width: 601px) and (max-width: 860px),
        (orientation: portrait) and (min-width: 601px) and (max-width: 1024px) {
-  /* Restore button labels — plenty of room at 600px+ */
+  .console-wrapper {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  /* Restore button labels on tablets */
   .hdr-btn span { display: inline; }
   .undo-redo-btn span { display: inline; }
+  .header-row-2 .hdr-btn { padding: 5px 12px; }
 
-  /* Header row 2 has room for labels */
-  .header-row-2 .hdr-btn {
-    padding: 5px 12px;
+  /* Canvas gets more height on tablets */
+  .canvas-area {
+    max-height: min(calc(100vw - 28px), 55vh);
+    max-height: min(calc(100vw - 28px), 55dvh);
   }
 
-  /* 8-column channel grid — fits well at 600px+ */
-  .channel-row {
-    grid-template-columns: repeat(8, 1fr) !important;
+  /* Left panel narrower, right panel wider */
+  .console-body > .side-panel:first-child {
+    flex: 1 1 0;
+    min-width: 0;
+    align-self: flex-start;
+  }
+  .console-body > .side-panel:last-child {
+    flex: 2 1 0;
+    min-width: 0;
   }
 
-  /* Side panel groups can stretch more */
   .side-panel > .panel-group {
-    min-width: 120px;
+    min-width: 100px;
+  }
+
+  /* Auto-expand channels on tablet (enough room) */
+  .channel-list-body {
+    max-height: none !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+  .channel-header::after { content: '' !important; }
+
+  /* 8-column channel grid at wider tablets */
+  @media (min-width: 760px) {
+    .channel-list-body {
+      grid-template-columns: repeat(8, 1fr) !important;
+    }
+  }
+
+  /* Draw panel: Wall + Symmetry side by side on tablets */
+  .draw-panel {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: flex-start;
+  }
+  .draw-panel > h3 {
+    flex: 1 1 100%;
+    margin: 0;
+  }
+  .draw-panel > .draw-tool-group:first-of-type {
+    flex: 1 1 100%; /* Arrow section full row */
+  }
+  .draw-panel > .draw-tool-group:not(:first-of-type) {
+    flex: 1 1 40%; /* Wall & Symmetry share a row */
+    min-width: 110px;
+  }
+
+  /* Bigger touch targets with room */
+  .tool-btn { min-width: 42px; height: 42px; }
+  .wall-side-btn { height: 38px; font-size: 0.7em; }
+  .sym-grid .tool-btn { height: 42px; }
+  .popup-trigger-btn {
+    min-height: 42px;
+    font-size: 0.88em;
+  }
+  .channel-box { min-height: 36px; }
+  .ch-num-btn { width: 24px; min-width: 24px; height: 24px; font-size: 0.52em; }
+  .ch-ctrl-btn { height: 24px; min-width: 26px; font-size: 0.46em; }
+
+  /* Footer inline */
+  .console-footer { gap: 8px; }
+  .footer-group {
+    gap: 6px;
+    padding: 4px 10px;
+  }
+  .sel {
+    font-size: 0.75em;
+    padding: 5px 24px 5px 8px;
+    min-height: 34px;
   }
 }
 
-/* ── Very small phones (≤480px) — iPhone 16 Pro is 402px ── */
+/* ── Phones (≤480px) — iPhone SE/Pro/Plus ── */
 @media (max-width: 480px) {
   .console-wrapper {
-    padding: 6px;
-    padding-top: max(6px, env(safe-area-inset-top));
-    padding-left: max(6px, env(safe-area-inset-left));
-    padding-right: max(6px, env(safe-area-inset-right));
-    padding-bottom: max(6px, env(safe-area-inset-bottom));
-    gap: 6px;
-    border-radius: 6px;
+    padding: 4px;
+    padding-top: max(4px, env(safe-area-inset-top));
+    padding-left: max(4px, env(safe-area-inset-left));
+    padding-right: max(4px, env(safe-area-inset-right));
+    padding-bottom: max(4px, env(safe-area-inset-bottom));
+    gap: 4px;
+    border-radius: 4px;
   }
 
-  /* Header: compact for narrow screens */
-  .console-header {
-    gap: 6px;
-  }
-  .app-title-lines {
-    display: none;
-  }
+  /* Header: ultra-compact */
+  .console-header { gap: 4px; padding-bottom: 4px; }
+  .app-title-lines { display: none; }
   .app-logo {
-    width: 44px;
-    height: 44px;
-    margin: -12px -4px -12px -6px;
+    width: 36px;
+    height: 36px;
+    margin: -8px -2px -8px -4px;
   }
   .undo-redo-btn {
-    min-width: 32px;
-    min-height: 32px;
-    padding: 4px 6px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 3px 5px;
   }
-  .undo-redo-btn svg {
-    width: 14px;
-    height: 14px;
-  }
+  .undo-redo-btn svg { width: 14px; height: 14px; }
   .hdr-btn {
-    padding: 4px 6px;
-    min-height: 32px;
+    padding: 3px 5px;
+    min-height: 44px;
+    min-width: 44px;
+    font-size: 0.65em;
   }
   .header-presets .preset-label {
-    font-size: 0.65em;
-    min-width: 50px;
+    font-size: 0.58em;
+    min-width: 42px;
   }
-  .play-btn-hero {
-    width: 38px;
-    height: 38px;
-  }
-  .header-row-2 {
-    gap: 6px;
-  }
+  .play-btn-hero { width: 44px; height: 44px; }
+  .header-row-2 { gap: 4px; }
+  .nav-btn { width: 32px; height: 44px; }
 
-  /* Canvas: cap height so it doesn't dominate the page */
+  /* Canvas: compact */
   .canvas-area {
-    max-height: min(calc(100vw - 24px), 55vh);
+    max-height: min(calc(100vw - 12px), 46vh);
+    max-height: min(calc(100vw - 12px), 46dvh);
   }
 
-  /* Stack left-panel groups vertically for very narrow */
+  /* Side panels stack */
+  .side-panel {
+    flex: 0 0 100%;
+    gap: 4px;
+  }
   .side-panel > .panel-group {
     flex: 1 1 28%;
-    min-width: 80px;
+    min-width: 70px;
   }
 
-  /* Channels: 4 cols still but tighter */
-  .channel-row {
-    gap: 3px !important;
-  }
+  /* Channels: tighter */
+  .channel-list-body { gap: 2px !important; }
   .channel-box {
-    min-height: 36px;
-    padding: 3px;
+    min-height: 30px;
+    padding: 2px;
     gap: 1px;
   }
-  .ch-num-btn { width: 20px; min-width: 20px; height: 22px; font-size: 0.48em; }
-  .ch-ctrl-btn { height: 22px; min-width: 24px; font-size: 0.42em; }
-  .ch-vol-fixed { width: 30px; min-width: 30px; }
+  .ch-num-btn { width: 18px; min-width: 18px; height: 18px; font-size: 0.42em; }
+  .ch-ctrl-btn { height: 18px; min-width: 20px; font-size: 0.38em; }
+  .ch-vol-fixed { width: 26px; min-width: 26px; }
 
-  /* Footer fully stacked */
+  /* Draw tools: compact */
+  .draw-tool-group { padding: 4px; gap: 4px; }
+  .tool-btn { min-width: 44px; height: 44px; }
+  .wall-side-btn { height: 44px; font-size: 0.58em; }
+  .sym-grid .tool-btn { min-width: 44px; height: 44px; }
+  .ch-select-btn { min-height: 44px; font-size: 0.7em; }
+  .popup-trigger-btn { min-height: 44px; font-size: 0.78em; }
+  .group-label { font-size: 0.58em; }
+  .tool-label { font-size: 8px; }
+
+  /* Erase panel compact */
+  .erase-grid { gap: 4px; }
+  .erase-grid .tool-btn { font-size: 0.58em; }
+
+  /* Footer stacked */
   .console-footer {
     flex-direction: column;
     align-items: stretch;
-    gap: 6px;
+    gap: 4px;
+    padding-top: 4px;
   }
   .footer-group {
     justify-content: space-between;
     width: 100%;
+    padding: 2px 6px;
   }
-  .footer-group .sel {
-    flex: 1;
+  .footer-group .sel { flex: 1; min-height: 44px; }
+  .footer-group label { font-size: 0.55em; }
+  .key-nudge-btn {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 0.7em;
+    padding: 4px;
+  }
+  .midi-help-btn {
+    min-width: 44px;
+    min-height: 44px;
   }
 
-  /* Action bar: wrap on small screens */
+  /* Action bar */
   .action-bar {
     flex-wrap: wrap;
     justify-content: center;
-    gap: 6px;
+    gap: 4px;
+    padding-top: 4px;
   }
   .action-bar-buttons {
     width: 100%;
     justify-content: center;
     order: 0;
   }
+  .action-btn {
+    padding: 6px 10px;
+    font-size: 0.65em;
+    gap: 3px;
+    min-height: 44px;
+  }
   .footer-copyright {
     order: 1;
     width: 100%;
     text-align: center;
+    font-size: 0.55em;
   }
   .footer-discover {
     order: 2;
@@ -2217,52 +2314,59 @@ body {
     text-align: center;
     width: 100%;
     justify-content: center;
+    font-size: 0.65em;
+    padding: 4px 10px;
   }
 
-  /* Midi help popup: centered on mobile */
+  /* MIDI help popup */
   .midi-help-popup {
     position: fixed;
     inset: auto;
-    bottom: 60px;
+    bottom: 50px;
     left: 50%;
     transform: translateX(-50%);
-    width: calc(100vw - 24px);
-    max-width: 320px;
+    width: calc(100vw - 16px);
+    max-width: 300px;
     z-index: 2000;
   }
 
-  /* Prog modal: responsive width */
+  /* Prog modal */
   .prog-modal {
     min-width: 0;
-    max-width: calc(100vw - 24px);
-    padding: 12px;
+    max-width: calc(100vw - 16px);
+    padding: 10px;
   }
 
   /* Intro */
   .intro-how { grid-template-columns: 1fr; }
-  .intro-header h1 { font-size: 1.5em; }
-  .intro-splash { padding: 20px 12px; }
+  .intro-header h1 { font-size: 1.3em; }
+  .intro-splash { padding: 16px 10px; }
+  .intro-steps-visual { grid-template-columns: 1fr; gap: 6px; }
+  .intro-sound-choice { flex-direction: column; gap: 6px; }
+  .intro-step-card { padding: 10px 8px; }
+}
+
+/* ── Phones 361-480px: 2-col channel grid ── */
+@media (min-width: 361px) and (max-width: 480px) {
+  .channel-list-body {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
 }
 
 /* ── Tiny phones (≤360px) ── */
 @media (max-width: 360px) {
-  .channel-row {
+  .channel-list-body {
     grid-template-columns: repeat(2, 1fr) !important;
   }
   .ch-select-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .header-presets {
-    gap: 4px;
+  .header-presets { gap: 2px; }
+  .canvas-area {
+    max-height: min(calc(100vw - 10px), 44vh);
+    max-height: min(calc(100vw - 10px), 44dvh);
   }
-  .nav-btn { width: 32px; height: 32px; }
-}
-
-/* ── Phones 360-420px: 2-col channel grid (fits better than 4-col) ── */
-@media (min-width: 361px) and (max-width: 420px) {
-  .channel-row {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
+  .console-wrapper { padding: 3px; gap: 3px; }
 }
 
 /* ── Focus-visible for keyboard accessibility ── */
@@ -2481,11 +2585,7 @@ input:focus-visible {
   color: var(--text-dim);
 }
 
-/* Mobile: stack the step cards single-column on very small screens */
-@media (max-width: 380px) {
-  .intro-steps-visual { grid-template-columns: 1fr; }
-  .intro-sound-choice { flex-direction: column; }
-}
+/* Mobile step cards handled in ≤480px responsive query */
 
 /* ── Action bar (save / load / share) ── */
 .action-bar {
