@@ -156,6 +156,7 @@ export class Application extends React.Component {
             progInputText: '0',       // custom text input for program number
             progCloseConfirm: false,  // show close confirmation warning
             channelsExpanded: false,  // collapsed on mobile by default
+            landscapeDrawerOpen: false, // pull-up drawer for landscape phones
         };
     }
 
@@ -280,6 +281,8 @@ export class Application extends React.Component {
     };
 
     _onChannelPointerDown = (e) => {
+        // On mobile (touch), don't capture - allow native scroll
+        if (e.pointerType === 'touch') return;
         // Start drag from the ch-num-btn or the arrow indicator
         if (!e.target.closest('.ch-num-btn') && !e.target.closest('.ch-select-arrow')) return;
         this._channelDragging = true;
@@ -322,14 +325,17 @@ export class Application extends React.Component {
     _computeCanvasSize = () => {
         const vw = window.innerWidth;
         const vh = window.innerHeight;
-        const isLandscapePhone = vw > vh && vw <= 860;
+        const isLandscapePhone = vw > vh && vh <= 500;
         const isPortrait = (vh > vw || vw <= 860) && !isLandscapePhone;
 
         let canvasSize;
         if (isLandscapePhone) {
-            // Landscape phone: canvas height = viewport height minus compact header/footer
-            const chrome = 100; // compact header + footer + gaps
-            canvasSize = Math.min(vh - chrome, vw * 0.45);
+            // Landscape phone: canvas between two side panels
+            const chrome = 60; // compact header + padding + border
+            const panelWidth = 140; // max-width of each side panel
+            const maxW = vw - panelWidth * 2 - 24; // minus both panels and gaps
+            const maxH = vh - chrome;
+            canvasSize = Math.min(maxH, maxW);
         } else if (isPortrait) {
             // Portrait: canvas width = viewport width minus padding/margins
             // Row labels hidden on mobile, so no extra left margin needed
@@ -1214,8 +1220,17 @@ export class Application extends React.Component {
                         </div>
                     </header>
 
+                    {/* ── Landscape drawer toggle ── */}
+                    <button
+                        className="landscape-drawer-toggle"
+                        onClick={() => this.setState({ landscapeDrawerOpen: !this.state.landscapeDrawerOpen }, () => this._computeCanvasSize())}                        title={this.state.landscapeDrawerOpen ? 'Hide controls' : 'Show controls'}
+                    >
+                        <span className={`drawer-chevron${this.state.landscapeDrawerOpen ? ' open' : ''}`}>&#9650;</span>
+                        <span className="drawer-label">{this.state.landscapeDrawerOpen ? 'Hide' : 'More Controls'}</span>
+                    </button>
+
                     {/* ── Body: Left | Canvas | Right ── */}
-                    <div className="console-body">
+                    <div className={`console-body${this.state.landscapeDrawerOpen ? ' drawer-open' : ''}`}>
 
                         {/* ── LEFT PANEL ── */}
                         <div className="side-panel" style={{position:'relative'}}>
@@ -1307,7 +1322,6 @@ export class Application extends React.Component {
                                     onPointerMove={this._onChannelPointerMove}
                                     onPointerUp={this._onChannelPointerUp}
                                     onPointerCancel={this._onChannelPointerUp}
-                                    style={{ touchAction: 'none' }}
                                 >
                                 <div className="ch-select-arrow" style={{
                                     top: `${((this.state.arrowChannel - 1) / MAX_CHANNELS) * 100 + (100 / MAX_CHANNELS / 2)}%`,
