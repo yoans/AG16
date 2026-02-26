@@ -66,6 +66,7 @@ body {
   display:flex; align-items:center; gap:6px;
   color: var(--ch-color, var(--text-primary));
   font-family: 'Press Start 2P', monospace;
+  margin: 7px;
   letter-spacing: -0.01em;
 }
 .app-title-lines {
@@ -679,6 +680,9 @@ body {
   color: var(--text-muted);
   font-weight: 600;
 }
+.channel-header-chevron {
+  display: none;
+}
 .channel-item {
   display: flex;
   flex-direction: column;
@@ -686,6 +690,7 @@ body {
   border-radius: var(--r-sm);
   transition: all 0.12s ease;
   flex: 1;
+  align-items: center
 }
 .channel-item:last-child {
   border-bottom: none;
@@ -1804,12 +1809,16 @@ body {
     flex-wrap: wrap;
     gap: 6px;
     padding-bottom: 6px;
+    position: relative;
   }
   .app-title {
     font-size: 0.7em;
     order: 0;
   }
-  .undo-redo-group { order: 1; }
+  .undo-redo-group {
+    order: 1;
+    flex: 0;
+  }
   .undo-redo-btn span { display: none; }
   .undo-redo-btn {
     min-width: 44px;
@@ -1817,6 +1826,10 @@ body {
     padding: 4px 6px;
   }
   .play-btn-hero {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
     width: 44px;
     height: 44px;
     order: 2;
@@ -1824,6 +1837,7 @@ body {
   .header-actions {
     order: 3;
     gap: 4px;
+    margin-left: auto;
   }
   .header-row-2 {
     display: flex;
@@ -1845,12 +1859,15 @@ body {
     font-size: 0.7em;
     min-height: 44px;
     min-width: 44px;
+    justify-content: center;
   }
   .hdr-btn span { display: none; }
+  .hdr-btn svg { width: 20px; height: 20px; }
   .nav-btn {
     width: 32px;
     height: 44px;
   }
+  .nav-btn svg { width: 18px; height: 18px; }
 
   /* --- Body: row-wrap so canvas spans full width, panels below --- */
   .console-body {
@@ -1869,6 +1886,10 @@ body {
     border-radius: var(--r-sm);
   }
 
+  /* Hide row labels on mobile, keep column labels */
+  .grid-labels-left { display: none; }
+  .grid-labels-top { height: 16px; }
+
   /* Side panels: full-width by default (phones), side-by-side on tablets */
   .side-panel {
     flex: 0 0 100%;
@@ -1885,14 +1906,38 @@ body {
     min-width: 0;
   }
 
-  /* Draw gets more width than Erase */
+  /* Draw panel: full width, internal flex layout */
   .console-body > .side-panel:last-child > .draw-panel {
-    flex: 2 1 0;
+    flex: 1 1 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: flex-start;
+  }
+  .console-body > .side-panel:last-child > .draw-panel > h3 {
+    flex: 1 1 100%;
+    margin: 0;
+  }
+  /* Arrow + Wall side-by-side */
+  .console-body > .side-panel:last-child > .draw-panel > .draw-tool-group:nth-of-type(1),
+  .console-body > .side-panel:last-child > .draw-panel > .draw-tool-group:nth-of-type(2) {
+    flex: 1 1 40%;
     min-width: 0;
   }
+  /* Symmetry full width */
+  .console-body > .side-panel:last-child > .draw-panel > .draw-tool-group:nth-of-type(3) {
+    flex: 1 1 100%;
+  }
+  /* Erase panel: full width below draw, single row of 3 buttons */
   .console-body > .side-panel:last-child > .erase-panel {
-    flex: 1 1 0;
-    min-width: 60px;
+    flex: 1 1 100%;
+  }
+  .console-body > .side-panel:last-child > .erase-panel .erase-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .console-body > .side-panel:last-child > .erase-panel .erase-grid .tool-btn.wide {
+    grid-column: auto;
   }
   .panel-group h3 { font-size: 0.5em; }
 
@@ -1918,7 +1963,6 @@ body {
   .side-panel > .channel-row {
     flex: 1 1 100%;
     order: 10;
-    display: block !important;
   }
   .channel-list-body {
     display: grid !important;
@@ -1932,18 +1976,45 @@ body {
     max-height: 900px;
   }
   .channel-header {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    padding: 6px 16px;
+    min-width: 160px;
+    min-height: 44px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-md);
     cursor: pointer;
     user-select: none;
+    transition: background 0.15s, border-color 0.15s;
+    gap: 6px;
   }
-  .channel-header::after {
-    content: ' ▸';
-    font-size: 0.7em;
+  .channel-header:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-hover);
   }
-  .channel-row.expanded .channel-header::after {
-    content: ' ▾';
+  .channel-row.expanded .channel-header {
+    border-color: var(--accent);
+    background: var(--accent-glow);
   }
+  .channel-row.expanded .channel-header h3 {
+    color: var(--accent);
+  }
+  .channel-header-chevron {
+    display: inline;
+    font-size: 0.65em;
+    color: var(--text-muted);
+    transition: transform 0.2s ease;
+    line-height: 1;
+  }
+  .channel-row.expanded .channel-header-chevron {
+    transform: rotate(90deg);
+    color: var(--accent);
+  }
+  .channel-header::after { content: none; }
   .ch-select-arrow { display: none; }
-  .channel-header { grid-column: 1 / -1; }
   .channel-item { min-width: 0; }
   .channel-box {
     min-height: 34px;
@@ -1991,13 +2062,18 @@ body {
   /* --- Slider overlays → fixed full-screen --- */
   .slider-overlay {
     position: fixed;
-    inset: 0;
+    top: 50%;
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 1000;
-    border-radius: 0;
-    padding: 20px 16px;
-    padding-top: max(20px, env(safe-area-inset-top));
+    border-radius: var(--r-md) var(--r-md) 0 0;
+    background: rgba(10, 8, 24, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 16px 16px;
     padding-bottom: max(16px, env(safe-area-inset-bottom));
-    gap: 14px;
+    gap: 12px;
   }
   .intro-overlay,
   .info-overlay,
@@ -2010,8 +2086,8 @@ body {
   .slider-overlay-val { font-size: 1.8em; }
   .slider-overlay-range {
     width: 36px;
-    max-height: 50vh;
-    max-height: 50dvh;
+    max-height: 30vh;
+    max-height: 30dvh;
   }
   .slider-overlay-range::-webkit-slider-thumb { width: 44px; height: 44px; }
   .slider-overlay-range::-moz-range-thumb { width: 44px; height: 44px; }
@@ -2028,7 +2104,7 @@ body {
     margin: 0 auto;
   }
   .ch-select-item {
-    min-height: 48px;
+    min-height: 40px;
     font-size: 0.85em;
     border-radius: var(--r-md);
   }
@@ -2203,20 +2279,23 @@ body {
     min-height: 44px;
     padding: 3px 5px;
   }
-  .undo-redo-btn svg { width: 14px; height: 14px; }
+  .undo-redo-btn svg { width: 18px; height: 18px; }
   .hdr-btn {
     padding: 3px 5px;
     min-height: 44px;
     min-width: 44px;
     font-size: 0.65em;
+    justify-content: center;
   }
+  .hdr-btn svg { width: 20px; height: 20px; }
+  .nav-btn svg { width: 18px; height: 18px; }
   .header-presets .preset-label {
     font-size: 0.58em;
     min-width: 42px;
   }
   .play-btn-hero { width: 44px; height: 44px; }
-  .header-row-2 { gap: 4px; }
-  .nav-btn { width: 32px; height: 44px; }
+  .header-row-2 { gap: 4px; margin-bottom: 12px; }
+  .nav-btn { width: 32px; height: 32px; }
 
   /* Canvas: compact */
   .canvas-area {
@@ -2240,10 +2319,16 @@ body {
     min-height: 30px;
     padding: 2px;
     gap: 1px;
+    width: 140px;
   }
-  .ch-num-btn { width: 18px; min-width: 18px; height: 18px; font-size: 0.42em; }
-  .ch-ctrl-btn { height: 18px; min-width: 20px; font-size: 0.38em; }
-  .ch-vol-fixed { width: 26px; min-width: 26px; }
+  .ch-num-btn { width: 30px; min-width: 18px; height: 30px; font-size: 0.7em; }
+  .ch-ctrl-btn { height: 30px; min-width: 20px; font-size: 0.7em; }
+  
+  .ch-fx-btn {
+    min-width: 30px;
+    max-width: 30px;
+  }
+  .ch-vol-fixed { width: 30px; min-width: 30px; }
 
   /* Draw tools: compact */
   .draw-tool-group { padding: 4px; gap: 4px; }
@@ -2255,9 +2340,10 @@ body {
   .group-label { font-size: 0.58em; }
   .tool-label { font-size: 8px; }
 
-  /* Erase panel compact */
+  /* Erase panel compact — single row of 3 */
   .erase-grid { gap: 4px; }
   .erase-grid .tool-btn { font-size: 0.58em; }
+  .erase-grid .tool-btn.wide { grid-column: auto; }
 
   /* Footer stacked */
   .console-footer {

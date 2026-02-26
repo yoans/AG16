@@ -327,8 +327,8 @@ export class Application extends React.Component {
         let canvasSize;
         if (isPortrait) {
             // Portrait: canvas width = viewport width minus padding/margins
-            // Tighter padding on phones, more room on tablets
-            const padding = vw <= 360 ? 12 : vw <= 480 ? 16 : vw <= 860 ? 28 : 40;
+            // Row labels hidden on mobile, so no extra left margin needed
+            const padding = vw <= 360 ? 12 : vw <= 480 ? 16 : vw <= 860 ? 20 : 40;
             const maxH = vw <= 360 ? vh * 0.44 : vw <= 480 ? vh * 0.46 : vh * 0.50;
             canvasSize = Math.min(vw - padding, maxH);
         } else {
@@ -1293,6 +1293,7 @@ export class Application extends React.Component {
                             <div className={`channel-row${this.state.channelsExpanded ? ' expanded' : ''}`}>
                                 <div className="channel-header" onClick={() => this.setState({ channelsExpanded: !this.state.channelsExpanded })}>
                                     <h3>Channels</h3>
+                                    <span className="channel-header-chevron">&#9658;</span>
                                 </div>
                                 {/* Channel buttons */}
                                 <div className="channel-list-body"
