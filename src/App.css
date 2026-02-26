@@ -1227,6 +1227,7 @@ body {
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
   transition: color 0.15s, border-color 0.15s;
 }
 .midi-help-btn:hover {
@@ -1976,42 +1977,8 @@ body {
     max-height: 900px;
   }
   .channel-header {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    align-self: center;
-    padding: 6px 16px;
-    min-width: 160px;
-    min-height: 44px;
-    background: var(--bg-elevated);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--r-md);
     cursor: pointer;
     user-select: none;
-    transition: background 0.15s, border-color 0.15s;
-    gap: 6px;
-  }
-  .channel-header:hover {
-    background: var(--bg-hover);
-    border-color: var(--border-hover);
-  }
-  .channel-row.expanded .channel-header {
-    border-color: var(--accent);
-    background: var(--accent-glow);
-  }
-  .channel-row.expanded .channel-header h3 {
-    color: var(--accent);
-  }
-  .channel-header-chevron {
-    display: inline;
-    font-size: 0.65em;
-    color: var(--text-muted);
-    transition: transform 0.2s ease;
-    line-height: 1;
-  }
-  .channel-row.expanded .channel-header-chevron {
-    transform: rotate(90deg);
-    color: var(--accent);
   }
   .channel-header::after { content: none; }
   .ch-select-arrow { display: none; }
@@ -2172,6 +2139,7 @@ body {
   /* Restore button labels on tablets */
   .hdr-btn span { display: inline; }
   .undo-redo-btn span { display: inline; }
+  .header-row-2 { justify-content: center; }
   .header-row-2 .hdr-btn { padding: 5px 12px; }
 
   /* Canvas gets more height on tablets */
@@ -2196,6 +2164,7 @@ body {
   }
 
   /* Auto-expand channels on tablet (enough room) */
+  .grid-labels-left { display: flex; }
   .channel-list-body {
     max-height: none !important;
     grid-template-columns: repeat(4, 1fr) !important;
@@ -2251,6 +2220,46 @@ body {
     font-size: 0.75em;
     padding: 5px 24px 5px 8px;
     min-height: 34px;
+  }
+}
+
+/* ── Channel header button chrome (≤600px only) ── */
+@media (max-width: 600px) {
+  .channel-header {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    padding: 6px 16px;
+    min-width: 160px;
+    min-height: 44px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-md);
+    transition: background 0.15s, border-color 0.15s;
+    gap: 6px;
+  }
+  .channel-header:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-hover);
+  }
+  .channel-row.expanded .channel-header {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+  }
+  .channel-row.expanded .channel-header h3 {
+    color: var(--accent);
+  }
+  .channel-header-chevron {
+    display: inline;
+    font-size: 0.65em;
+    color: var(--text-muted);
+    transition: transform 0.2s ease;
+    line-height: 1;
+  }
+  .channel-row.expanded .channel-header-chevron {
+    transform: rotate(90deg);
+    color: var(--accent);
   }
 }
 
@@ -2368,6 +2377,7 @@ body {
   .midi-help-btn {
     min-width: 44px;
     min-height: 44px;
+    justify-content: center;
   }
 
   /* Action bar */
