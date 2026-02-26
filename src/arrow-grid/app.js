@@ -2038,6 +2038,7 @@ export class Application extends React.Component {
                             </button>
                         </div>
                         <a href="https://nathaniel-young.com" target="_blank" rel="noopener noreferrer" className="footer-discover">🔗 Discover more at nathaniel-young.com →</a>
+                        <a href="#" className="footer-privacy" onClick={(e) => { e.preventDefault(); this.setState({ showPrivacy: true }); }}>Privacy Policy</a>
                     </div>
                 </div>
 

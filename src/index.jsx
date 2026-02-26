@@ -1,6 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './arrow-grid';
+import ErrorBoundary from './ErrorBoundary';
 
 function getParameterByName(name, url) {
     if (!url) url = window.location.href;
@@ -23,5 +24,7 @@ if (encoded) {
 const container = document.getElementById('root');
 const root = createRoot(container);
 root.render(
-    <App noteLength={parsedGrid.noteLength} grid={parsedGrid.grid} />
+    <ErrorBoundary>
+        <App noteLength={parsedGrid.noteLength} grid={parsedGrid.grid} />
+    </ErrorBoundary>
 );

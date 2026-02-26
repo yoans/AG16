@@ -3222,6 +3222,17 @@ select.sel option:checked {
   border-color: var(--border-hover);
   color: var(--text-primary);
 }
+.footer-privacy {
+  font-size: 0.65em;
+  color: var(--text-muted);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.footer-privacy:hover {
+  color: var(--text-secondary);
+  text-decoration: underline;
+}
 
 /* ── Info Modal ── */
 .info-overlay {

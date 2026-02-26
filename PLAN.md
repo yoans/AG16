@@ -50,15 +50,15 @@
 - [x] Open Graph meta tags in index.html ✅
 - [x] Twitter Card meta tags ✅
 - [x] Generate social preview image (1200×630) with pixel logo and tagline ✅
-- [ ] Meta description tag (already exists, refine copy)
-- [ ] Canonical URL tag
+- [x] Meta description tag (refined with keywords + feature description) ✅
+- [x] Canonical URL tag ✅
 
 ### Legal / Compliance
 - [x] Privacy Policy (inline modal in info section) ✅
   - [x] GA4 analytics disclosure ✅
   - [x] localStorage disclosure ✅
   - [x] No data sold statement ✅
-- [ ] Footer link to privacy policy
+- [x] Footer link to privacy policy ✅
 - [x] Copyright notice: "© 2026 Nathaniel Young" in footer ✅
 - [x] Credits: Earslap/Otomata attribution + ArrowGrid lineage in info modal ✅
 
@@ -70,11 +70,11 @@
   - [ ] Color contrast meets WCAG AA
   - [ ] Screen reader announces state changes (play/pause, channel, preset)
 - [ ] Cross-browser testing: Chrome, Firefox, Safari (iOS + macOS), Edge
-- [ ] Error boundary (React) — catch crashes gracefully, show "reload" instead of blank screen
+- [x] Error boundary (React) — catch crashes gracefully, show "reload" instead of blank screen ✅
 
 ### PWA Enhancement
 - [ ] Service worker for offline support (Vite PWA plugin or custom)
-- [ ] manifest.json: add `description`, `categories`, `orientation`
+- [x] manifest.json: add `description`, `categories`, `orientation` ✅
 - [ ] Add to Home Screen prompt / install banner
 
 ---

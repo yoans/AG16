@@ -1,6 +1,9 @@
 {
   "short_name": "AG16",
-  "name": "AG16",
+  "name": "AG16 — Arrow Grid 16 Channel",
+  "description": "A free creative tool to generate visuals, rhythms, and melodies using a 16-channel arrow-routing grid.",
+  "categories": ["music", "entertainment", "creativity"],
+  "orientation": "any",
   "icons": [
     {
       "src": "favicon.ico",
