@@ -322,10 +322,15 @@ export class Application extends React.Component {
     _computeCanvasSize = () => {
         const vw = window.innerWidth;
         const vh = window.innerHeight;
-        const isPortrait = vh > vw || vw <= 860;
+        const isLandscapePhone = vw > vh && vw <= 860;
+        const isPortrait = (vh > vw || vw <= 860) && !isLandscapePhone;
 
         let canvasSize;
-        if (isPortrait) {
+        if (isLandscapePhone) {
+            // Landscape phone: canvas height = viewport height minus compact header/footer
+            const chrome = 100; // compact header + footer + gaps
+            canvasSize = Math.min(vh - chrome, vw * 0.45);
+        } else if (isPortrait) {
             // Portrait: canvas width = viewport width minus padding/margins
             // Row labels hidden on mobile, so no extra left margin needed
             const padding = vw <= 360 ? 12 : vw <= 480 ? 16 : vw <= 860 ? 20 : 40;
