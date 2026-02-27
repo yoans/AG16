@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Responsive Screenshot Review</title>
+<style>
+  :root {
+    --bg: #1a1a2e;
+    --card: #16213e;
+    --border: #0f3460;
+    --good: #00b894;
+    --bad: #d63031;
+    --neutral: #636e72;
+    --text: #dfe6e9;
+    --text-dim: #b2bec3;
+    --accent: #6c5ce7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 20px;
+  }
+
+  /* ── Header ── */
+  header { text-align: center; margin-bottom: 24px; }
+  header h1 { font-size: 1.6rem; margin-bottom: 6px; }
+  header p { color: var(--text-dim); font-size: .9rem; }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    display: flex; gap: 10px; justify-content: center;
+    flex-wrap: wrap; margin-bottom: 20px;
+  }
+  .toolbar button, .toolbar select {
+    padding: 8px 16px; border: 1px solid var(--border);
+    border-radius: 6px; background: var(--card);
+    color: var(--text); font-size: .85rem; cursor: pointer;
+  }
+  .toolbar button:hover { border-color: var(--accent); }
+  .toolbar .count { display: inline-flex; align-items: center; gap: 6px; font-size: .85rem; color: var(--text-dim); }
+  .count .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .dot.good { background: var(--good); }
+  .dot.bad  { background: var(--bad); }
+  .dot.ungraded { background: var(--neutral); }
+
+  /* ── Group tree ── */
+  .group {
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+    overflow: hidden;
+  }
+  .group.all-good { border-color: var(--good); }
+  .group.has-bad  { border-color: var(--bad); }
+
+  .group-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px; cursor: pointer;
+    user-select: none; transition: background .15s;
+  }
+  .group-header:hover { background: rgba(255,255,255,.03); }
+  .group-chevron {
+    font-size: .7em; transition: transform .2s;
+    color: var(--text-dim); flex-shrink: 0;
+  }
+  .group.open .group-chevron { transform: rotate(90deg); }
+  .group-title { font-size: 1rem; font-weight: 700; flex: 1; }
+  .group-desc { font-size: .75rem; color: var(--text-dim); margin-left: 8px; }
+  .group-badge {
+    font-size: .7rem; padding: 3px 10px; border-radius: 12px;
+    font-weight: 700; flex-shrink: 0;
+  }
+  .badge-good { background: var(--good); color: #fff; }
+  .badge-bad  { background: var(--bad); color: #fff; }
+  .badge-mixed { background: var(--neutral); color: #fff; }
+  .badge-ungraded { background: transparent; border: 1px solid var(--neutral); color: var(--neutral); }
+
+  .group-actions {
+    display: flex; gap: 6px; flex-shrink: 0;
+  }
+  .group-actions button {
+    padding: 4px 10px; border: none; border-radius: 5px;
+    font-size: .7rem; font-weight: 600; cursor: pointer;
+  }
+
+  .group-body { display: none; padding: 0 18px 18px; }
+  .group.open .group-body { display: block; }
+
+  /* ── Grid ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  /* ── Card ── */
+  .card {
+    border: 2px solid var(--border); border-radius: 10px;
+    background: rgba(0,0,0,.2); overflow: hidden;
+    transition: border-color .2s;
+  }
+  .card.good { border-color: var(--good); }
+  .card.bad  { border-color: var(--bad); }
+  .card .img-wrap {
+    position: relative; background: #0d0d1a; cursor: pointer;
+  }
+  .card .img-wrap img { display: block; width: 100%; height: auto; }
+  .card .img-wrap .zoom-hint {
+    position: absolute; bottom: 6px; right: 8px;
+    font-size: .7rem; background: rgba(0,0,0,.6);
+    padding: 2px 6px; border-radius: 4px; color: #ccc; pointer-events: none;
+  }
+  .card .meta { padding: 10px 12px 6px; }
+  .card .meta h3 { font-size: .9rem; margin-bottom: 2px; }
+  .card .meta .dims { font-size: .78rem; color: var(--text-dim); }
+  .card .meta .note { font-size: .72rem; color: var(--accent); margin-top: 2px; }
+  .card .actions { display: flex; gap: 6px; padding: 6px 12px 10px; }
+  .card .actions button {
+    flex: 1; padding: 6px; border: none; border-radius: 6px;
+    font-weight: 600; font-size: .8rem; cursor: pointer;
+    transition: opacity .2s;
+  }
+  .card .actions button:hover { opacity: .85; }
+  .btn-good { background: var(--good); color: #fff; }
+  .btn-bad  { background: var(--bad); color: #fff; }
+  .btn-clear { background: var(--neutral); color: #fff; }
+
+  .card textarea {
+    width: calc(100% - 24px); margin: 0 12px 10px;
+    padding: 6px 8px; border: 1px solid var(--border);
+    border-radius: 6px; background: var(--bg);
+    color: var(--text); font-size: .78rem;
+    resize: vertical; min-height: 32px;
+  }
+
+  /* ── Lightbox ── */
+  #lightbox {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,.92); justify-content: center;
+    align-items: center; cursor: zoom-out;
+  }
+  #lightbox.open { display: flex; }
+  #lightbox img { max-width: 95vw; max-height: 95vh; border: 2px solid var(--border); border-radius: 6px; }
+  #lightbox .lb-label {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,.7); padding: 6px 16px; border-radius: 6px; font-size: .9rem;
+  }
+
+  /* ── Summary ── */
+  #summary {
+    margin-top: 30px; padding: 20px; background: var(--card);
+    border: 1px solid var(--border); border-radius: 10px; display: none;
+  }
+  #summary.has-data { display: block; }
+  #summary h2 { margin-bottom: 12px; font-size: 1.1rem; }
+  #summary table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+  #summary th, #summary td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--border); }
+  #summary th { color: var(--text-dim); font-weight: 600; }
+  .grade-good { color: var(--good); font-weight: 700; }
+  .grade-bad  { color: var(--bad); font-weight: 700; }
+  .grade-none { color: var(--neutral); }
+  #summary .export-btn {
+    margin-top: 14px; padding: 10px 20px;
+    background: var(--accent); border: none; border-radius: 6px;
+    color: #fff; font-weight: 600; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📱 Responsive Screenshot Review</h1>
+  <p>Expand a feature group, grade each viewport, then export the report.</p>
+</header>
+
+<div class="toolbar">
+  <label>Filter:
+    <select id="filter">
+      <option value="all">All</option>
+      <option value="good">✓ Good</option>
+      <option value="bad">✗ Bad</option>
+      <option value="ungraded">— Ungraded</option>
+    </select>
+  </label>
+  <button id="btn-expand-bad">Expand Bad Groups</button>
+  <button id="btn-collapse">Collapse All</button>
+  <button id="btn-reset">Reset All Grades</button>
+  <span class="count"><span class="dot good"></span><span id="c-good">0</span></span>
+  <span class="count"><span class="dot bad"></span><span id="c-bad">0</span></span>
+  <span class="count"><span class="dot ungraded"></span><span id="c-ungraded">0</span></span>
+</div>
+
+<div id="groups-container"></div>
+
+<div id="summary">
+  <h2>Review Summary</h2>
+  <table>
+    <thead><tr><th>Group</th><th>Viewport</th><th>Size</th><th>Breakpoint</th><th>Grade</th><th>Notes</th></tr></thead>
+    <tbody id="summary-body"></tbody>
+  </table>
+  <button class="export-btn" id="btn-export">📋 Copy Summary to Clipboard</button>
+  <button class="export-btn" id="btn-save-grades" style="margin-left:8px;background:var(--good);">💾 Save grades.json</button>
+</div>
+
+<div id="lightbox">
+  <span class="lb-label" id="lb-label"></span>
+  <img id="lb-img" src="" alt="">
+</div>
+
+<script>
+const STORAGE_KEY = 'responsive-review-grades-v2';
+
+// ── Inlined manifest (auto-generated) ──
+const __INLINE_MANIFEST__ = {"intro-modal":{"id":"intro-modal","name":"Intro Modal","description":"The first-time welcome modal with sound choices","screenshots":[{"label":"iPhone-SE","width":320,"height":568,"note":"≤360","file":"intro-modal/iPhone-SE_320x568.png"},{"label":"Galaxy-S-small","width":360,"height":640,"note":"≤360 boundary","file":"intro-modal/Galaxy-S-small_360x640.png"},{"label":"iPhone-6-7-8","width":375,"height":667,"note":"361–480","file":"intro-modal/iPhone-6-7-8_375x667.png"},{"label":"iPhone-12-13","width":390,"height":844,"note":"361–480","file":"intro-modal/iPhone-12-13_390x844.png"},{"label":"iPhone-XR-11","width":414,"height":896,"note":"361–480","file":"intro-modal/iPhone-XR-11_414x896.png"},{"label":"Phone-480","width":480,"height":854,"note":"≤480 boundary","file":"intro-modal/Phone-480_480x854.png"},{"label":"Phablet-540","width":540,"height":720,"note":"481–600","file":"intro-modal/Phablet-540_540x720.png"},{"label":"Phone-600","width":600,"height":960,"note":"≤600 boundary","file":"intro-modal/Phone-600_600x960.png"},{"label":"iPad-mini","width":768,"height":1024,"note":"601–860 tablet","file":"intro-modal/iPad-mini_768x1024.png"},{"label":"iPad-Air","width":810,"height":1080,"note":"601–860 tablet","file":"intro-modal/iPad-Air_810x1080.png"},{"label":"Tablet-860","width":860,"height":1100,"note":"≤860 boundary","file":"intro-modal/Tablet-860_860x1100.png"},{"label":"iPhone-SE-land","width":568,"height":320,"note":"landscape ≤500h","file":"intro-modal/iPhone-SE-land_568x320.png"},{"label":"iPhone-8-land","width":667,"height":375,"note":"landscape ≤500h","file":"intro-modal/iPhone-8-land_667x375.png"},{"label":"iPhone-XR-land","width":896,"height":414,"note":"landscape ≤500h","file":"intro-modal/iPhone-XR-land_896x414.png"},{"label":"iPad-land","width":1024,"height":768,"note":"≥861 landscape","file":"intro-modal/iPad-land_1024x768.png"},{"label":"Laptop-1280","width":1280,"height":800,"note":"≥861 desktop","file":"intro-modal/Laptop-1280_1280x800.png"},{"label":"Laptop-1440","width":1440,"height":900,"note":"≥861 desktop","file":"intro-modal/Laptop-1440_1440x900.png"},{"label":"Desktop-1920","width":1920,"height":1080,"note":"≥861 desktop","file":"intro-modal/Desktop-1920_1920x1080.png"}]},"main-app":{"id":"main-app","name":"Main App","description":"Default view after dismissing intro","screenshots":[{"label":"iPhone-SE","width":320,"height":568,"note":"≤360","file":"main-app/iPhone-SE_320x568.png"},{"label":"Galaxy-S-small","width":360,"height":640,"note":"≤360 boundary","file":"main-app/Galaxy-S-small_360x640.png"},{"label":"iPhone-6-7-8","width":375,"height":667,"note":"361–480","file":"main-app/iPhone-6-7-8_375x667.png"},{"label":"iPhone-12-13","width":390,"height":844,"note":"361–480","file":"main-app/iPhone-12-13_390x844.png"},{"label":"iPhone-XR-11","width":414,"height":896,"note":"361–480","file":"main-app/iPhone-XR-11_414x896.png"},{"label":"Phone-480","width":480,"height":854,"note":"≤480 boundary","file":"main-app/Phone-480_480x854.png"},{"label":"Phablet-540","width":540,"height":720,"note":"481–600","file":"main-app/Phablet-540_540x720.png"},{"label":"Phone-600","width":600,"height":960,"note":"≤600 boundary","file":"main-app/Phone-600_600x960.png"},{"label":"iPad-mini","width":768,"height":1024,"note":"601–860 tablet","file":"main-app/iPad-mini_768x1024.png"},{"label":"iPad-Air","width":810,"height":1080,"note":"601–860 tablet","file":"main-app/iPad-Air_810x1080.png"},{"label":"Tablet-860","width":860,"height":1100,"note":"≤860 boundary","file":"main-app/Tablet-860_860x1100.png"},{"label":"iPhone-SE-land","width":568,"height":320,"note":"landscape ≤500h","file":"main-app/iPhone-SE-land_568x320.png"},{"label":"iPhone-8-land","width":667,"height":375,"note":"landscape ≤500h","file":"main-app/iPhone-8-land_667x375.png"},{"label":"iPhone-XR-land","width":896,"height":414,"note":"landscape ≤500h","file":"main-app/iPhone-XR-land_896x414.png"},{"label":"iPad-land","width":1024,"height":768,"note":"≥861 landscape","file":"main-app/iPad-land_1024x768.png"},{"label":"Laptop-1280","width":1280,"height":800,"note":"≥861 desktop","file":"main-app/Laptop-1280_1280x800.png"},{"label":"Laptop-1440","width":1440,"height":900,"note":"≥861 desktop","file":"main-app/Laptop-1440_1440x900.png"},{"label":"Desktop-1920","width":1920,"height":1080,"note":"≥861 desktop","file":"main-app/Desktop-1920_1920x1080.png"}]},"speed-slider":{"id":"speed-slider","name":"Speed Slider","description":"Popup slider for adjusting speed (BPM)","screenshots":[{"label":"iPhone-SE","width":320,"height":568,"note":"≤360","file":"speed-slider/iPhone-SE_320x568.png"},{"label":"Galaxy-S-small","width":360,"height":640,"note":"≤360 boundary","file":"speed-slider/Galaxy-S-small_360x640.png"},{"label":"iPhone-6-7-8","width":375,"height":667,"note":"361–480","file":"speed-slider/iPhone-6-7-8_375x667.png"},{"label":"iPhone-12-13","width":390,"height":844,"note":"361–480","file":"speed-slider/iPhone-12-13_390x844.png"},{"label":"iPhone-XR-11","width":414,"height":896,"note":"361–480","file":"speed-slider/iPhone-XR-11_414x896.png"},{"label":"Phone-480","width":480,"height":854,"note":"≤480 boundary","file":"speed-slider/Phone-480_480x854.png"},{"label":"Phablet-540","width":540,"height":720,"note":"481–600","file":"speed-slider/Phablet-540_540x720.png"},{"label":"Phone-600","width":600,"height":960,"note":"≤600 boundary","file":"speed-slider/Phone-600_600x960.png"},{"label":"iPad-mini","width":768,"height":1024,"note":"601–860 tablet","file":"speed-slider/iPad-mini_768x1024.png"},{"label":"iPad-Air","width":810,"height":1080,"note":"601–860 tablet","file":"speed-slider/iPad-Air_810x1080.png"},{"label":"Tablet-860","width":860,"height":1100,"note":"≤860 boundary","file":"speed-slider/Tablet-860_860x1100.png"},{"label":"iPhone-SE-land","width":568,"height":320,"note":"landscape ≤500h","file":"speed-slider/iPhone-SE-land_568x320.png"},{"label":"iPhone-8-land","width":667,"height":375,"note":"landscape ≤500h","file":"speed-slider/iPhone-8-land_667x375.png"},{"label":"iPhone-XR-land","width":896,"height":414,"note":"landscape ≤500h","file":"speed-slider/iPhone-XR-land_896x414.png"},{"label":"iPad-land","width":1024,"height":768,"note":"≥861 landscape","file":"speed-slider/iPad-land_1024x768.png"},{"label":"Laptop-1280","width":1280,"height":800,"note":"≥861 desktop","file":"speed-slider/Laptop-1280_1280x800.png"},{"label":"Laptop-1440","width":1440,"height":900,"note":"≥861 desktop","file":"speed-slider/Laptop-1440_1440x900.png"},{"label":"Desktop-1920","width":1920,"height":1080,"note":"≥861 desktop","file":"speed-slider/Desktop-1920_1920x1080.png"}]},"grid-size-slider":{"id":"grid-size-slider","name":"Grid Size Slider","description":"Popup slider for adjusting grid dimensions","screenshots":[{"label":"iPhone-SE","width":320,"height":568,"note":"≤360","file":"grid-size-slider/iPhone-SE_320x568.png"},{"label":"Galaxy-S-small","width":360,"height":640,"note":"≤360 boundary","file":"grid-size-slider/Galaxy-S-small_360x640.png"},{"label":"iPhone-6-7-8","width":375,"height":667,"note":"361–480","file":"grid-size-slider/iPhone-6-7-8_375x667.png"},{"label":"iPhone-12-13","width":390,"height":844,"note":"361–480","file":"grid-size-slider/iPhone-12-13_390x844.png"},{"label":"iPhone-XR-11","width":414,"height":896,"note":"361–480","file":"grid-size-slider/iPhone-XR-11_414x896.png"},{"label":"Phone-480","width":480,"height":854,"note":"≤480 boundary","file":"grid-size-slider/Phone-480_480x854.png"},{"label":"Phablet-540","width":540,"height":720,"note":"481–600","file":"grid-size-slider/Phablet-540_540x720.png"},{"label":"Phone-600","width":600,"height":960,"note":"≤600 boundary","file":"grid-size-slider/Phone-600_600x960.png"},{"label":"iPad-mini","width":768,"height":1024,"note":"601–860 tablet","file":"grid-size-slider/iPad-mini_768x1024.png"},{"label":"iPad-Air","width":810,"height":1080,"note":"601–860 tablet","file":"grid-size-slider/iPad-Air_810x1080.png"},{"label":"Tablet-860","width":860,"height":1100,"note":"≤860 boundary","file":"grid-size-slider/Tablet-860_860x1100.png"},{"label":"iPhone-SE-land","width":568,"height":320,"note":"landscape ≤500h","file":"grid-size-slider/iPhone-SE-land_568x320.png"},{"label":"iPhone-8-land","width":667,"height":375,"note":"landscape ≤500h","file":"grid-size-slider/iPhone-8-land_667x375.png"},{"label":"iPhone-XR-land","width":896,"height":414,"note":"landscape ≤500h","file":"grid-size-slider/iPhone-XR-land_896x414.png"},{"label":"iPad-land","width":1024,"height":768,"note":"≥861 landscape","file":"grid-size-slider/iPad-land_1024x768.png"},{"label":"Laptop-1280","width":1280,"height":800,"note":"≥861 desktop","file":"grid-size-slider/Laptop-1280_1280x800.png"},{"label":"Laptop-1440","width":1440,"height":900,"note":"≥861 desktop","file":"grid-size-slider/Laptop-1440_1440x900.png"},{"label":"Desktop-1920","width":1920,"height":1080,"note":"≥861 desktop","file":"grid-size-slider/Desktop-1920_1920x1080.png"}]},"more-controls":{"id":"more-controls","name":"More Controls (Landscape)","description":"Landscape drawer opened via \"More Controls\" toggle","screenshots":[{"label":"iPhone-SE-land","width":568,"height":320,"note":"landscape ≤500h","file":"more-controls/iPhone-SE-land_568x320.png"},{"label":"iPhone-8-land","width":667,"height":375,"note":"landscape ≤500h","file":"more-controls/iPhone-8-land_667x375.png"},{"label":"iPhone-XR-land","width":896,"height":414,"note":"landscape ≤500h","file":"more-controls/iPhone-XR-land_896x414.png"}]},"info-modal":{"id":"info-modal","name":"Info / About Modal","description":"The \"About AG16\" info modal","screenshots":[{"label":"iPhone-SE","width":320,"height":568,"note":"≤360","file":"info-modal/iPhone-SE_320x568.png"},{"label":"Galaxy-S-small","width":360,"height":640,"note":"≤360 boundary","file":"info-modal/Galaxy-S-small_360x640.png"},{"label":"iPhone-6-7-8","width":375,"height":667,"note":"361–480","file":"info-modal/iPhone-6-7-8_375x667.png"},{"label":"iPhone-12-13","width":390,"height":844,"note":"361–480","file":"info-modal/iPhone-12-13_390x844.png"},{"label":"iPhone-XR-11","width":414,"height":896,"note":"361–480","file":"info-modal/iPhone-XR-11_414x896.png"},{"label":"Phone-480","width":480,"height":854,"note":"≤480 boundary","file":"info-modal/Phone-480_480x854.png"},{"label":"Phablet-540","width":540,"height":720,"note":"481–600","file":"info-modal/Phablet-540_540x720.png"},{"label":"Phone-600","width":600,"height":960,"note":"≤600 boundary","file":"info-modal/Phone-600_600x960.png"},{"label":"iPad-mini","width":768,"height":1024,"note":"601–860 tablet","file":"info-modal/iPad-mini_768x1024.png"},{"label":"iPad-Air","width":810,"height":1080,"note":"601–860 tablet","file":"info-modal/iPad-Air_810x1080.png"},{"label":"Tablet-860","width":860,"height":1100,"note":"≤860 boundary","file":"info-modal/Tablet-860_860x1100.png"},{"label":"iPhone-SE-land","width":568,"height":320,"note":"landscape ≤500h","file":"info-modal/iPhone-SE-land_568x320.png"},{"label":"iPhone-8-land","width":667,"height":375,"note":"landscape ≤500h","file":"info-modal/iPhone-8-land_667x375.png"},{"label":"iPhone-XR-land","width":896,"height":414,"note":"landscape ≤500h","file":"info-modal/iPhone-XR-land_896x414.png"},{"label":"iPad-land","width":1024,"height":768,"note":"≥861 landscape","file":"info-modal/iPad-land_1024x768.png"},{"label":"Laptop-1280","width":1280,"height":800,"note":"≥861 desktop","file":"info-modal/Laptop-1280_1280x800.png"},{"label":"Laptop-1440","width":1440,"height":900,"note":"≥861 desktop","file":"info-modal/Laptop-1440_1440x900.png"},{"label":"Desktop-1920","width":1920,"height":1080,"note":"≥861 desktop","file":"info-modal/Desktop-1920_1920x1080.png"}]},"privacy-policy":{"id":"privacy-policy","name":"Privacy Policy","description":"Privacy Policy modal via footer link","screenshots":[{"label":"iPhone-SE","width":320,"height":568,"note":"≤360","file":"privacy-policy/iPhone-SE_320x568.png"},{"label":"Galaxy-S-small","width":360,"height":640,"note":"≤360 boundary","file":"privacy-policy/Galaxy-S-small_360x640.png"},{"label":"iPhone-6-7-8","width":375,"height":667,"note":"361–480","file":"privacy-policy/iPhone-6-7-8_375x667.png"},{"label":"iPhone-12-13","width":390,"height":844,"note":"361–480","file":"privacy-policy/iPhone-12-13_390x844.png"},{"label":"iPhone-XR-11","width":414,"height":896,"note":"361–480","file":"privacy-policy/iPhone-XR-11_414x896.png"},{"label":"Phone-480","width":480,"height":854,"note":"≤480 boundary","file":"privacy-policy/Phone-480_480x854.png"},{"label":"Phablet-540","width":540,"height":720,"note":"481–600","file":"privacy-policy/Phablet-540_540x720.png"},{"label":"Phone-600","width":600,"height":960,"note":"≤600 boundary","file":"privacy-policy/Phone-600_600x960.png"},{"label":"iPad-mini","width":768,"height":1024,"note":"601–860 tablet","file":"privacy-policy/iPad-mini_768x1024.png"},{"label":"iPad-Air","width":810,"height":1080,"note":"601–860 tablet","file":"privacy-policy/iPad-Air_810x1080.png"},{"label":"Tablet-860","width":860,"height":1100,"note":"≤860 boundary","file":"privacy-policy/Tablet-860_860x1100.png"},{"label":"iPhone-SE-land","width":568,"height":320,"note":"landscape ≤500h","file":"privacy-policy/iPhone-SE-land_568x320.png"},{"label":"iPhone-8-land","width":667,"height":375,"note":"landscape ≤500h","file":"privacy-policy/iPhone-8-land_667x375.png"},{"label":"iPhone-XR-land","width":896,"height":414,"note":"landscape ≤500h","file":"privacy-policy/iPhone-XR-land_896x414.png"},{"label":"iPad-land","width":1024,"height":768,"note":"≥861 landscape","file":"privacy-policy/iPad-land_1024x768.png"},{"label":"Laptop-1280","width":1280,"height":800,"note":"≥861 desktop","file":"privacy-policy/Laptop-1280_1280x800.png"},{"label":"Laptop-1440","width":1440,"height":900,"note":"≥861 desktop","file":"privacy-policy/Laptop-1440_1440x900.png"},{"label":"Desktop-1920","width":1920,"height":1080,"note":"≥861 desktop","file":"privacy-policy/Desktop-1920_1920x1080.png"}]}};
+
+
+let manifest = {};   // { groupId: { id, name, description, screenshots: [...] } }
+let grades = {};     // { groupId: { filename: { grade, notes } } }
+let openGroups = {}; // { groupId: boolean }
+
+// ── Persist ──
+function save() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(grades)); } catch {}
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) grades = JSON.parse(raw);
+  } catch {}
+}
+
+function getGrade(groupId, file) {
+  return (grades[groupId] && grades[groupId][file]) || {};
+}
+function setGrade(groupId, file, grade) {
+  if (!grades[groupId]) grades[groupId] = {};
+  if (!grades[groupId][file]) grades[groupId][file] = {};
+  grades[groupId][file].grade = grade;
+  save();
+}
+function setNotes(groupId, file, notes) {
+  if (!grades[groupId]) grades[groupId] = {};
+  if (!grades[groupId][file]) grades[groupId][file] = {};
+  grades[groupId][file].notes = notes;
+  save();
+}
+
+// ── Group status helpers ──
+function groupStatus(groupId) {
+  const group = manifest[groupId];
+  if (!group) return 'ungraded';
+  const grp = grades[groupId] || {};
+  let good = 0, bad = 0, total = group.screenshots.length;
+  for (const s of group.screenshots) {
+    const g = (grp[s.file] || {}).grade;
+    if (g === 'good') good++;
+    else if (g === 'bad') bad++;
+  }
+  if (bad > 0) return 'bad';
+  if (good === total) return 'good';
+  if (good > 0) return 'mixed';
+  return 'ungraded';
+}
+
+// ── Build UI ──
+function buildGroups() {
+  const container = document.getElementById('groups-container');
+  container.innerHTML = '';
+  const filter = document.getElementById('filter').value;
+
+  for (const groupId of Object.keys(manifest)) {
+    const group = manifest[groupId];
+    const status = groupStatus(groupId);
+    const isOpen = openGroups[groupId] || false;
+
+    const div = document.createElement('div');
+    div.className = `group ${status === 'good' ? 'all-good' : status === 'bad' ? 'has-bad' : ''}${isOpen ? ' open' : ''}`;
+    div.dataset.group = groupId;
+
+    const badgeClass = status === 'good' ? 'badge-good' : status === 'bad' ? 'badge-bad' : status === 'mixed' ? 'badge-mixed' : 'badge-ungraded';
+    const badgeText = status === 'good' ? '✓ All Good' : status === 'bad' ? '✗ Has Issues' : status === 'mixed' ? '⋯ Partial' : '— Ungraded';
+
+    // Count for this group
+    const grp = grades[groupId] || {};
+    let gGood = 0, gBad = 0;
+    for (const s of group.screenshots) {
+      const g = (grp[s.file] || {}).grade;
+      if (g === 'good') gGood++;
+      else if (g === 'bad') gBad++;
+    }
+    const gUngraded = group.screenshots.length - gGood - gBad;
+
+    div.innerHTML = `
+      <div class="group-header">
+        <span class="group-chevron">▶</span>
+        <span class="group-title">${group.name}</span>
+        <span class="group-desc">${group.description}</span>
+        <span class="group-badge ${badgeClass}">${badgeText}</span>
+        <span style="font-size:.7rem;color:var(--text-dim)">${gGood}✓ ${gBad}✗ ${gUngraded}—</span>
+        <div class="group-actions">
+          <button class="btn-good" data-group="${groupId}" data-action="all-good">All Good</button>
+          <button class="btn-clear" data-group="${groupId}" data-action="clear">Clear</button>
+        </div>
+      </div>
+      <div class="group-body">
+        <div class="grid" id="grid-${groupId}"></div>
+      </div>
+    `;
+    container.appendChild(div);
+
+    // Header click toggles open
+    div.querySelector('.group-header').addEventListener('click', (e) => {
+      if (e.target.closest('.group-actions')) return;
+      openGroups[groupId] = !openGroups[groupId];
+      buildGroups();
+    });
+
+    // Group-level buttons
+    div.querySelectorAll('.group-actions button').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const action = btn.dataset.action;
+        if (action === 'all-good') {
+          if (!grades[groupId]) grades[groupId] = {};
+          for (const s of group.screenshots) {
+            if (!grades[groupId][s.file]) grades[groupId][s.file] = {};
+            grades[groupId][s.file].grade = 'good';
+          }
+        } else if (action === 'clear') {
+          grades[groupId] = {};
+        }
+        save(); buildGroups();
+      });
+    });
+
+    // Build cards inside grid
+    if (isOpen) {
+      const grid = div.querySelector(`#grid-${groupId}`);
+      for (const item of group.screenshots) {
+        const g = getGrade(groupId, item.file);
+        const grade = g.grade || null;
+
+        if (filter === 'good' && grade !== 'good') continue;
+        if (filter === 'bad' && grade !== 'bad') continue;
+        if (filter === 'ungraded' && grade) continue;
+
+        const card = document.createElement('div');
+        card.className = 'card' + (grade ? ` ${grade}` : '');
+        card.innerHTML = `
+          <div class="img-wrap" data-file="${item.file}" data-group="${groupId}">
+            <img src="./${item.file}" alt="${item.label}" loading="lazy">
+            <span class="zoom-hint">click to zoom</span>
+          </div>
+          <div class="meta">
+            <h3>${item.label}</h3>
+            <div class="dims">${item.width} × ${item.height}</div>
+            <div class="note">${item.note}</div>
+          </div>
+          <div class="actions">
+            <button class="btn-good" data-group="${groupId}" data-file="${item.file}" data-grade="good">✓ Good</button>
+            <button class="btn-bad" data-group="${groupId}" data-file="${item.file}" data-grade="bad">✗ Bad</button>
+            <button class="btn-clear" data-group="${groupId}" data-file="${item.file}" data-grade="">Clear</button>
+          </div>
+          <textarea placeholder="Notes…" data-group="${groupId}" data-file="${item.file}">${g.notes || ''}</textarea>
+        `;
+        grid.appendChild(card);
+      }
+
+      // Wire card events
+      grid.querySelectorAll('.actions button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          setGrade(btn.dataset.group, btn.dataset.file, btn.dataset.grade || null);
+          buildGroups();
+        });
+      });
+      grid.querySelectorAll('textarea').forEach(ta => {
+        ta.addEventListener('input', () => {
+          setNotes(ta.dataset.group, ta.dataset.file, ta.value);
+          updateCounts();
+        });
+      });
+      grid.querySelectorAll('.img-wrap').forEach(wrap => {
+        wrap.addEventListener('click', () => openLightbox(wrap.dataset.group, wrap.dataset.file));
+      });
+    }
+  }
+
+  updateCounts();
+  updateSummary();
+}
+
+function updateCounts() {
+  let good = 0, bad = 0, ungraded = 0;
+  for (const groupId of Object.keys(manifest)) {
+    const grp = grades[groupId] || {};
+    for (const s of manifest[groupId].screenshots) {
+      const g = (grp[s.file] || {}).grade;
+      if (g === 'good') good++;
+      else if (g === 'bad') bad++;
+      else ungraded++;
+    }
+  }
+  document.getElementById('c-good').textContent = good;
+  document.getElementById('c-bad').textContent = bad;
+  document.getElementById('c-ungraded').textContent = ungraded;
+}
+
+function updateSummary() {
+  const body = document.getElementById('summary-body');
+  const panel = document.getElementById('summary');
+  let hasAny = false;
+  for (const gid of Object.keys(manifest)) {
+    const grp = grades[gid] || {};
+    if (manifest[gid].screenshots.some(s => (grp[s.file] || {}).grade)) { hasAny = true; break; }
+  }
+  panel.classList.toggle('has-data', hasAny);
+  if (!hasAny) return;
+
+  body.innerHTML = '';
+  for (const groupId of Object.keys(manifest)) {
+    const group = manifest[groupId];
+    const grp = grades[groupId] || {};
+    for (const item of group.screenshots) {
+      const g = grp[item.file] || {};
+      const cls = g.grade === 'good' ? 'grade-good' : g.grade === 'bad' ? 'grade-bad' : 'grade-none';
+      const label = g.grade === 'good' ? '✓ Good' : g.grade === 'bad' ? '✗ Bad' : '—';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${group.name}</td>
+        <td>${item.label}</td>
+        <td>${item.width}×${item.height}</td>
+        <td>${item.note}</td>
+        <td class="${cls}">${label}</td>
+        <td>${g.notes || ''}</td>
+      `;
+      body.appendChild(tr);
+    }
+  }
+}
+
+// ── Lightbox ──
+function openLightbox(groupId, file) {
+  const group = manifest[groupId];
+  const item = group ? group.screenshots.find(s => s.file === file) : null;
+  document.getElementById('lb-img').src = `./${file}`;
+  document.getElementById('lb-label').textContent = item
+    ? `${group.name} › ${item.label}  (${item.width}×${item.height})`
+    : file;
+  document.getElementById('lightbox').classList.add('open');
+}
+document.getElementById('lightbox').addEventListener('click', () => {
+  document.getElementById('lightbox').classList.remove('open');
+});
+
+// ── Toolbar ──
+document.getElementById('filter').addEventListener('change', buildGroups);
+document.getElementById('btn-expand-bad').addEventListener('click', () => {
+  for (const gid of Object.keys(manifest)) {
+    const status = groupStatus(gid);
+    openGroups[gid] = (status === 'bad' || status === 'ungraded' || status === 'mixed');
+  }
+  buildGroups();
+});
+document.getElementById('btn-collapse').addEventListener('click', () => {
+  openGroups = {};
+  buildGroups();
+});
+document.getElementById('btn-reset').addEventListener('click', () => {
+  if (!confirm('Reset all grades and notes?')) return;
+  grades = {};
+  save(); buildGroups();
+});
+document.getElementById('btn-export').addEventListener('click', () => {
+  let text = 'Responsive Review Report\n========================\n';
+  for (const gid of Object.keys(manifest)) {
+    const group = manifest[gid];
+    const status = groupStatus(gid);
+    text += `\n## ${group.name}  [${status.toUpperCase()}]\n${group.description}\n\n`;
+    const grp = grades[gid] || {};
+    for (const item of group.screenshots) {
+      const g = grp[item.file] || {};
+      const label = g.grade === 'good' ? '✓ GOOD' : g.grade === 'bad' ? '✗ BAD' : '— UNGRADED';
+      text += `  ${item.label} (${item.width}×${item.height}) [${item.note}]  ${label}\n`;
+      if (g.notes) text += `    Notes: ${g.notes}\n`;
+    }
+  }
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('btn-export');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = '📋 Copy Summary to Clipboard', 2000);
+  });
+});
+document.getElementById('btn-save-grades').addEventListener('click', () => {
+  // Download grades as JSON so the screenshot script can use --skip-good
+  const blob = new Blob([JSON.stringify(grades, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'grades.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  const btn = document.getElementById('btn-save-grades');
+  btn.textContent = '✓ Saved!';
+  setTimeout(() => btn.textContent = '💾 Save grades.json', 2000);
+});
+
+// ── Keyboard ──
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+});
+
+// ── Init from tree manifest ──
+function initFromManifest(m) {
+  manifest = m;
+  buildGroups();
+}
+
+// ── Init ──
+load();
+initFromManifest(__INLINE_MANIFEST__);
+</script>
+</body>
+</html>

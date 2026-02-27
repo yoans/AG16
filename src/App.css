@@ -331,7 +331,7 @@ body {
   display:flex; align-items:center; justify-content:center;
   cursor: crosshair;
 }
-#sketch-holder canvas { display:block; max-width:100%; max-height:100%; }
+#sketch-holder canvas { display:block; max-width:100%; max-height:100%; touch-action: none; }
 
 /* ── TOOL BUTTONS (universal) ── */
 .tool-btn {
@@ -1818,13 +1818,14 @@ body {
   .console-body {
     flex: 1;
     min-height: 0;
+    justify-content: center;
   }
   .canvas-area {
-    flex: 0 0 auto;
+    /* flex: 1 from base — fills space between panels, canvas centered within */
     align-self: stretch;
   }
   .side-panel {
-    overflow: visible;
+    overflow-y: auto;
     max-height: 100%;
   }
 }
@@ -1931,8 +1932,8 @@ body {
   .canvas-area {
     flex: 0 0 100%;
     aspect-ratio: 1 / 1;
-    max-height: min(calc(100vw - 20px), 50vh);
-    max-height: min(calc(100vw - 20px), 50dvh);
+    max-height: min(calc(100vw - 16px), 58vh);
+    max-height: min(calc(100vw - 16px), 58dvh);
     order: -1;
     border-radius: var(--r-sm);
   }
@@ -2195,8 +2196,8 @@ body {
 
   /* Canvas gets more height on tablets */
   .canvas-area {
-    max-height: min(calc(100vw - 28px), 55vh);
-    max-height: min(calc(100vw - 28px), 55dvh);
+    max-height: min(calc(100vw - 24px), 70vh);
+    max-height: min(calc(100vw - 24px), 70dvh);
   }
 
   /* Left panel narrower, right panel wider */
@@ -2365,8 +2366,34 @@ body {
   .hdr-btn span { display: none; }
   .hdr-btn svg { width: 12px; height: 12px; }
 
-  /* Header row 2: hidden in landscape — accessed via drawer */
-  .header-row-2 { display: none; }
+  /* Header row 2: compact inline in landscape */
+  .header-row-2 {
+    display: flex;
+    width: auto;
+    gap: 2px;
+    order: 5;
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+    margin: 0;
+  }
+  .header-row-2 .header-presets {
+    gap: 2px;
+  }
+  .header-row-2 .nav-btn {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+  }
+  .header-presets .preset-label {
+    font-size: 0.5em;
+    min-width: 30px;
+  }
+  .header-row-2 .hdr-btn {
+    padding: 2px 3px;
+    min-height: 24px;
+    min-width: 24px;
+  }
 
   /* Landscape drawer toggle — anchored over the right panel */
   .landscape-drawer-toggle {
@@ -2651,8 +2678,8 @@ body {
 
   /* Canvas: compact */
   .canvas-area {
-    max-height: min(calc(100vw - 12px), 46vh);
-    max-height: min(calc(100vw - 12px), 46dvh);
+    max-height: min(calc(100vw - 12px), 55vh);
+    max-height: min(calc(100vw - 12px), 55dvh);
   }
 
   /* Side panels stack */
@@ -2802,8 +2829,8 @@ body {
   }
   .header-presets { gap: 2px; }
   .canvas-area {
-    max-height: min(calc(100vw - 10px), 44vh);
-    max-height: min(calc(100vw - 10px), 44dvh);
+    max-height: min(calc(100vw - 10px), 55vh);
+    max-height: min(calc(100vw - 10px), 55dvh);
   }
   .console-wrapper { padding: 3px; gap: 3px; }
 }
@@ -3022,6 +3049,39 @@ input:focus-visible {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid var(--border);
   color: var(--text-dim);
+}
+
+/* Landscape / short viewport: compact intro modal with 1-row of 4 cards */
+@media (orientation: landscape) and (max-height: 600px) {
+  .intro-overlay {
+    align-items: flex-start;
+    padding: 8px;
+    overflow-y: auto;
+  }
+  .intro-modal {
+    max-width: 90vw;
+    width: auto;
+    padding: 16px 20px;
+  }
+  .intro-header .modal-logo { width: 40px; height: 40px; }
+  .intro-modal h2 { font-size: 1.1em; }
+  .intro-tagline { font-size: 0.78em; margin-bottom: 10px; }
+  .intro-steps-visual {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .intro-step-card {
+    padding: 8px 6px;
+    flex-direction: row;
+    gap: 6px;
+  }
+  .intro-step-icon { font-size: 1.2em; height: auto; }
+  .intro-step-text { text-align: left; }
+  .intro-step-text strong { font-size: 0.75em; }
+  .intro-step-text span { font-size: 0.65em; }
+  .intro-sound-choice { gap: 8px; }
+  .intro-close-btn { padding: 8px 12px; font-size: 0.82em; }
 }
 
 /* Mobile step cards handled in ≤480px responsive query */

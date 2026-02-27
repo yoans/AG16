@@ -293,6 +293,13 @@ export const setUpCanvas = (state) => {
             sketch.mousePressed = setMouseStart;
             sketch.mouseReleased = setMouseEnd;
 
+            // Prevent page scrolling ONLY when touching/dragging on the canvas
+            const canvasEl = document.getElementById('arrows-animation');
+            if (canvasEl) {
+                canvasEl.addEventListener('touchstart', (e) => { e.preventDefault(); }, { passive: false });
+                canvasEl.addEventListener('touchmove', (e) => { e.preventDefault(); }, { passive: false });
+            }
+
             const onDrag = (e) =>{
                 
                 if(mouseIsPressed && mouseIsInSketch()){

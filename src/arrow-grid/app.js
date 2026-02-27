@@ -339,8 +339,8 @@ export class Application extends React.Component {
         } else if (isPortrait) {
             // Portrait: canvas width = viewport width minus padding/margins
             // Row labels hidden on mobile, so no extra left margin needed
-            const padding = vw <= 360 ? 12 : vw <= 480 ? 16 : vw <= 860 ? 20 : 40;
-            const maxH = vw <= 360 ? vh * 0.44 : vw <= 480 ? vh * 0.46 : vh * 0.50;
+            const padding = vw <= 360 ? 10 : vw <= 480 ? 12 : vw <= 600 ? 16 : vw <= 860 ? 24 : 40;
+            const maxH = vw <= 360 ? vh * 0.55 : vw <= 480 ? vh * 0.55 : vw <= 600 ? vh * 0.58 : vw <= 860 ? vh * 0.70 : vh * 0.50;
             canvasSize = Math.min(vw - padding, maxH);
         } else {
             // Landscape: canvas height = viewport height minus header/footer/padding/labels
