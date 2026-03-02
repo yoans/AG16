@@ -824,5 +824,138 @@
         "file": "privacy-policy/Desktop-1920_1920x1080.png"
       }
     ]
+  },
+  "save-manager": {
+    "id": "save-manager",
+    "name": "Save Manager Modal",
+    "description": "Save / Browse modal for saving and loading grids",
+    "screenshots": [
+      {
+        "label": "iPhone-SE",
+        "width": 320,
+        "height": 568,
+        "note": "≤360",
+        "file": "save-manager/iPhone-SE_320x568.png"
+      },
+      {
+        "label": "Galaxy-S-small",
+        "width": 360,
+        "height": 640,
+        "note": "≤360 boundary",
+        "file": "save-manager/Galaxy-S-small_360x640.png"
+      },
+      {
+        "label": "iPhone-6-7-8",
+        "width": 375,
+        "height": 667,
+        "note": "361–480",
+        "file": "save-manager/iPhone-6-7-8_375x667.png"
+      },
+      {
+        "label": "iPhone-12-13",
+        "width": 390,
+        "height": 844,
+        "note": "361–480",
+        "file": "save-manager/iPhone-12-13_390x844.png"
+      },
+      {
+        "label": "iPhone-XR-11",
+        "width": 414,
+        "height": 896,
+        "note": "361–480",
+        "file": "save-manager/iPhone-XR-11_414x896.png"
+      },
+      {
+        "label": "Phone-480",
+        "width": 480,
+        "height": 854,
+        "note": "≤480 boundary",
+        "file": "save-manager/Phone-480_480x854.png"
+      },
+      {
+        "label": "Phablet-540",
+        "width": 540,
+        "height": 720,
+        "note": "481–600",
+        "file": "save-manager/Phablet-540_540x720.png"
+      },
+      {
+        "label": "Phone-600",
+        "width": 600,
+        "height": 960,
+        "note": "≤600 boundary",
+        "file": "save-manager/Phone-600_600x960.png"
+      },
+      {
+        "label": "iPad-mini",
+        "width": 768,
+        "height": 1024,
+        "note": "601–860 tablet",
+        "file": "save-manager/iPad-mini_768x1024.png"
+      },
+      {
+        "label": "iPad-Air",
+        "width": 810,
+        "height": 1080,
+        "note": "601–860 tablet",
+        "file": "save-manager/iPad-Air_810x1080.png"
+      },
+      {
+        "label": "Tablet-860",
+        "width": 860,
+        "height": 1100,
+        "note": "≤860 boundary",
+        "file": "save-manager/Tablet-860_860x1100.png"
+      },
+      {
+        "label": "iPhone-SE-land",
+        "width": 568,
+        "height": 320,
+        "note": "landscape ≤500h",
+        "file": "save-manager/iPhone-SE-land_568x320.png"
+      },
+      {
+        "label": "iPhone-8-land",
+        "width": 667,
+        "height": 375,
+        "note": "landscape ≤500h",
+        "file": "save-manager/iPhone-8-land_667x375.png"
+      },
+      {
+        "label": "iPhone-XR-land",
+        "width": 896,
+        "height": 414,
+        "note": "landscape ≤500h",
+        "file": "save-manager/iPhone-XR-land_896x414.png"
+      },
+      {
+        "label": "iPad-land",
+        "width": 1024,
+        "height": 768,
+        "note": "≥861 landscape",
+        "file": "save-manager/iPad-land_1024x768.png"
+      },
+      {
+        "label": "Laptop-1280",
+        "width": 1280,
+        "height": 800,
+        "note": "≥861 desktop",
+        "file": "save-manager/Laptop-1280_1280x800.png"
+      },
+      {
+        "label": "Laptop-1440",
+        "width": 1440,
+        "height": 900,
+        "note": "≥861 desktop",
+        "file": "save-manager/Laptop-1440_1440x900.png"
+      },
+      {
+        "label": "Desktop-1920",
+        "width": 1920,
+        "height": 1080,
+        "note": "≥861 desktop",
+        "file": "save-manager/Desktop-1920_1920x1080.png"
+      }
+    ]
   }
 }

@@ -1,0 +1,2642 @@
+[
+  {
+    "group": "main-app",
+    "groupName": "Main App",
+    "viewport": "iPhone-SE",
+    "width": 320,
+    "height": 568,
+    "mobile": true,
+    "screenshot": "main-app/iPhone-SE_320x568.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "2 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "main-app",
+    "groupName": "Main App",
+    "viewport": "Galaxy-S-small",
+    "width": 360,
+    "height": 640,
+    "mobile": true,
+    "screenshot": "main-app/Galaxy-S-small_360x640.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "4 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "main-app",
+    "groupName": "Main App",
+    "viewport": "iPhone-12-13",
+    "width": 390,
+    "height": 844,
+    "mobile": true,
+    "screenshot": "main-app/iPhone-12-13_390x844.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "12 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "main-app",
+    "groupName": "Main App",
+    "viewport": "Phone-480",
+    "width": 480,
+    "height": 854,
+    "mobile": true,
+    "screenshot": "main-app/Phone-480_480x854.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "8 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "main-app",
+    "groupName": "Main App",
+    "viewport": "iPad-mini",
+    "width": 768,
+    "height": 1024,
+    "mobile": true,
+    "screenshot": "main-app/iPad-mini_768x1024.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "24 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "main-app",
+    "groupName": "Main App",
+    "viewport": "Tablet-860",
+    "width": 860,
+    "height": 1100,
+    "mobile": true,
+    "screenshot": "main-app/Tablet-860_860x1100.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "32 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 28,
+            "h": 24
+          },
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 28,
+            "h": 24
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "main-app",
+    "groupName": "Main App",
+    "viewport": "iPhone-SE-land",
+    "width": 568,
+    "height": 320,
+    "mobile": true,
+    "screenshot": "main-app/iPhone-SE-land_568x320.png",
+    "issues": [
+      {
+        "type": "small-text",
+        "severity": "warning",
+        "message": "53 element(s) with font-size < 11px",
+        "details": [
+          {
+            "el": "span.channel-header-chevron",
+            "size": 6,
+            "text": "►"
+          },
+          {
+            "el": "button.ch-num-btn",
+            "size": 6.4,
+            "text": "1"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "ON"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "100%"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "🎹"
+          },
+          {
+            "el": "span.ch-fx-icon",
+            "size": 6.16,
+            "text": "🎹"
+          },
+          {
+            "el": "button.ch-num-btn",
+            "size": 6.4,
+            "text": "2"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "ON"
+          }
+        ]
+      },
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "54 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.landscape-drawer-toggle",
+            "w": 121,
+            "h": 29
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "main-app",
+    "groupName": "Main App",
+    "viewport": "iPhone-XR-land",
+    "width": 896,
+    "height": 414,
+    "mobile": true,
+    "screenshot": "main-app/iPhone-XR-land_896x414.png",
+    "issues": [
+      {
+        "type": "small-text",
+        "severity": "warning",
+        "message": "50 element(s) with font-size < 11px",
+        "details": [
+          {
+            "el": "span.channel-header-chevron",
+            "size": 6,
+            "text": "►"
+          },
+          {
+            "el": "button.ch-num-btn",
+            "size": 6.4,
+            "text": "1"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "ON"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "100%"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "🎹"
+          },
+          {
+            "el": "span.ch-fx-icon",
+            "size": 6.16,
+            "text": "🎹"
+          },
+          {
+            "el": "button.ch-num-btn",
+            "size": 6.4,
+            "text": "2"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "ON"
+          }
+        ]
+      },
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "52 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.landscape-drawer-toggle",
+            "w": 121,
+            "h": 29
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "main-app",
+    "groupName": "Main App",
+    "viewport": "Laptop-1280",
+    "width": 1280,
+    "height": 800,
+    "mobile": false,
+    "screenshot": "main-app/Laptop-1280_1280x800.png",
+    "issues": []
+  },
+  {
+    "group": "main-app",
+    "groupName": "Main App",
+    "viewport": "Desktop-1920",
+    "width": 1920,
+    "height": 1080,
+    "mobile": false,
+    "screenshot": "main-app/Desktop-1920_1920x1080.png",
+    "issues": []
+  },
+  {
+    "group": "speed-slider",
+    "groupName": "Speed Slider Popup",
+    "viewport": "iPhone-SE",
+    "width": 320,
+    "height": 568,
+    "mobile": true,
+    "screenshot": "speed-slider/iPhone-SE_320x568.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "2 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "speed-slider",
+    "groupName": "Speed Slider Popup",
+    "viewport": "Galaxy-S-small",
+    "width": 360,
+    "height": 640,
+    "mobile": true,
+    "screenshot": "speed-slider/Galaxy-S-small_360x640.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "4 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "speed-slider",
+    "groupName": "Speed Slider Popup",
+    "viewport": "iPhone-12-13",
+    "width": 390,
+    "height": 844,
+    "mobile": true,
+    "screenshot": "speed-slider/iPhone-12-13_390x844.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "12 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "speed-slider",
+    "groupName": "Speed Slider Popup",
+    "viewport": "Phone-480",
+    "width": 480,
+    "height": 854,
+    "mobile": true,
+    "screenshot": "speed-slider/Phone-480_480x854.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "8 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "speed-slider",
+    "groupName": "Speed Slider Popup",
+    "viewport": "iPad-mini",
+    "width": 768,
+    "height": 1024,
+    "mobile": true,
+    "screenshot": "speed-slider/iPad-mini_768x1024.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "24 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "speed-slider",
+    "groupName": "Speed Slider Popup",
+    "viewport": "Tablet-860",
+    "width": 860,
+    "height": 1100,
+    "mobile": true,
+    "screenshot": "speed-slider/Tablet-860_860x1100.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "32 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 28,
+            "h": 24
+          },
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 28,
+            "h": 24
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "speed-slider",
+    "groupName": "Speed Slider Popup",
+    "viewport": "iPhone-SE-land",
+    "width": 568,
+    "height": 320,
+    "mobile": true,
+    "screenshot": "speed-slider/iPhone-SE-land_568x320.png",
+    "issues": [
+      {
+        "type": "small-text",
+        "severity": "warning",
+        "message": "55 element(s) with font-size < 11px",
+        "details": [
+          {
+            "el": "span.slider-overlay-title",
+            "size": 9.6,
+            "text": "Speed"
+          },
+          {
+            "el": "button.slider-overlay-done",
+            "size": 9.6,
+            "text": "Done"
+          },
+          {
+            "el": "span.channel-header-chevron",
+            "size": 6,
+            "text": "►"
+          },
+          {
+            "el": "button.ch-num-btn",
+            "size": 6.4,
+            "text": "1"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "ON"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "100%"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "🎹"
+          },
+          {
+            "el": "span.ch-fx-icon",
+            "size": 6.16,
+            "text": "🎹"
+          }
+        ]
+      },
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "57 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.landscape-drawer-toggle",
+            "w": 121,
+            "h": 29
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "speed-slider",
+    "groupName": "Speed Slider Popup",
+    "viewport": "iPhone-XR-land",
+    "width": 896,
+    "height": 414,
+    "mobile": true,
+    "screenshot": "speed-slider/iPhone-XR-land_896x414.png",
+    "issues": [
+      {
+        "type": "small-text",
+        "severity": "warning",
+        "message": "52 element(s) with font-size < 11px",
+        "details": [
+          {
+            "el": "span.slider-overlay-title",
+            "size": 9.6,
+            "text": "Speed"
+          },
+          {
+            "el": "button.slider-overlay-done",
+            "size": 9.6,
+            "text": "Done"
+          },
+          {
+            "el": "span.channel-header-chevron",
+            "size": 6,
+            "text": "►"
+          },
+          {
+            "el": "button.ch-num-btn",
+            "size": 6.4,
+            "text": "1"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "ON"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "100%"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "🎹"
+          },
+          {
+            "el": "span.ch-fx-icon",
+            "size": 6.16,
+            "text": "🎹"
+          }
+        ]
+      },
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "55 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.landscape-drawer-toggle",
+            "w": 121,
+            "h": 29
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "speed-slider",
+    "groupName": "Speed Slider Popup",
+    "viewport": "Laptop-1280",
+    "width": 1280,
+    "height": 800,
+    "mobile": false,
+    "screenshot": "speed-slider/Laptop-1280_1280x800.png",
+    "issues": []
+  },
+  {
+    "group": "speed-slider",
+    "groupName": "Speed Slider Popup",
+    "viewport": "Desktop-1920",
+    "width": 1920,
+    "height": 1080,
+    "mobile": false,
+    "screenshot": "speed-slider/Desktop-1920_1920x1080.png",
+    "issues": []
+  },
+  {
+    "group": "grid-size-slider",
+    "groupName": "Grid Size Slider",
+    "viewport": "iPhone-SE",
+    "width": 320,
+    "height": 568,
+    "mobile": true,
+    "screenshot": "grid-size-slider/iPhone-SE_320x568.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "2 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "grid-size-slider",
+    "groupName": "Grid Size Slider",
+    "viewport": "Galaxy-S-small",
+    "width": 360,
+    "height": 640,
+    "mobile": true,
+    "screenshot": "grid-size-slider/Galaxy-S-small_360x640.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "4 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "grid-size-slider",
+    "groupName": "Grid Size Slider",
+    "viewport": "iPhone-12-13",
+    "width": 390,
+    "height": 844,
+    "mobile": true,
+    "screenshot": "grid-size-slider/iPhone-12-13_390x844.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "12 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "grid-size-slider",
+    "groupName": "Grid Size Slider",
+    "viewport": "Phone-480",
+    "width": 480,
+    "height": 854,
+    "mobile": true,
+    "screenshot": "grid-size-slider/Phone-480_480x854.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "8 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "grid-size-slider",
+    "groupName": "Grid Size Slider",
+    "viewport": "iPad-mini",
+    "width": 768,
+    "height": 1024,
+    "mobile": true,
+    "screenshot": "grid-size-slider/iPad-mini_768x1024.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "24 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "grid-size-slider",
+    "groupName": "Grid Size Slider",
+    "viewport": "Tablet-860",
+    "width": 860,
+    "height": 1100,
+    "mobile": true,
+    "screenshot": "grid-size-slider/Tablet-860_860x1100.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "32 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 28,
+            "h": 24
+          },
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 28,
+            "h": 24
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "grid-size-slider",
+    "groupName": "Grid Size Slider",
+    "viewport": "iPhone-SE-land",
+    "width": 568,
+    "height": 320,
+    "mobile": true,
+    "screenshot": "grid-size-slider/iPhone-SE-land_568x320.png",
+    "issues": [
+      {
+        "type": "small-text",
+        "severity": "warning",
+        "message": "55 element(s) with font-size < 11px",
+        "details": [
+          {
+            "el": "span.slider-overlay-title",
+            "size": 9.6,
+            "text": "Grid Size"
+          },
+          {
+            "el": "button.slider-overlay-done",
+            "size": 9.6,
+            "text": "Done"
+          },
+          {
+            "el": "span.channel-header-chevron",
+            "size": 6,
+            "text": "►"
+          },
+          {
+            "el": "button.ch-num-btn",
+            "size": 6.4,
+            "text": "1"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "ON"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "100%"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "🎹"
+          },
+          {
+            "el": "span.ch-fx-icon",
+            "size": 6.16,
+            "text": "🎹"
+          }
+        ]
+      },
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "57 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.landscape-drawer-toggle",
+            "w": 121,
+            "h": 29
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "grid-size-slider",
+    "groupName": "Grid Size Slider",
+    "viewport": "iPhone-XR-land",
+    "width": 896,
+    "height": 414,
+    "mobile": true,
+    "screenshot": "grid-size-slider/iPhone-XR-land_896x414.png",
+    "issues": [
+      {
+        "type": "small-text",
+        "severity": "warning",
+        "message": "52 element(s) with font-size < 11px",
+        "details": [
+          {
+            "el": "span.slider-overlay-title",
+            "size": 9.6,
+            "text": "Grid Size"
+          },
+          {
+            "el": "button.slider-overlay-done",
+            "size": 9.6,
+            "text": "Done"
+          },
+          {
+            "el": "span.channel-header-chevron",
+            "size": 6,
+            "text": "►"
+          },
+          {
+            "el": "button.ch-num-btn",
+            "size": 6.4,
+            "text": "1"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "ON"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "100%"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "🎹"
+          },
+          {
+            "el": "span.ch-fx-icon",
+            "size": 6.16,
+            "text": "🎹"
+          }
+        ]
+      },
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "55 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.landscape-drawer-toggle",
+            "w": 121,
+            "h": 29
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "grid-size-slider",
+    "groupName": "Grid Size Slider",
+    "viewport": "Laptop-1280",
+    "width": 1280,
+    "height": 800,
+    "mobile": false,
+    "screenshot": "grid-size-slider/Laptop-1280_1280x800.png",
+    "issues": []
+  },
+  {
+    "group": "grid-size-slider",
+    "groupName": "Grid Size Slider",
+    "viewport": "Desktop-1920",
+    "width": 1920,
+    "height": 1080,
+    "mobile": false,
+    "screenshot": "grid-size-slider/Desktop-1920_1920x1080.png",
+    "issues": []
+  },
+  {
+    "group": "info-modal",
+    "groupName": "Info Modal",
+    "viewport": "iPhone-SE",
+    "width": 320,
+    "height": 568,
+    "mobile": true,
+    "screenshot": "info-modal/iPhone-SE_320x568.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "2 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "info-modal",
+    "groupName": "Info Modal",
+    "viewport": "Galaxy-S-small",
+    "width": 360,
+    "height": 640,
+    "mobile": true,
+    "screenshot": "info-modal/Galaxy-S-small_360x640.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "4 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "info-modal",
+    "groupName": "Info Modal",
+    "viewport": "iPhone-12-13",
+    "width": 390,
+    "height": 844,
+    "mobile": true,
+    "screenshot": "info-modal/iPhone-12-13_390x844.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "12 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "info-modal",
+    "groupName": "Info Modal",
+    "viewport": "Phone-480",
+    "width": 480,
+    "height": 854,
+    "mobile": true,
+    "screenshot": "info-modal/Phone-480_480x854.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "8 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "info-modal",
+    "groupName": "Info Modal",
+    "viewport": "iPad-mini",
+    "width": 768,
+    "height": 1024,
+    "mobile": true,
+    "screenshot": "info-modal/iPad-mini_768x1024.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "24 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "info-modal",
+    "groupName": "Info Modal",
+    "viewport": "Tablet-860",
+    "width": 860,
+    "height": 1100,
+    "mobile": true,
+    "screenshot": "info-modal/Tablet-860_860x1100.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "32 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 28,
+            "h": 24
+          },
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 28,
+            "h": 24
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "info-modal",
+    "groupName": "Info Modal",
+    "viewport": "iPhone-SE-land",
+    "width": 568,
+    "height": 320,
+    "mobile": true,
+    "screenshot": "info-modal/iPhone-SE-land_568x320.png",
+    "issues": [
+      {
+        "type": "small-text",
+        "severity": "warning",
+        "message": "53 element(s) with font-size < 11px",
+        "details": [
+          {
+            "el": "span.channel-header-chevron",
+            "size": 6,
+            "text": "►"
+          },
+          {
+            "el": "button.ch-num-btn",
+            "size": 6.4,
+            "text": "1"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "ON"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "100%"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "🎹"
+          },
+          {
+            "el": "span.ch-fx-icon",
+            "size": 6.16,
+            "text": "🎹"
+          },
+          {
+            "el": "button.ch-num-btn",
+            "size": 6.4,
+            "text": "2"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "ON"
+          }
+        ]
+      },
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "54 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.landscape-drawer-toggle",
+            "w": 121,
+            "h": 29
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "info-modal",
+    "groupName": "Info Modal",
+    "viewport": "iPhone-XR-land",
+    "width": 896,
+    "height": 414,
+    "mobile": true,
+    "screenshot": "info-modal/iPhone-XR-land_896x414.png",
+    "issues": [
+      {
+        "type": "small-text",
+        "severity": "warning",
+        "message": "50 element(s) with font-size < 11px",
+        "details": [
+          {
+            "el": "span.channel-header-chevron",
+            "size": 6,
+            "text": "►"
+          },
+          {
+            "el": "button.ch-num-btn",
+            "size": 6.4,
+            "text": "1"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "ON"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "100%"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "🎹"
+          },
+          {
+            "el": "span.ch-fx-icon",
+            "size": 6.16,
+            "text": "🎹"
+          },
+          {
+            "el": "button.ch-num-btn",
+            "size": 6.4,
+            "text": "2"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "ON"
+          }
+        ]
+      },
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "52 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.landscape-drawer-toggle",
+            "w": 121,
+            "h": 29
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "info-modal",
+    "groupName": "Info Modal",
+    "viewport": "Laptop-1280",
+    "width": 1280,
+    "height": 800,
+    "mobile": false,
+    "screenshot": "info-modal/Laptop-1280_1280x800.png",
+    "issues": []
+  },
+  {
+    "group": "info-modal",
+    "groupName": "Info Modal",
+    "viewport": "Desktop-1920",
+    "width": 1920,
+    "height": 1080,
+    "mobile": false,
+    "screenshot": "info-modal/Desktop-1920_1920x1080.png",
+    "issues": []
+  },
+  {
+    "group": "save-manager",
+    "groupName": "Save Manager Modal",
+    "viewport": "iPhone-SE",
+    "width": 320,
+    "height": 568,
+    "mobile": true,
+    "screenshot": "save-manager/iPhone-SE_320x568.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "2 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "save-manager",
+    "groupName": "Save Manager Modal",
+    "viewport": "Galaxy-S-small",
+    "width": 360,
+    "height": 640,
+    "mobile": true,
+    "screenshot": "save-manager/Galaxy-S-small_360x640.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "4 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "save-manager",
+    "groupName": "Save Manager Modal",
+    "viewport": "iPhone-12-13",
+    "width": 390,
+    "height": 844,
+    "mobile": true,
+    "screenshot": "save-manager/iPhone-12-13_390x844.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "12 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "save-manager",
+    "groupName": "Save Manager Modal",
+    "viewport": "Phone-480",
+    "width": 480,
+    "height": 854,
+    "mobile": true,
+    "screenshot": "save-manager/Phone-480_480x854.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "8 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 34
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "save-manager",
+    "groupName": "Save Manager Modal",
+    "viewport": "iPad-mini",
+    "width": 768,
+    "height": 1024,
+    "mobile": true,
+    "screenshot": "save-manager/iPad-mini_768x1024.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "24 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "save-manager",
+    "groupName": "Save Manager Modal",
+    "viewport": "Tablet-860",
+    "width": 860,
+    "height": 1100,
+    "mobile": true,
+    "screenshot": "save-manager/Tablet-860_860x1100.png",
+    "issues": [
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "32 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 28,
+            "h": 24
+          },
+          {
+            "el": "button.ch-num-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 30,
+            "h": 24
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "w": 28,
+            "h": 24
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "save-manager",
+    "groupName": "Save Manager Modal",
+    "viewport": "iPhone-SE-land",
+    "width": 568,
+    "height": 320,
+    "mobile": true,
+    "screenshot": "save-manager/iPhone-SE-land_568x320.png",
+    "issues": [
+      {
+        "type": "small-text",
+        "severity": "warning",
+        "message": "53 element(s) with font-size < 11px",
+        "details": [
+          {
+            "el": "span.channel-header-chevron",
+            "size": 6,
+            "text": "►"
+          },
+          {
+            "el": "button.ch-num-btn",
+            "size": 6.4,
+            "text": "1"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "ON"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "100%"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "🎹"
+          },
+          {
+            "el": "span.ch-fx-icon",
+            "size": 6.16,
+            "text": "🎹"
+          },
+          {
+            "el": "button.ch-num-btn",
+            "size": 6.4,
+            "text": "2"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "ON"
+          }
+        ]
+      },
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "54 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.landscape-drawer-toggle",
+            "w": 121,
+            "h": 29
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "save-manager",
+    "groupName": "Save Manager Modal",
+    "viewport": "iPhone-XR-land",
+    "width": 896,
+    "height": 414,
+    "mobile": true,
+    "screenshot": "save-manager/iPhone-XR-land_896x414.png",
+    "issues": [
+      {
+        "type": "small-text",
+        "severity": "warning",
+        "message": "50 element(s) with font-size < 11px",
+        "details": [
+          {
+            "el": "span.channel-header-chevron",
+            "size": 6,
+            "text": "►"
+          },
+          {
+            "el": "button.ch-num-btn",
+            "size": 6.4,
+            "text": "1"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "ON"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "100%"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "🎹"
+          },
+          {
+            "el": "span.ch-fx-icon",
+            "size": 6.16,
+            "text": "🎹"
+          },
+          {
+            "el": "button.ch-num-btn",
+            "size": 6.4,
+            "text": "2"
+          },
+          {
+            "el": "button.ch-ctrl-btn",
+            "size": 6,
+            "text": "ON"
+          }
+        ]
+      },
+      {
+        "type": "small-tap-target",
+        "severity": "info",
+        "message": "52 tap target(s) < 32px",
+        "details": [
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.nav-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 24,
+            "h": 24
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.hdr-btn",
+            "w": 28,
+            "h": 28
+          },
+          {
+            "el": "button.landscape-drawer-toggle",
+            "w": 121,
+            "h": 29
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "group": "save-manager",
+    "groupName": "Save Manager Modal",
+    "viewport": "Laptop-1280",
+    "width": 1280,
+    "height": 800,
+    "mobile": false,
+    "screenshot": "save-manager/Laptop-1280_1280x800.png",
+    "issues": []
+  },
+  {
+    "group": "save-manager",
+    "groupName": "Save Manager Modal",
+    "viewport": "Desktop-1920",
+    "width": 1920,
+    "height": 1080,
+    "mobile": false,
+    "screenshot": "save-manager/Desktop-1920_1920x1080.png",
+    "issues": []
+  }
+]

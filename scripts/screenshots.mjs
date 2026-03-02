@@ -143,6 +143,22 @@ const GROUPS = [
       }
     },
   },
+  {
+    id: 'save-manager',
+    name: 'Save Manager Modal',
+    description: 'Save / Browse modal for saving and loading grids',
+    beforeDismiss: false,
+    setup: async (page) => {
+      const btn = page.locator('.hdr-btn:has(span:text("Save"))');
+      try {
+        await btn.waitFor({ state: 'visible', timeout: 5000 });
+        await btn.click();
+        await page.waitForTimeout(600);
+      } catch {
+        // Save button not found — skip
+      }
+    },
+  },
 ];
 
 // ── Grades persistence ──────────────────────────────────────────────
