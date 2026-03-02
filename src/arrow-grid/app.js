@@ -190,6 +190,9 @@ export class Application extends React.Component {
         
         // Click outside to close volume popup
         document.addEventListener('mousedown', this._closeVolumePopup);
+
+        // Apply initial body scroll lock if a modal is open on mount
+        this._updateBodyScroll();
         
         // Add resize listener for responsive canvas
         window.addEventListener('resize', this._handleResize);
@@ -248,7 +251,17 @@ export class Application extends React.Component {
     
     componentDidUpdate() {
         updateCanvas(this.state, new Date());
+        this._updateBodyScroll();
     }
+
+    _updateBodyScroll = () => {
+        const modalOpen = this.state.showSaveManager
+            || this.state.activePopup !== null
+            || this.state.showIntro
+            || this.state.showInfo
+            || this.state.showPrivacy;
+        document.body.style.overflow = modalOpen ? 'hidden' : '';
+    };
 
     componentWillUnmount() {
         document.removeEventListener('keydown', this.handleKeyDown);
@@ -262,6 +275,8 @@ export class Application extends React.Component {
         destroyCanvas();
         disposeAudio();
         disposeMIDI();
+        // Restore scroll in case a modal was open when component unmounted
+        document.body.style.overflow = '';
     }
 
     _resizeTimer = null;

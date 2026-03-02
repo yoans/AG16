@@ -242,6 +242,8 @@ export const setUpCanvas = (state) => {
                 mouseYstart=mouseY;
                 if (fromTouch && !mouseIsPressed) return;
                 if (!mouseIsInSketch()) return;
+                // Block canvas interaction when a modal/overlay is open
+                if (stateDrawing.showSaveManager || stateDrawing.showIntro || stateDrawing.showInfo || stateDrawing.showPrivacy) return;
                 if (stateDrawing.deleting) {
                     // Erase mode: remove based on eraseTarget
                     const target = stateDrawing.eraseTarget || 'both';
@@ -301,7 +303,8 @@ export const setUpCanvas = (state) => {
             }
 
             const onDrag = (e) =>{
-                
+                // Block canvas interaction when a modal/overlay is open
+                if (stateDrawing.showSaveManager || stateDrawing.showIntro || stateDrawing.showInfo || stateDrawing.showPrivacy) return;
                 if(mouseIsPressed && mouseIsInSketch()){
                     if (stateDrawing.deleting) {
                         // Erase mode on drag: remove based on eraseTarget
