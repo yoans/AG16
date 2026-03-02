@@ -246,9 +246,10 @@ body {
 .play-btn-hero {
   width: 44px;
   height: 44px;
+  box-sizing: border-box;
   display: flex; align-items: center; justify-content: center;
   background: var(--accent);
-  border: none;
+  border: 2px solid transparent;
   border-radius: 50%;
   color: white;
   cursor: pointer;
@@ -265,7 +266,7 @@ body {
 }
 .play-btn-hero.playing {
   background: var(--bg-card);
-  border: 2px solid var(--accent);
+  border-color: var(--accent);
   color: var(--accent);
   animation: playGlowActive 1.5s ease-in-out infinite;
   box-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow);
@@ -1886,6 +1887,9 @@ body {
     width: 44px;
     height: 44px;
     order: 2;
+  }
+  .play-btn-hero:hover {
+    transform: translateX(-50%) scale(1.08);
   }
   .header-actions {
     order: 3;

@@ -100,7 +100,7 @@ export class Application extends React.Component {
             noteLength: props.noteLength || generateRandomSpeed(),
             grid: props.grid || generateRandomGrid(),  // Start with random grid
             playing: false,
-            soundOn: localStorage.getItem('arrowgrid-sound') === 'on',
+            soundOn: false,  // always start silent; enabled after first user gesture if persisted
             midiOn: false,
             deleting: false,
             eraseTarget: 'both', // 'arrows', 'walls', or 'both'
@@ -180,6 +180,10 @@ export class Application extends React.Component {
             try { await resumeAudio(); await initAudio(); } catch (e) { /* ignore */ }
             document.removeEventListener('pointerdown', resumeAudioOnGesture);
             document.removeEventListener('keydown', resumeAudioOnGesture);
+            // Restore persisted sound preference now that AudioContext is ready
+            if (localStorage.getItem('arrowgrid-sound') === 'on' && !this.state.soundOn) {
+                this.setState({ soundOn: true });
+            }
         };
         document.addEventListener('pointerdown', resumeAudioOnGesture, { once: false });
         document.addEventListener('keydown', resumeAudioOnGesture, { once: false });
@@ -2135,7 +2139,7 @@ export class Application extends React.Component {
                             </div>
 
                             <div className="intro-sound-choice">
-                                <button className="intro-close-btn sound-on" onClick={() => { track('Intro-Dismissed', { sound: 'on' }); localStorage.setItem('arrowgrid-seen', '1'); localStorage.setItem('arrowgrid-sound', 'on'); this.setState({ showIntro: false, soundOn: true }, () => this.play()); }}>
+                                <button className="intro-close-btn sound-on" onClick={async () => { track('Intro-Dismissed', { sound: 'on' }); localStorage.setItem('arrowgrid-seen', '1'); localStorage.setItem('arrowgrid-sound', 'on'); try { await resumeAudio(); await initAudio(); } catch(e) {} this.setState({ showIntro: false, soundOn: true }, () => this.play()); }}>
                                     🔊 Start with Sound
                                 </button>
                                 <button className="intro-close-btn sound-off" onClick={() => { track('Intro-Dismissed', { sound: 'off' }); localStorage.setItem('arrowgrid-seen', '1'); localStorage.setItem('arrowgrid-sound', 'off'); this.setState({ showIntro: false, soundOn: false }, () => this.play()); }}>
