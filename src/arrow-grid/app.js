@@ -2047,7 +2047,10 @@ export class Application extends React.Component {
 
                     {/* ── Action bar ── */}
                     <div className="action-bar">
-                        <span className="footer-copyright">© {new Date().getFullYear()} Nathaniel Young</span>
+                        <div className="footer-credit-group">
+                            <span className="footer-copyright">© {new Date().getFullYear()} Nathaniel Young</span>
+                            <a href="#" className="footer-privacy" onClick={(e) => { e.preventDefault(); this.setState({ showPrivacy: true }); }}>Privacy Policy</a>
+                        </div>
                         <div className="action-bar-buttons">
                             <button className="action-btn" onClick={this.saveToLocalStorage} title="Save to browser (Ctrl+S)">
                                 <svg viewBox="0 0 24 24" width="14" height="14"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" fill="currentColor"/></svg>
@@ -2071,7 +2074,6 @@ export class Application extends React.Component {
                             </button>
                         </div>
                         <a href="https://nathaniel-young.com" target="_blank" rel="noopener noreferrer" className="footer-discover">🔗 Discover more at nathaniel-young.com →</a>
-                        <a href="#" className="footer-privacy" onClick={(e) => { e.preventDefault(); this.setState({ showPrivacy: true }); }}>Privacy Policy</a>
                     </div>
                 </div>
 

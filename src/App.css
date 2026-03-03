@@ -176,7 +176,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: 116px;
+  width: 130px;
   flex-shrink: 0;
   margin-right: 5px;
 }
@@ -321,7 +321,7 @@ body {
   min-width: 0;
   min-height: 0;
   position: relative;
-  background: var(--bg-dark);
+  background: var(--bg-card);
   border-radius: 0;
   overflow: visible;
   box-shadow: inset 0 0 40px rgba(0,0,0,0.4);
@@ -1827,8 +1827,86 @@ body {
     align-self: stretch;
   }
   .side-panel {
-    overflow-y: auto;
     max-height: 100%;
+    gap: 4px;
+  }
+  .side-panel:last-child {
+    overflow-y: auto;
+  }
+  .draw-tool-group {
+    padding: 4px;
+    gap: 4px;
+  }
+  .draw-panel {
+    gap: 4px;
+  }
+}
+
+/* ── Narrow landscape (861–1049px wide): wrap header, tighten draw panel ── */
+@media (orientation: landscape) and (min-width: 861px) and (max-width: 1049px) {
+  .console-header {
+    flex-wrap: wrap;
+    gap: 4px;
+    padding-bottom: 2px;
+    position: relative;
+  }
+  .app-title {
+    font-size: 0.7em;
+    order: 0;
+    margin: 0;
+  }
+  .undo-redo-group {
+    order: 1;
+    flex: 0;
+  }
+  .undo-redo-btn span { display: none; }
+  .undo-redo-btn {
+    min-width: 32px;
+    min-height: 32px;
+    padding: 2px 4px;
+  }
+  .play-btn-hero {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 36px;
+    order: 2;
+  }
+  .play-btn-hero:hover {
+    transform: translateX(-50%) scale(1.08);
+  }
+  .header-actions {
+    order: 3;
+    gap: 3px;
+    margin-left: auto;
+  }
+  .header-row-2 {
+    display: flex;
+    width: 100%;
+    gap: 4px;
+    order: 10;
+    align-items: center;
+  }
+  .header-row-2 .header-presets {
+    flex: 1;
+    justify-content: center;
+    gap: 4px;
+  }
+  .hdr-btn {
+    padding: 2px 8px;
+    font-size: 0.68em;
+    min-height: 30px;
+    min-width: 30px;
+    justify-content: center;
+  }
+  .draw-tool-group {
+    padding: 0 4px;
+    gap: 3px;
+  }
+  .draw-panel {
+    gap: 3px;
   }
 }
 
@@ -3402,6 +3480,13 @@ select.sel option:checked {
 }
 
 /* ── App footer bar ── */
+.footer-credit-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
 .footer-copyright {
   color: var(--text-muted);
   font-size: max(0.6em, 11px);
