@@ -362,10 +362,20 @@ export class Application extends React.Component {
             const maxH = vw <= 360 ? vh * 0.55 : vw <= 480 ? vh * 0.55 : vw <= 600 ? vh * 0.58 : vw <= 860 ? vh * 0.70 : vh * 0.50;
             canvasSize = Math.min(vw - padding, maxH);
         } else {
-            // Landscape: canvas height = viewport height minus header/footer/padding/labels
-            const chrome = 240; // header + footer + gaps + wrapper padding + note labels
-            const sidePanelWidth = 116 * 2 + 40 + 48 + 30; // both panels + gaps + wrapper padding + note labels
-            canvasSize = Math.min(vh - chrome, vw - sidePanelWidth);
+            // Landscape: size the canvas to fit inside the canvas-area element.
+            // Reading canvas-area directly avoids the circular dependency of
+            // measuring console-body (which the canvas itself can inflate).
+            const canvasAreaEl = document.querySelector('.canvas-area');
+            if (canvasAreaEl) {
+                const rect = canvasAreaEl.getBoundingClientRect();
+                // Use the smaller dimension so the square canvas fits both axes
+                canvasSize = Math.min(rect.width, rect.height);
+            } else {
+                // Fallback if DOM isn't ready yet
+                const chrome = 240;
+                const sidePanelWidth = 116 * 2 + 40 + 48 + 30;
+                canvasSize = Math.min(vh - chrome, vw - sidePanelWidth);
+            }
         }
 
         // Clamp to reasonable range
@@ -1962,6 +1972,7 @@ export class Application extends React.Component {
                                     </button>
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
