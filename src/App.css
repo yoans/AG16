@@ -2258,21 +2258,29 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
     height: 44px;
   }
 
-  /* --- Slider overlays → fixed full-screen --- */
+  /* --- Slider overlays — backdrop is fixed; overlay is relative bottom-sheet --- */
+  .slider-overlay-backdrop {
+    align-items: flex-end;
+  }
   .slider-overlay {
-    position: fixed;
-    top: 50%;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1000;
+    position: relative;
+    width: 100%;
+    min-height: 0;
+    max-height: none;
     border-radius: var(--r-md) var(--r-md) 0 0;
-    background: rgba(10, 8, 24, 0.5);
+    background: rgba(10, 8, 24, 0.92);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     padding: 16px 16px;
     padding-bottom: max(16px, env(safe-area-inset-bottom));
     gap: 12px;
+  }
+  .ch-select-overlay {
+    width: 100%;
+    max-height: 75dvh;
+    flex-direction: column;
+    border-radius: var(--r-md) var(--r-md) 0 0;
+    padding-top: 16px;
   }
   .intro-overlay,
   .info-overlay,
@@ -2295,7 +2303,6 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
   .slider-overlay-done { height: 44px; font-size: 0.8em; }
 
   /* Channel select overlay */
-  .ch-select-overlay { padding-top: 16px; }
   .ch-select-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: 5px;
@@ -2783,13 +2790,9 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
   }
   .console-wrapper:has(.drawer-open) .action-bar .hdr-btn span { display: inline; }
 
-  /* Slider overlay in landscape — horizontal bottom sheet */
-  .slider-overlay-backdrop {
-    align-items: flex-end;
-  }
+  /* Slider overlay in landscape — backdrop already float-end, slider is full-width horizontal row */
   .slider-overlay {
     width: 100%;
-    max-height: none;
     min-height: 0;
     border-radius: var(--r-md) var(--r-md) 0 0;
     flex-direction: row;
@@ -2797,12 +2800,16 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
     gap: 8px;
     padding: 8px 12px;
     padding-bottom: max(8px, env(safe-area-inset-bottom));
+    background: rgba(10, 8, 24, 0.95);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
   .ch-select-overlay {
     flex-direction: column;
     max-height: 75dvh;
-    min-height: 200px;
+    min-height: 0;
     border-radius: var(--r-md);
+    padding-top: 12px;
   }
   .slider-overlay-header {
     flex-shrink: 0;
