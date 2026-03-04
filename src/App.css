@@ -22,7 +22,7 @@
 }
 
 *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
-html, #root { max-width: 100vw; overflow-x: hidden; }
+html, #root { max-width: 100vw; overflow-x: hidden; background-color: var(--bg-dark); }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -30,7 +30,8 @@ body {
   overflow:hidden;
   height:100vh; width:100vw;
   display:flex; align-items:center; justify-content:center;
-  background: radial-gradient(circle at 50% 40%, #1a1a30 0%, var(--bg-dark) 70%);
+  background-color: var(--bg-dark);
+  background-image: radial-gradient(circle at 50% 40%, #1a1a30 0%, var(--bg-dark) 70%);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
 }
@@ -551,6 +552,8 @@ body {
   justify-content: space-between;
   padding-top: 12px;
   gap: 8px;
+  width: min(320px, 90vw);
+  max-height: min(480px, 85dvh);
 }
 .ch-select-grid {
   display: grid;
@@ -668,8 +671,8 @@ body {
 .ch-select-arrow:active {
   cursor: grabbing;
 }
-/* Hide channel arrow when a slider overlay is open in the side panel */
-.side-panel:has(.slider-overlay) .ch-select-arrow {
+/* Hide channel arrow when a slider overlay is open (backdrop portalled to body) */
+body:has(.slider-overlay-backdrop) .ch-select-arrow {
   opacity: 0;
   pointer-events: none;
 }
@@ -792,10 +795,20 @@ body {
 }
 
 /* Full side-panel overlay with vertical slider */
-.slider-overlay {
-  position: absolute;
+.slider-overlay-backdrop {
+  position: fixed;
   inset: 0;
-  z-index: 200;
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  animation: overlayFadeIn 0.12s ease-out;
+}
+.slider-overlay {
+  position: relative;
+  width: 220px;
+  min-height: 260px;
   background: var(--bg-dark);
   border: 1px solid var(--border-subtle);
   border-radius: var(--r-md);
@@ -2605,6 +2618,7 @@ body {
     justify-content: center;
     gap: 4px;
     overflow: hidden;
+    padding-top: 4px;
   }
 
   /* Side panels: always visible, scrollable */
@@ -2620,7 +2634,7 @@ body {
     -webkit-overflow-scrolling: touch;
   }
   /* Left panel (channels): order 0 */
-  .side-panel:first-child { order: 0; }
+  .side-panel:first-child { order: 0; padding-bottom: 20px; }
   /* Right panel (draw/erase): order 2 */
   .side-panel:last-child { order: 2; }
 
@@ -2658,53 +2672,78 @@ body {
   .erase-panel { padding: 2px 3px; }
   .erase-panel h3 { font-size: 11px; }
 
-  /* Channels — compact, scrollable within panel */
+  /* Channels — compact, always expanded, scrollable within panel */
   .channel-row { order: 10; }
-  .channel-list-body {
+  /* Three-class specificity (0,3,0) beats .channel-row.expanded .channel-list-body (0,2,0)
+     so channels are always visible regardless of expanded state */
+  .side-panel .channel-row .channel-list-body {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 2px;
     max-height: none;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow: visible;
     touch-action: pan-y;
   }
+  /* Channel header: plain label, not a button */
   .channel-header {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
-    align-self: center;
-    padding: 3px 10px;
-    min-width: 60px;
-    min-height: 24px;
-    background: var(--bg-elevated);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--r-md);
-    cursor: pointer;
+    padding: 2px 4px;
+    min-width: 0;
+    min-height: 16px;
+    background: none;
+    border: none;
+    border-radius: 0;
+    cursor: default;
     user-select: none;
-    gap: 3px;
+    pointer-events: none;
+    gap: 0;
     font-size: 0.75em;
   }
-  .channel-header-chevron {
-    display: inline;
-    font-size: 0.5em;
-    color: var(--text-muted);
-  }
-  .channel-row.expanded .channel-header {
-    border-color: var(--accent);
-    background: var(--accent-glow);
-  }
-  .channel-row.expanded .channel-header h3 { color: var(--accent); }
-  .channel-row.expanded .channel-header-chevron {
-    transform: rotate(90deg);
-    color: var(--accent);
-  }
+  .channel-header-chevron { display: none; }
+  .channel-row.expanded .channel-header { background: none; border: none; }
+  .channel-row.expanded .channel-header h3 { color: var(--text-muted); }
   .channel-header::after { content: none; }
   .ch-select-arrow { display: none; }
   .channel-item { min-width: 0; }
   .channel-box { min-height: 22px; padding: 1px; gap: 1px; }
   .ch-num-btn { width: 16px; min-width: 16px; height: 16px; font-size: 0.4em; }
   .ch-ctrl-btn { height: 16px; min-width: 18px; font-size: 0.35em; }
+
+  /* Right panel: wider to fit draw tools without overflow */
+  .side-panel:last-child {
+    max-width: 170px;
+    min-width: 130px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 48px;
+  }
+  /* Draw/erase compact for landscape phone */
+  .draw-tool-group {
+    padding: 3px 4px;
+    gap: 2px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .draw-tool-group .tool-row {
+    flex-direction: column;
+    gap: 2px;
+  }
+  .draw-tool-group .tool-btn-labeled {
+    flex: 1;
+    min-width: 0;
+  }
+  .wall-sides-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+  .wall-side-btn { height: 20px; font-size: 0.5em; }
+  .sym-grid { gap: 2px; }
+  .sym-grid .tool-btn { min-width: 20px; height: 20px; padding: 0; }
+  .tool-btn { min-height: 20px; height: 20px; min-width: 20px; font-size: 0.5em; padding: 0 3px; }
+  .ch-select-btn { min-height: 20px; font-size: 0.6em; }
+  .popup-trigger-btn { min-height: 20px; font-size: 0.55em; }
 
   /* Footer & action bar: hidden by default */
   .console-footer { display: none; }
@@ -2745,19 +2784,25 @@ body {
   .console-wrapper:has(.drawer-open) .action-bar .hdr-btn span { display: inline; }
 
   /* Slider overlay in landscape — horizontal bottom sheet */
+  .slider-overlay-backdrop {
+    align-items: flex-end;
+  }
   .slider-overlay {
-    position: fixed;
-    top: auto;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    width: 100%;
     max-height: none;
+    min-height: 0;
     border-radius: var(--r-md) var(--r-md) 0 0;
     flex-direction: row;
     align-items: center;
     gap: 8px;
     padding: 8px 12px;
     padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  .ch-select-overlay {
+    flex-direction: column;
+    max-height: 75dvh;
+    min-height: 200px;
+    border-radius: var(--r-md);
   }
   .slider-overlay-header {
     flex-shrink: 0;

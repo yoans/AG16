@@ -1746,58 +1746,64 @@ export class Application extends React.Component {
                         {/* ── RIGHT PANEL ── */}
                         <div className="side-panel" style={{position:'relative'}}>
                             {/* Slider overlay for right panel */}
-                            {(this.state.activePopup === 'arrowVol' || this.state.activePopup === 'masterVol') && (
-                                <div className="slider-overlay popup-trigger-wrap" onClick={(e) => e.stopPropagation()}>
-                                    <div className="slider-overlay-header">
-                                        <button className="slider-overlay-back" onClick={() => this.setState({ activePopup: null })} title="Back">‹</button>
-                                        <span className="slider-overlay-title">{this.state.activePopup === 'arrowVol' ? 'Arrow Volume' : 'Master Volume'}</span>
-                                    </div>
-                                    <span className="slider-overlay-val">
-                                        {this.state.activePopup === 'arrowVol'
-                                            ? `${Math.round(this.state.inputVelocity * 100)}%`
-                                            : `${Math.round(this.state.globalVelocity * 100)}%`
-                                        }
-                                    </span>
-                                    <input
-                                        type="range"
-                                        className="slider-overlay-range"
-                                        orient="vertical"
-                                        min={this.state.activePopup === 'arrowVol' ? '5' : '0'}
-                                        max="100"
-                                        value={this.state.activePopup === 'arrowVol'
-                                            ? Math.round(this.state.inputVelocity * 100)
-                                            : Math.round(this.state.globalVelocity * 100)
-                                        }
-                                        onChange={(e) => {
-                                            if (this.state.activePopup === 'arrowVol') {
-                                                this.setState({ inputVelocity: parseInt(e.target.value) / 100 });
-                                            } else {
-                                                this.setState({ globalVelocity: parseInt(e.target.value) / 100 });
+                            {(this.state.activePopup === 'arrowVol' || this.state.activePopup === 'masterVol') && ReactDOM.createPortal(
+                                <div className="slider-overlay-backdrop" onClick={() => this.setState({ activePopup: null })}>
+                                    <div className="slider-overlay popup-trigger-wrap" onClick={(e) => e.stopPropagation()}>
+                                        <div className="slider-overlay-header">
+                                            <button className="slider-overlay-back" onClick={() => this.setState({ activePopup: null })} title="Back">‹</button>
+                                            <span className="slider-overlay-title">{this.state.activePopup === 'arrowVol' ? 'Arrow Volume' : 'Master Volume'}</span>
+                                        </div>
+                                        <span className="slider-overlay-val">
+                                            {this.state.activePopup === 'arrowVol'
+                                                ? `${Math.round(this.state.inputVelocity * 100)}%`
+                                                : `${Math.round(this.state.globalVelocity * 100)}%`
                                             }
-                                        }}
-                                    />
-                                    <button className="slider-overlay-done" onClick={() => this.setState({ activePopup: null })}>Done</button>
-                                </div>
+                                        </span>
+                                        <input
+                                            type="range"
+                                            className="slider-overlay-range"
+                                            orient="vertical"
+                                            min={this.state.activePopup === 'arrowVol' ? '5' : '0'}
+                                            max="100"
+                                            value={this.state.activePopup === 'arrowVol'
+                                                ? Math.round(this.state.inputVelocity * 100)
+                                                : Math.round(this.state.globalVelocity * 100)
+                                            }
+                                            onChange={(e) => {
+                                                if (this.state.activePopup === 'arrowVol') {
+                                                    this.setState({ inputVelocity: parseInt(e.target.value) / 100 });
+                                                } else {
+                                                    this.setState({ globalVelocity: parseInt(e.target.value) / 100 });
+                                                }
+                                            }}
+                                        />
+                                        <button className="slider-overlay-done" onClick={() => this.setState({ activePopup: null })}>Done</button>
+                                    </div>
+                                </div>,
+                                document.body
                             )}
                             {/* Channel select overlay */}
-                            {this.state.activePopup === 'chSelect' && (
-                                <div className="slider-overlay ch-select-overlay popup-trigger-wrap" onClick={(e) => e.stopPropagation()}>
-                                    <div className="slider-overlay-header">
-                                        <button className="slider-overlay-back" onClick={() => this.setState({ activePopup: null })} title="Back">‹</button>
-                                        <span className="slider-overlay-title">Select Channel</span>
+                            {this.state.activePopup === 'chSelect' && ReactDOM.createPortal(
+                                <div className="slider-overlay-backdrop" onClick={() => this.setState({ activePopup: null })}>
+                                    <div className="slider-overlay ch-select-overlay popup-trigger-wrap" onClick={(e) => e.stopPropagation()}>
+                                        <div className="slider-overlay-header">
+                                            <button className="slider-overlay-back" onClick={() => this.setState({ activePopup: null })} title="Back">‹</button>
+                                            <span className="slider-overlay-title">Select Channel</span>
+                                        </div>
+                                        <div className="ch-select-grid">
+                                            {Array.from({length: MAX_CHANNELS}, (_, i) => i + 1).map(ch => (
+                                                <button
+                                                    key={ch}
+                                                    className={`ch-select-item ${this.state.arrowChannel === ch ? 'selected' : ''}`}
+                                                    style={{background: `rgb(${CHANNEL_COLORS[ch].join(',')})`}}
+                                                    onClick={(e) => { e.stopPropagation(); this.setState({ arrowChannel: ch, activePopup: null }); }}
+                                                >{ch}</button>
+                                            ))}
+                                        </div>
+                                        <button className="slider-overlay-done" onClick={() => this.setState({ activePopup: null })}>Done</button>
                                     </div>
-                                    <div className="ch-select-grid">
-                                        {Array.from({length: MAX_CHANNELS}, (_, i) => i + 1).map(ch => (
-                                            <button
-                                                key={ch}
-                                                className={`ch-select-item ${this.state.arrowChannel === ch ? 'selected' : ''}`}
-                                                style={{background: `rgb(${CHANNEL_COLORS[ch].join(',')})`}}
-                                                onClick={(e) => { e.stopPropagation(); this.setState({ arrowChannel: ch, activePopup: null }); }}
-                                            >{ch}</button>
-                                        ))}
-                                    </div>
-                                    <button className="slider-overlay-done" onClick={() => this.setState({ activePopup: null })}>Done</button>
-                                </div>
+                                </div>,
+                                document.body
                             )}
                             {/* Draw Tools */}
                             <div className={`panel-group draw-panel ${!this.state.deleting ? 'draw-active' : ''}`}>
@@ -1872,7 +1878,7 @@ export class Application extends React.Component {
                                         </div>
                                     </div>
                                     <div className="tool-btn-labeled" style={{width:'100%'}}>
-                                        <span className="tool-label">Arrow Vol</span>
+                                        <span className="tool-label">Vol</span>
                                         <button
                                             className="popup-trigger-btn"
                                             onClick={(e) => { e.stopPropagation(); this.setState({ activePopup: this.state.activePopup === 'arrowVol' ? null : 'arrowVol' }); }}
