@@ -813,8 +813,19 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
 /* Desktop: anchor slider overlay precisely over its originating panel */
 .slider-overlay-backdrop--left  { justify-content: flex-start; }
 .slider-overlay-backdrop--right { justify-content: flex-end; }
+/* On desktop the backdrop must NOT intercept canvas clicks — let events pass
+   through so the user can draw arrows even while a popup panel is open.
+   The document-level mousedown handler (_closeVolumePopup) still closes the
+   popup when the user clicks outside it. */
+.slider-overlay-backdrop--left,
+.slider-overlay-backdrop--right {
+  pointer-events: none;
+  background: transparent;
+}
+/* The slider card itself must still be interactive */
 .slider-overlay-backdrop--left .slider-overlay,
 .slider-overlay-backdrop--right .slider-overlay {
+  pointer-events: auto;
   position: absolute;
   left: var(--panel-left, 0px);
   top: var(--panel-top, 0px);
@@ -2277,9 +2288,12 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
   }
 
   /* --- Slider overlays — backdrop is fixed; overlay is relative bottom-sheet --- */
+  /* Mobile: restore full-screen dim + pointer interception for modal-dismiss */
   .slider-overlay-backdrop,
   .slider-overlay-backdrop--left,
   .slider-overlay-backdrop--right {
+    pointer-events: auto;
+    background: rgba(0, 0, 0, 0.55);
     align-items: flex-end;
     justify-content: center;
   }
@@ -2302,9 +2316,18 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
     background: rgba(10, 8, 24, 0.92);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    padding: 16px 16px;
-    padding-bottom: max(16px, env(safe-area-inset-bottom));
-    gap: 12px;
+    padding: 12px 16px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    gap: 8px;
+    /* Portrait: horizontal layout — header row, then val+range+Done row */
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  /* Header spans full width so val/range/Done sit below it */
+  .slider-overlay-header {
+    width: 100%;
+    flex: none;
   }
   .ch-select-overlay {
     width: 100%;
@@ -2321,19 +2344,54 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
     padding-bottom: env(safe-area-inset-bottom);
   }
   .slider-overlay-title { font-size: 0.85em; }
-  .slider-overlay-val { font-size: 1.8em; }
+  /* val: compact inline label left of slider */
+  .slider-overlay-val {
+    font-size: 1.2em;
+    flex: none;
+    width: auto;
+    min-width: 3.5em;
+    text-align: center;
+  }
+  /* range: switch to horizontal */
   .slider-overlay-range {
-    width: 36px;
-    max-height: 30vh;
-    max-height: 30dvh;
+    -webkit-appearance: none;
+    appearance: none;
+    writing-mode: horizontal-tb;
+    direction: ltr;
+    flex: 1;
+    width: 1px;    /* flex will stretch it */
+    height: 44px;
+    max-height: none;
   }
   .slider-overlay-range::-webkit-slider-thumb { width: 44px; height: 44px; }
-  .slider-overlay-range::-moz-range-thumb { width: 44px; height: 44px; }
+  .slider-overlay-range::-moz-range-thumb    { width: 44px; height: 44px; }
+  /* Done: compact pill beside slider */
+  .slider-overlay-done {
+    flex: none;
+    width: auto;
+    min-width: 56px;
+    height: 44px;
+    font-size: 0.8em;
+    padding: 0 12px;
+  }
   .slider-overlay-close { width: 44px; height: 44px; font-size: 1.1em; }
-  .slider-overlay-back { width: 44px; min-height: 44px; font-size: 1.8em; }
-  .slider-overlay-done { height: 44px; font-size: 0.8em; }
+  .slider-overlay-back  { width: 44px; min-height: 44px; font-size: 1.8em; }
 
-  /* Channel select overlay */
+  /* Channel select overlay: keep vertical (no range slider — not a row layout) */
+  .ch-select-overlay.slider-overlay {
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+  .ch-select-overlay .slider-overlay-header {
+    width: 100%;
+  }
+  .ch-select-overlay .slider-overlay-done {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+  }
+
+  /* Channel select grid */
   .ch-select-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: 5px;
@@ -2825,6 +2883,8 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
   .slider-overlay-backdrop,
   .slider-overlay-backdrop--left,
   .slider-overlay-backdrop--right {
+    pointer-events: auto;
+    background: rgba(0, 0, 0, 0.55);
     align-items: flex-end;
     justify-content: center;
   }

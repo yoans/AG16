@@ -359,7 +359,7 @@ export class Application extends React.Component {
             && !e.target.closest('.popup-trigger-wrap')
             && !e.target.closest('.prog-modal-overlay')
             && !e.target.closest('.prog-modal')) {
-            this.setState({ activePopup: null });
+            this.setState({ activePopup: null, popupPanelStyle: null });
         }
     };
 
