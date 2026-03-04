@@ -24,19 +24,6 @@
 *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
 html, #root { max-width: 100vw; overflow-x: hidden; background-color: var(--bg-dark); }
 
-/* When a popup backdrop is open, lift overflow constraints so iOS WebKit
-   doesn't clip the position:fixed portal element to the html/body box */
-html:has(.slider-overlay-backdrop),
-html:has(.prog-modal-overlay) { overflow: visible; }
-body:has(.slider-overlay-backdrop),
-body:has(.prog-modal-overlay) { overflow: visible; }
-/* Also stop side-panel's -webkit-overflow-scrolling from creating a
-   compositing stacking context that can bury the backdrop on iOS */
-body:has(.slider-overlay-backdrop) .side-panel,
-body:has(.prog-modal-overlay) .side-panel { -webkit-overflow-scrolling: auto; }
-body:has(.slider-overlay-backdrop) #sketch-holder canvas,
-body:has(.prog-modal-overlay) #sketch-holder canvas { position: relative; z-index: 0; }
-
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   margin:0; padding:0;
@@ -817,6 +804,24 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
   justify-content: center;
   background: rgba(0, 0, 0, 0.55);
   animation: overlayFadeIn 0.12s ease-out;
+  /* iOS WebKit: GPU-promote this element into its own compositing layer so it
+     renders above the p5.js canvas layer regardless of z-index paint order */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  isolation: isolate;
+}
+/* Desktop: anchor slider overlay precisely over its originating panel */
+.slider-overlay-backdrop--left  { justify-content: flex-start; }
+.slider-overlay-backdrop--right { justify-content: flex-end; }
+.slider-overlay-backdrop--left .slider-overlay,
+.slider-overlay-backdrop--right .slider-overlay {
+  position: absolute;
+  left: var(--panel-left, 0px);
+  top: var(--panel-top, 0px);
+  width: var(--panel-width, 220px);
+  height: var(--panel-height, 100%);
+  min-height: 0;
+  border-radius: var(--r-md);
 }
 .slider-overlay {
   position: relative;
@@ -2272,8 +2277,21 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
   }
 
   /* --- Slider overlays — backdrop is fixed; overlay is relative bottom-sheet --- */
-  .slider-overlay-backdrop {
+  .slider-overlay-backdrop,
+  .slider-overlay-backdrop--left,
+  .slider-overlay-backdrop--right {
     align-items: flex-end;
+    justify-content: center;
+  }
+  .slider-overlay-backdrop--left .slider-overlay,
+  .slider-overlay-backdrop--right .slider-overlay {
+    position: static;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    align-self: auto;
+    border-radius: var(--r-md) var(--r-md) 0 0;
   }
   .slider-overlay {
     position: relative;
@@ -2804,6 +2822,22 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
   .console-wrapper:has(.drawer-open) .action-bar .hdr-btn span { display: inline; }
 
   /* Slider overlay in landscape — backdrop already float-end, slider is full-width horizontal row */
+  .slider-overlay-backdrop,
+  .slider-overlay-backdrop--left,
+  .slider-overlay-backdrop--right {
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .slider-overlay-backdrop--left .slider-overlay,
+  .slider-overlay-backdrop--right .slider-overlay {
+    position: static;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    align-self: auto;
+    border-radius: var(--r-md) var(--r-md) 0 0;
+  }
   .slider-overlay {
     width: 100%;
     min-height: 0;

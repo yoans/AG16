@@ -94,6 +94,9 @@ export class Application extends React.Component {
     constructor(props) {
         super(props);
 
+        this.leftPanelRef  = React.createRef();
+        this.rightPanelRef = React.createRef();
+
         this.state = {
             currentPreset: -1,  // -1 = random/custom, 0+ = preset index
             presets,
@@ -119,6 +122,7 @@ export class Application extends React.Component {
             arrowChannel: 1,   // 1-7 = channel number
             activeChannels: MAX_CHANNELS,  // all channels always visible
             activePopup: null,  // which popup is open: null, 'speed', 'gridSize', or channel number
+            popupPanelStyle: null, // CSS vars positioning the slider backdrop over its panel
             channelSettings: {  // per-channel settings
                 1: createChannelSettings(1),
                 2: createChannelSettings(2),
@@ -160,6 +164,23 @@ export class Application extends React.Component {
             landscapeDrawerOpen: false, // pull-up drawer for landscape phones
         };
     }
+
+    /** Open a popup and record the panel rect so CSS can pin the overlay over it */
+    _openPopup = (id, side) => {
+        if (this.state.activePopup === id) {
+            this.setState({ activePopup: null, popupPanelStyle: null });
+            return;
+        }
+        const ref = side === 'left' ? this.leftPanelRef : this.rightPanelRef;
+        const rect = ref.current?.getBoundingClientRect();
+        const style = rect ? {
+            '--panel-left':   `${Math.round(rect.left)}px`,
+            '--panel-top':    `${Math.round(rect.top)}px`,
+            '--panel-width':  `${Math.round(rect.width)}px`,
+            '--panel-height': `${Math.round(rect.height)}px`,
+        } : null;
+        this.setState({ activePopup: id, popupPanelStyle: style });
+    };
 
     componentDidMount() {
         // Compute initial canvas size before setup
@@ -1263,60 +1284,63 @@ export class Application extends React.Component {
                     <div className={`console-body${this.state.landscapeDrawerOpen ? ' drawer-open' : ''}`}>
 
                         {/* ── LEFT PANEL ── */}
-                        <div className="side-panel" style={{position:'relative'}}>
-                            {/* Slider overlay — renders on top of side panel */}
-                            {(this.state.activePopup === 'speed' || this.state.activePopup === 'gridSize' || typeof this.state.activePopup === 'number') && (
-                                <div
-                                    className="slider-overlay popup-trigger-wrap"
-                                    onClick={(e) => e.stopPropagation()}
-                                    style={typeof this.state.activePopup === 'number' ? {
-                                        '--ch-r': CHANNEL_COLORS[this.state.activePopup]?.[0] ?? 102,
-                                        '--ch-g': CHANNEL_COLORS[this.state.activePopup]?.[1] ?? 126,
-                                        '--ch-b': CHANNEL_COLORS[this.state.activePopup]?.[2] ?? 234,
-                                    } : undefined}
-                                >
-                                    <div className="slider-overlay-header">
-                                        <button className="slider-overlay-back" onClick={() => this.setState({ activePopup: null })} title="Back">‹</button>
-                                        <span className="slider-overlay-title">
-                                            {this.state.activePopup === 'speed' ? 'Speed' : this.state.activePopup === 'gridSize' ? 'Grid Size' : `Ch${this.state.activePopup} Vol`}
-                                        </span>
-                                    </div>
-                                    <span className="slider-overlay-val">
-                                        {this.state.activePopup === 'speed'
-                                            ? `${Math.round(60000 / this.state.noteLength)} bpm`
-                                            : this.state.activePopup === 'gridSize'
-                                                ? `${this.state.grid.size}×${this.state.grid.size}`
-                                                : `${Math.round(((this.state.channelSettings[this.state.activePopup]?.volume ?? 1.0)) * 100)}%`
-                                        }
-                                    </span>
-                                    <input
-                                        type="range"
-                                        className="slider-overlay-range"
-                                        orient="vertical"
-                                        min={this.state.activePopup === 'speed' ? minNoteLength : this.state.activePopup === 'gridSize' ? minSize : 0}
-                                        max={this.state.activePopup === 'speed' ? maxNoteLength : this.state.activePopup === 'gridSize' ? maxSize : 100}
-                                        value={this.state.activePopup === 'speed'
-                                            ? -1 * this.state.noteLength
-                                            : this.state.activePopup === 'gridSize'
-                                                ? this.state.grid.size
-                                                : Math.round((this.state.channelSettings[this.state.activePopup]?.volume ?? 1.0) * 100)
-                                        }
-                                        onChange={(e) => {
-                                            if (this.state.activePopup === 'speed') {
-                                                this.newNoteLength(e.target.value);
-                                            } else if (this.state.activePopup === 'gridSize') {
-                                                this.newSize(e.target.value);
-                                            } else {
-                                                const ch = this.state.activePopup;
-                                                const settings = this.state.channelSettings[ch] || createChannelSettings(ch);
-                                                const newSettings = { ...this.state.channelSettings };
-                                                newSettings[ch] = { ...settings, volume: parseInt(e.target.value) / 100 };
-                                                this.setState({ channelSettings: newSettings });
+                        <div className="side-panel" ref={this.leftPanelRef} style={{position:'relative'}}>
+                            {/* Slider overlay — portalled to body so iOS WebKit doesn't clip it */}
+                            {(this.state.activePopup === 'speed' || this.state.activePopup === 'gridSize' || typeof this.state.activePopup === 'number') && ReactDOM.createPortal(
+                                <div className="slider-overlay-backdrop slider-overlay-backdrop--left" style={this.state.popupPanelStyle} onClick={() => this.setState({ activePopup: null, popupPanelStyle: null })}>
+                                    <div
+                                        className="slider-overlay popup-trigger-wrap"
+                                        onClick={(e) => e.stopPropagation()}
+                                        style={typeof this.state.activePopup === 'number' ? {
+                                            '--ch-r': CHANNEL_COLORS[this.state.activePopup]?.[0] ?? 102,
+                                            '--ch-g': CHANNEL_COLORS[this.state.activePopup]?.[1] ?? 126,
+                                            '--ch-b': CHANNEL_COLORS[this.state.activePopup]?.[2] ?? 234,
+                                        } : undefined}
+                                    >
+                                        <div className="slider-overlay-header">
+                                            <button className="slider-overlay-back" onClick={() => this.setState({ activePopup: null, popupPanelStyle: null })} title="Back">‹</button>
+                                            <span className="slider-overlay-title">
+                                                {this.state.activePopup === 'speed' ? 'Speed' : this.state.activePopup === 'gridSize' ? 'Grid Size' : `Ch${this.state.activePopup} Vol`}
+                                            </span>
+                                        </div>
+                                        <span className="slider-overlay-val">
+                                            {this.state.activePopup === 'speed'
+                                                ? `${Math.round(60000 / this.state.noteLength)} bpm`
+                                                : this.state.activePopup === 'gridSize'
+                                                    ? `${this.state.grid.size}×${this.state.grid.size}`
+                                                    : `${Math.round(((this.state.channelSettings[this.state.activePopup]?.volume ?? 1.0)) * 100)}%`
                                             }
-                                        }}
-                                    />
-                                    <button className="slider-overlay-done" onClick={() => this.setState({ activePopup: null })}>Done</button>
-                                </div>
+                                        </span>
+                                        <input
+                                            type="range"
+                                            className="slider-overlay-range"
+                                            orient="vertical"
+                                            min={this.state.activePopup === 'speed' ? minNoteLength : this.state.activePopup === 'gridSize' ? minSize : 0}
+                                            max={this.state.activePopup === 'speed' ? maxNoteLength : this.state.activePopup === 'gridSize' ? maxSize : 100}
+                                            value={this.state.activePopup === 'speed'
+                                                ? -1 * this.state.noteLength
+                                                : this.state.activePopup === 'gridSize'
+                                                    ? this.state.grid.size
+                                                    : Math.round((this.state.channelSettings[this.state.activePopup]?.volume ?? 1.0) * 100)
+                                            }
+                                            onChange={(e) => {
+                                                if (this.state.activePopup === 'speed') {
+                                                    this.newNoteLength(e.target.value);
+                                                } else if (this.state.activePopup === 'gridSize') {
+                                                    this.newSize(e.target.value);
+                                                } else {
+                                                    const ch = this.state.activePopup;
+                                                    const settings = this.state.channelSettings[ch] || createChannelSettings(ch);
+                                                    const newSettings = { ...this.state.channelSettings };
+                                                    newSettings[ch] = { ...settings, volume: parseInt(e.target.value) / 100 };
+                                                    this.setState({ channelSettings: newSettings });
+                                                }
+                                            }}
+                                        />
+                                        <button className="slider-overlay-done" onClick={() => this.setState({ activePopup: null, popupPanelStyle: null })}>Done</button>
+                                    </div>
+                                </div>,
+                                document.body
                             )}
 
                             {/* Speed */}
@@ -1324,7 +1348,7 @@ export class Application extends React.Component {
                                 <h3>Speed</h3>
                                 <button
                                     className="popup-trigger-btn popup-trigger-wrap"
-                                    onClick={() => this.setState({ activePopup: this.state.activePopup === 'speed' ? null : 'speed' })}
+                                    onClick={() => this._openPopup('speed', 'left')}
                                     title="Adjust speed"
                                 >{Math.round(60000 / this.state.noteLength)} bpm</button>
                             </div>
@@ -1334,7 +1358,7 @@ export class Application extends React.Component {
                                 <h3>Grid Size</h3>
                                 <button
                                     className="popup-trigger-btn popup-trigger-wrap"
-                                    onClick={() => this.setState({ activePopup: this.state.activePopup === 'gridSize' ? null : 'gridSize' })}
+                                    onClick={() => this._openPopup('gridSize', 'left')}
                                     title="Adjust grid size"
                                 >{this.state.grid.size}×{this.state.grid.size}</button>
                             </div>
@@ -1394,7 +1418,7 @@ export class Application extends React.Component {
                                                     className="ch-ctrl-btn ch-vol-fixed popup-trigger-wrap"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        this.setState({ activePopup: this.state.activePopup === ch ? null : ch });
+                                                        this._openPopup(ch, 'left');
                                                     }}
                                                     title={`Ch ${ch} volume: ${volPct}%`}
                                                 >{volPct}%</button>
@@ -1744,13 +1768,13 @@ export class Application extends React.Component {
                         </div>
 
                         {/* ── RIGHT PANEL ── */}
-                        <div className="side-panel" style={{position:'relative'}}>
+                        <div className="side-panel" ref={this.rightPanelRef} style={{position:'relative'}}>
                             {/* Slider overlay for right panel */}
                             {(this.state.activePopup === 'arrowVol' || this.state.activePopup === 'masterVol') && ReactDOM.createPortal(
-                                <div className="slider-overlay-backdrop" onClick={() => this.setState({ activePopup: null })}>
+                                <div className="slider-overlay-backdrop slider-overlay-backdrop--right" style={this.state.popupPanelStyle} onClick={() => this.setState({ activePopup: null, popupPanelStyle: null })}>
                                     <div className="slider-overlay popup-trigger-wrap" onClick={(e) => e.stopPropagation()}>
                                         <div className="slider-overlay-header">
-                                            <button className="slider-overlay-back" onClick={() => this.setState({ activePopup: null })} title="Back">‹</button>
+                                            <button className="slider-overlay-back" onClick={() => this.setState({ activePopup: null, popupPanelStyle: null })} title="Back">‹</button>
                                             <span className="slider-overlay-title">{this.state.activePopup === 'arrowVol' ? 'Arrow Volume' : 'Master Volume'}</span>
                                         </div>
                                         <span className="slider-overlay-val">
@@ -1777,17 +1801,17 @@ export class Application extends React.Component {
                                                 }
                                             }}
                                         />
-                                        <button className="slider-overlay-done" onClick={() => this.setState({ activePopup: null })}>Done</button>
+                                        <button className="slider-overlay-done" onClick={() => this.setState({ activePopup: null, popupPanelStyle: null })}>Done</button>
                                     </div>
                                 </div>,
                                 document.body
                             )}
                             {/* Channel select overlay */}
                             {this.state.activePopup === 'chSelect' && ReactDOM.createPortal(
-                                <div className="slider-overlay-backdrop" onClick={() => this.setState({ activePopup: null })}>
+                                <div className="slider-overlay-backdrop slider-overlay-backdrop--right" style={this.state.popupPanelStyle} onClick={() => this.setState({ activePopup: null, popupPanelStyle: null })}>
                                     <div className="slider-overlay ch-select-overlay popup-trigger-wrap" onClick={(e) => e.stopPropagation()}>
                                         <div className="slider-overlay-header">
-                                            <button className="slider-overlay-back" onClick={() => this.setState({ activePopup: null })} title="Back">‹</button>
+                                            <button className="slider-overlay-back" onClick={() => this.setState({ activePopup: null, popupPanelStyle: null })} title="Back">‹</button>
                                             <span className="slider-overlay-title">Select Channel</span>
                                         </div>
                                         <div className="ch-select-grid">
@@ -1796,11 +1820,11 @@ export class Application extends React.Component {
                                                     key={ch}
                                                     className={`ch-select-item ${this.state.arrowChannel === ch ? 'selected' : ''}`}
                                                     style={{background: `rgb(${CHANNEL_COLORS[ch].join(',')})`}}
-                                                    onClick={(e) => { e.stopPropagation(); this.setState({ arrowChannel: ch, activePopup: null }); }}
+                                                    onClick={(e) => { e.stopPropagation(); this.setState({ arrowChannel: ch, activePopup: null, popupPanelStyle: null }); }}
                                                 >{ch}</button>
                                             ))}
                                         </div>
-                                        <button className="slider-overlay-done" onClick={() => this.setState({ activePopup: null })}>Done</button>
+                                        <button className="slider-overlay-done" onClick={() => this.setState({ activePopup: null, popupPanelStyle: null })}>Done</button>
                                     </div>
                                 </div>,
                                 document.body
@@ -1824,7 +1848,7 @@ export class Application extends React.Component {
                                         <span className="tool-label">channel</span>
                                         <button
                                             className="ch-select-btn popup-trigger-wrap"
-                                            onClick={(e) => { e.stopPropagation(); this.setState({ activePopup: this.state.activePopup === 'chSelect' ? null : 'chSelect', drawMode: 'arrow', deleting: false }); }}
+                                            onClick={(e) => { e.stopPropagation(); this._openPopup('chSelect', 'right'); this.setState({ drawMode: 'arrow', deleting: false }); }}
                                             style={{background: `rgb(${CHANNEL_COLORS[this.state.arrowChannel].join(',')})`}}
                                             title={`Channel ${this.state.arrowChannel}`}
                                         >Ch{this.state.arrowChannel}</button>
@@ -1881,7 +1905,7 @@ export class Application extends React.Component {
                                         <span className="tool-label">Vol</span>
                                         <button
                                             className="popup-trigger-btn"
-                                            onClick={(e) => { e.stopPropagation(); this.setState({ activePopup: this.state.activePopup === 'arrowVol' ? null : 'arrowVol' }); }}
+                                            onClick={(e) => { e.stopPropagation(); this._openPopup('arrowVol', 'right'); }}
                                             title={`Arrow volume: ${Math.round(this.state.inputVelocity * 100)}%`}
                                         >{Math.round(this.state.inputVelocity * 100)}%</button>
                                     </div>
@@ -2056,7 +2080,7 @@ export class Application extends React.Component {
                             <label>Master Vol</label>
                             <button
                                 className="popup-trigger-btn popup-trigger-wrap"
-                                onClick={() => this.setState({ activePopup: this.state.activePopup === 'masterVol' ? null : 'masterVol' })}
+                                onClick={() => this._openPopup('masterVol', 'right')}
                                 title={`Master volume: ${Math.round(this.state.globalVelocity * 100)}%`}
                                 style={{width: '70px', padding: '4px 8px', fontSize: '0.75em'}}
                             >{Math.round(this.state.globalVelocity * 100)}%</button>
