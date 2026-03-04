@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import '../App.css';
 import {range} from 'ramda';
 import { resumeAudio, initAudio, playClick, SYNTH_PRESETS, PRESET_GROUPS, ALL_PRESET_KEYS, DEFAULT_SYNTH, disposeAudio } from './synth-engine';
@@ -1531,7 +1532,7 @@ export class Application extends React.Component {
                                         closeOk();
                                     }
                                 };
-                                return (
+                                return ReactDOM.createPortal(
                                     <div className="prog-modal-overlay" onClick={closeX} onMouseDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
                                         <div className="prog-modal" onClick={(e) => e.stopPropagation()}
                                             style={{
@@ -1699,7 +1700,7 @@ export class Application extends React.Component {
                                             </div>
                                         </div>
                                     </div>
-                                );
+                                , document.body);
                             })()}
                         </div>
 
