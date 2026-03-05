@@ -96,6 +96,20 @@ const mouseIsInSketch = () => mouseX > 0 + gridCanvasBorderSize &&
         mouseY > 0 + gridCanvasBorderSize &&
         mouseY < gridCanvasSize - gridCanvasBorderSize
     ;
+
+const isLandscapePhoneViewport = () => window.innerWidth > window.innerHeight && window.innerHeight <= 500;
+
+const isSliderPopupOpen = () => {
+    if (!stateDrawing) return false;
+    return stateDrawing.activePopup === 'speed'
+        || stateDrawing.activePopup === 'gridSize'
+    || stateDrawing.activePopup === 'arrowVol'
+    || stateDrawing.activePopup === 'masterVol'
+        || typeof stateDrawing.activePopup === 'number';
+};
+
+const shouldBlockCanvasInputForSlider = () => isLandscapePhoneViewport() && isSliderPopupOpen();
+
 export const getAdderWithMousePosition = (arrowAdder) => (e) => {
     thisArrowAdder = arrowAdder;
     if (mouseIsInSketch()) {
@@ -230,6 +244,7 @@ export const setUpCanvas = (state) => {
             
             // ── Event handlers (set once in setup, not every frame) ──
             const handleCanvasClick = (e, fromTouch) => {
+                if (shouldBlockCanvasInputForSlider()) return;
                 // Update mouse state from sketch at event time
                 mouseX = sketch.mouseX;
                 mouseY = sketch.mouseY;
@@ -303,6 +318,7 @@ export const setUpCanvas = (state) => {
             }
 
             const onDrag = (e) =>{
+                if (shouldBlockCanvasInputForSlider()) return;
                 // Block canvas interaction when a modal/overlay is open
                 if (stateDrawing.showSaveManager || stateDrawing.showIntro || stateDrawing.showInfo || stateDrawing.showPrivacy) return;
                 if(mouseIsPressed && mouseIsInSketch()){

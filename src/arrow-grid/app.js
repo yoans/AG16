@@ -1291,6 +1291,10 @@ export class Application extends React.Component {
                                     <div
                                         className="slider-overlay popup-trigger-wrap"
                                         onClick={(e) => e.stopPropagation()}
+                                        onPointerDown={(e) => e.stopPropagation()}
+                                        onPointerMove={(e) => e.stopPropagation()}
+                                        onTouchStart={(e) => e.stopPropagation()}
+                                        onTouchMove={(e) => e.stopPropagation()}
                                         style={typeof this.state.activePopup === 'number' ? {
                                             '--ch-r': CHANNEL_COLORS[this.state.activePopup]?.[0] ?? 102,
                                             '--ch-g': CHANNEL_COLORS[this.state.activePopup]?.[1] ?? 126,
@@ -1772,7 +1776,14 @@ export class Application extends React.Component {
                             {/* Slider overlay for right panel */}
                             {(this.state.activePopup === 'arrowVol' || this.state.activePopup === 'masterVol') && ReactDOM.createPortal(
                                 <div className="slider-overlay-backdrop slider-overlay-backdrop--right" style={this.state.popupPanelStyle} onClick={() => this.setState({ activePopup: null, popupPanelStyle: null })}>
-                                    <div className="slider-overlay popup-trigger-wrap" onClick={(e) => e.stopPropagation()}>
+                                    <div
+                                        className="slider-overlay popup-trigger-wrap"
+                                        onClick={(e) => e.stopPropagation()}
+                                        onPointerDown={(e) => e.stopPropagation()}
+                                        onPointerMove={(e) => e.stopPropagation()}
+                                        onTouchStart={(e) => e.stopPropagation()}
+                                        onTouchMove={(e) => e.stopPropagation()}
+                                    >
                                         <div className="slider-overlay-header">
                                             <button className="slider-overlay-back" onClick={() => this.setState({ activePopup: null, popupPanelStyle: null })} title="Back">‹</button>
                                             <span className="slider-overlay-title">{this.state.activePopup === 'arrowVol' ? 'Arrow Volume' : 'Master Volume'}</span>

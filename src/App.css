@@ -2748,8 +2748,8 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
   .canvas-area {
     flex: 0 0 auto;
     aspect-ratio: 1 / 1;
-    max-height: calc(100dvh - 60px);
-    max-width: calc(100dvh - 60px);
+    max-height: calc(100dvh - 66px);
+    max-width: calc(100dvh - 66px);
     width: auto;
     order: 1;
   }
@@ -2804,8 +2804,26 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
   .ch-select-arrow { display: none; }
   .channel-item { min-width: 0; }
   .channel-box { min-height: 22px; padding: 1px; gap: 1px; }
-  .ch-num-btn { width: 16px; min-width: 16px; height: 16px; font-size: 0.4em; }
-  .ch-ctrl-btn { height: 16px; min-width: 18px; font-size: 0.35em; }
+  .ch-num-btn {
+    width: 30px;
+    min-width: 30px;
+    max-width: 30px;
+    flex: 0 0 30px;
+    height: 16px;
+    font-size: 0.4em;
+    margin-right: 0;
+  }
+  .ch-ctrl-btn {
+    height: 16px;
+    width: 30px;
+    min-width: 30px;
+    max-width: 30px;
+    flex: 0 0 30px;
+    padding: 0;
+    font-size: 0.35em;
+  }
+  .ch-vol-fixed { width: 30px; min-width: 30px; max-width: 30px; }
+  .ch-fx-btn { width: 30px; min-width: 30px; max-width: 30px; }
 
   /* Right panel: wider to fit draw tools without overflow */
   .side-panel:last-child {
@@ -2949,6 +2967,7 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
     height: 28px;
     flex: 1;
     min-height: auto;
+    touch-action: pan-x;
   }
   .slider-overlay-done {
     width: auto;
