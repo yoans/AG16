@@ -1352,7 +1352,7 @@ export class Application extends React.Component {
                         onClick={() => this.setState({ landscapeDrawerOpen: !this.state.landscapeDrawerOpen }, () => this._computeCanvasSize())}                        title={this.state.landscapeDrawerOpen ? 'Hide controls' : 'Show controls'}
                     >
                         <span className={`drawer-chevron${this.state.landscapeDrawerOpen ? ' open' : ''}`}>&#9650;</span>
-                        <span className="drawer-label">{this.state.landscapeDrawerOpen ? 'Hide' : 'More Controls'}</span>
+                        <span className="drawer-label">{this.state.landscapeDrawerOpen ? 'Hide' : 'More'}</span>
                     </button>
 
                     {/* ── Body: Left | Canvas | Right ── */}
