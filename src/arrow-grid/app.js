@@ -222,6 +222,10 @@ export class Application extends React.Component {
         
         // Add resize listener for responsive canvas
         window.addEventListener('resize', this._handleResize);
+        window.addEventListener('orientationchange', this._handleOrientationChange);
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', this._handleResize);
+        }
         
         // Initialize MIDI on startup
         midiUtils();
@@ -293,11 +297,18 @@ export class Application extends React.Component {
         document.removeEventListener('keydown', this.handleKeyDown);
         document.removeEventListener('mousedown', this._closeVolumePopup);
         window.removeEventListener('resize', this._handleResize);
+        window.removeEventListener('orientationchange', this._handleOrientationChange);
+        if (window.visualViewport) {
+            window.visualViewport.removeEventListener('resize', this._handleResize);
+        }
         if (this._resumeAudioCleanup) this._resumeAudioCleanup();
         clearTimeout(this._timerID);
         clearTimeout(this._resizeTimer);
         clearTimeout(this._toastTimer);
         clearTimeout(this._autoPlayTimer);
+        clearTimeout(this._rotateSyncTimerA);
+        clearTimeout(this._rotateSyncTimerB);
+        clearTimeout(this._rotateSyncTimerC);
         destroyCanvas();
         disposeAudio();
         disposeMIDI();
@@ -306,6 +317,14 @@ export class Application extends React.Component {
     }
 
     _resizeTimer = null;
+    _rotateSyncTimerA = null;
+    _rotateSyncTimerB = null;
+    _rotateSyncTimerC = null;
+    _lastResizeSnapshot = null;
+
+    _isTouchLandscapeTablet = () => {
+        return window.matchMedia('(orientation: landscape) and (min-width: 861px) and (hover: none) and (pointer: coarse)').matches;
+    };
 
     // ── Channel drag-to-select (slider-like) ──
     _channelDragging = false;
@@ -370,24 +389,33 @@ export class Application extends React.Component {
         const isPortrait = (vh > vw || vw <= 860) && !isLandscapePhone;
 
         let canvasSize;
-        if (isLandscapePhone) {
+        // Prefer the actual rendered canvas-area bounds so orientation changes
+        // (especially on iPad Safari) cannot leave a stale oversized canvas.
+        const canvasAreaEl = document.querySelector('.canvas-area');
+        if (canvasAreaEl) {
+            const rect = canvasAreaEl.getBoundingClientRect();
+            if (rect.width > 50 && rect.height > 50) {
+                canvasSize = Math.min(rect.width, rect.height);
+            }
+        }
+
+        if (!canvasSize && isLandscapePhone) {
             // Landscape phone: canvas between two side panels
             const chrome = 60; // compact header + padding + border
             const panelWidth = 140; // max-width of each side panel
             const maxW = vw - panelWidth * 2 - 24; // minus both panels and gaps
             const maxH = vh - chrome;
             canvasSize = Math.min(maxH, maxW);
-        } else if (isPortrait) {
+        } else if (!canvasSize && isPortrait) {
             // Portrait: canvas width = viewport width minus padding/margins
             // Row labels hidden on mobile, so no extra left margin needed
             const padding = vw <= 360 ? 10 : vw <= 480 ? 12 : vw <= 600 ? 16 : vw <= 860 ? 24 : 40;
             const maxH = vw <= 360 ? vh * 0.55 : vw <= 480 ? vh * 0.55 : vw <= 600 ? vh * 0.58 : vw <= 860 ? vh * 0.70 : vh * 0.50;
             canvasSize = Math.min(vw - padding, maxH);
-        } else {
+        } else if (!canvasSize) {
             // Landscape: size the canvas to fit inside the canvas-area element.
             // Reading canvas-area directly avoids the circular dependency of
             // measuring console-body (which the canvas itself can inflate).
-            const canvasAreaEl = document.querySelector('.canvas-area');
             if (canvasAreaEl) {
                 const rect = canvasAreaEl.getBoundingClientRect();
                 // Use the smaller dimension so the square canvas fits both axes
@@ -408,9 +436,56 @@ export class Application extends React.Component {
     _handleResize = () => {
         clearTimeout(this._resizeTimer);
         this._resizeTimer = setTimeout(() => {
+            const currentW = window.innerWidth;
+            const currentH = window.innerHeight;
+            const isLandscapePhone = currentW > currentH && currentH <= 500;
+
+            if (this._isTouchLandscapeTablet()) {
+                const prev = this._lastResizeSnapshot;
+                if (prev) {
+                    const widthDelta = Math.abs(currentW - prev.w);
+                    // On iPad landscape, browser UI show/hide during slight page movement
+                    // changes viewport height and causes canvas jitter. Ignore all
+                    // height-only resize events; only width/orientation changes should
+                    // trigger a new canvas size.
+                    if (widthDelta <= 2) {
+                        this._lastResizeSnapshot = { w: currentW, h: currentH };
+                        return;
+                    }
+                }
+            }
+
+            this._lastResizeSnapshot = { w: currentW, h: currentH };
+            if (!isLandscapePhone && this.state.landscapeDrawerOpen) {
+                this.setState({ landscapeDrawerOpen: false });
+            }
             this._computeCanvasSize();
             this.forceUpdate();
         }, 100);
+    }
+
+    _handleOrientationChange = () => {
+        clearTimeout(this._rotateSyncTimerA);
+        clearTimeout(this._rotateSyncTimerB);
+        clearTimeout(this._rotateSyncTimerC);
+
+        const syncLayout = () => {
+            const isLandscapePhone = window.innerWidth > window.innerHeight && window.innerHeight <= 500;
+            this._lastResizeSnapshot = { w: window.innerWidth, h: window.innerHeight };
+            if (!isLandscapePhone && this.state.landscapeDrawerOpen) {
+                this.setState({ landscapeDrawerOpen: false }, () => {
+                    this._computeCanvasSize();
+                    this.forceUpdate();
+                });
+                return;
+            }
+            this._computeCanvasSize();
+            this.forceUpdate();
+        };
+
+        this._rotateSyncTimerA = setTimeout(syncLayout, 0);
+        this._rotateSyncTimerB = setTimeout(syncLayout, 140);
+        this._rotateSyncTimerC = setTimeout(syncLayout, 320);
     }
     
     handleKeyDown = (e) => {

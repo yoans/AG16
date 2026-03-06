@@ -1886,6 +1886,46 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
   }
 }
 
+/* ── Touch tablets in landscape (iPad Safari/Chrome): lock full view, no page scroll ── */
+@media (orientation: landscape) and (min-width: 861px) and (hover: none) and (pointer: coarse) {
+  body {
+    overflow: hidden;
+    height: 100svh;
+    width: 100vw;
+  }
+  .app-container {
+    width: 100vw;
+    height: 100svh;
+    padding: 0;
+  }
+  .console-wrapper {
+    height: calc(100svh - 12px);
+    max-height: calc(100svh - 12px);
+    max-width: calc(100vw - 12px);
+    overflow: hidden;
+  }
+  .side-panel:first-child {
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 100%;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .side-panel:first-child::-webkit-scrollbar {
+    display: none;
+  }
+  .side-panel:last-child {
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 100%;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .side-panel:last-child::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* ── Narrow landscape (861–1049px wide): wrap header, tighten draw panel ── */
 @media (orientation: landscape) and (min-width: 861px) and (max-width: 1049px) {
   .console-header {
@@ -2774,7 +2814,7 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
      so channels are always visible regardless of expanded state */
   .side-panel .channel-row .channel-list-body {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 1fr;
     gap: 2px;
     max-height: none;
     overflow: visible;
