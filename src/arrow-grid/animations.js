@@ -91,10 +91,10 @@ const convertPixelToIndex = pixel => Math.floor(
 //     min: 0,
 //     max: 255,
 // });
-const mouseIsInSketch = () => mouseX > 0 + gridCanvasBorderSize &&
-        mouseX < gridCanvasSize - gridCanvasBorderSize &&
-        mouseY > 0 + gridCanvasBorderSize &&
-        mouseY < gridCanvasSize - gridCanvasBorderSize
+const mouseIsInSketch = () => mouseX > gridCanvasBorderSize &&
+        mouseX < gridCanvasSize + gridCanvasBorderSize &&
+        mouseY > gridCanvasBorderSize &&
+        mouseY < gridCanvasSize + gridCanvasBorderSize
     ;
 
 const isLandscapePhoneViewport = () => window.innerWidth > window.innerHeight && window.innerHeight <= 500;
@@ -246,8 +246,14 @@ export const setUpCanvas = (state) => {
             const handleCanvasClick = (e, fromTouch) => {
                 if (shouldBlockCanvasInputForSlider()) return;
                 // Update mouse state from sketch at event time
-                mouseX = sketch.mouseX;
-                mouseY = sketch.mouseY;
+                // For touch events, prefer touch coordinates over sketch.mouseX which may lag
+                if (fromTouch && sketch.touches && sketch.touches.length > 0) {
+                    mouseX = sketch.touches[0].x;
+                    mouseY = sketch.touches[0].y;
+                } else {
+                    mouseX = sketch.mouseX;
+                    mouseY = sketch.mouseY;
+                }
                 mouseIsPressed = sketch.mouseIsPressed;
                 // Debounce double-fires from p5 event system
                 const now = Date.now();
@@ -255,7 +261,6 @@ export const setUpCanvas = (state) => {
                 lastClickTime = now;
                 mouseXstart=mouseX;
                 mouseYstart=mouseY;
-                if (fromTouch && !mouseIsPressed) return;
                 if (!mouseIsInSketch()) return;
                 // Block canvas interaction when a modal/overlay is open
                 if (stateDrawing.showSaveManager || stateDrawing.showIntro || stateDrawing.showInfo || stateDrawing.showPrivacy) return;
@@ -321,7 +326,17 @@ export const setUpCanvas = (state) => {
                 if (shouldBlockCanvasInputForSlider()) return;
                 // Block canvas interaction when a modal/overlay is open
                 if (stateDrawing.showSaveManager || stateDrawing.showIntro || stateDrawing.showInfo || stateDrawing.showPrivacy) return;
-                if(mouseIsPressed && mouseIsInSketch()){
+                // Sync coordinates (touches take priority over mouse)
+                if (sketch.touches && sketch.touches.length > 0) {
+                    mouseX = sketch.touches[0].x;
+                    mouseY = sketch.touches[0].y;
+                } else {
+                    mouseX = sketch.mouseX;
+                    mouseY = sketch.mouseY;
+                }
+                mouseIsPressed = sketch.mouseIsPressed;
+                const isActiveInput = mouseIsPressed || (sketch.touches && sketch.touches.length > 0);
+                if(isActiveInput && mouseIsInSketch()){
                     if (stateDrawing.deleting) {
                         // Erase mode on drag: remove based on eraseTarget
                         const target = stateDrawing.eraseTarget || 'both';
