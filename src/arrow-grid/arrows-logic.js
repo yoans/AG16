@@ -2,6 +2,7 @@
 import * as R from 'ramda';
 import Chance from 'chance';
 import {playSounds} from './play-notes';
+import * as triangleGeo from './geometry/triangle';
 
 const chance = new Chance();
 export const NO_BOUNDARY = 'no-boundary';
@@ -145,12 +146,16 @@ const moveArrow = arrow => vectorOperations[arrow.vector](arrow);
 export const arrowKey = arrow => `{x:${arrow.x},y:${arrow.y},vector:${arrow.vector}}`;
 export const locationKey = arrow => `{x:${arrow.x},y:${arrow.y}}`;
 
-export const arrowBoundaryKey = (arrow, size, rotations = 0, walls) => {
-    const returnVal = boundaryKey(arrow, size, rotations, walls);
-    return (returnVal === 'x' || returnVal === 'y') ? BOUNDARY: returnVal;
+export const arrowBoundaryKey = (arrow, size, rotations = 0, walls, gridType) => {
+    const returnVal = boundaryKey(arrow, size, rotations, walls, gridType);
+    return (returnVal === 'x' || returnVal === 'y' || returnVal === 'z') ? BOUNDARY: returnVal;
 };
 
-export const boundaryKey = (arrow, size, rotations = 0, walls) => {
+export const boundaryKey = (arrow, size, rotations = 0, walls, gridType) => {
+    if (gridType === 'triangle') {
+        const wallSet = (walls && walls.length > 0) ? (walls._set || (walls._set = new Set(walls))) : null;
+        return triangleGeo.boundaryAxis(arrow, size, rotations, wallSet);
+    }
     const v = (arrow.vector + rotations) % 4;
     // Check exterior walls
     if (arrow.y === 0 && v === 0) return 'y';

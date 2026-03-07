@@ -437,3 +437,142 @@ export default [
     muted: true
   }
 ];
+
+// ── Triangle presets ────────────────────────────────────────────────────────
+export const trianglePresets = [
+  // 0 — Diagonal Cascade: arrows on the main diagonal, all pointing up-right
+  {
+    name: "Cascade",
+    size: 8,
+    gridType: 'triangle',
+    arrows: [
+      { x: 0, y: 0, vector: 0, channel: 1 },
+      { x: 1, y: 1, vector: 0, channel: 2 },
+      { x: 2, y: 2, vector: 0, channel: 3 },
+      { x: 3, y: 3, vector: 0, channel: 4 },
+      { x: 4, y: 4, vector: 0, channel: 5 },
+      { x: 0, y: 5, vector: 0, channel: 6 },
+      { x: 0, y: 6, vector: 0, channel: 7 },
+      { x: 0, y: 7, vector: 1, channel: 1 },
+    ],
+    muted: true
+  },
+  // 1 — Cross-Stream: two diagonals crossing
+  {
+    name: "Cross-Stream",
+    size: 8,
+    gridType: 'triangle',
+    arrows: [
+      { x: 0, y: 0, vector: 2, channel: 1 },
+      { x: 1, y: 1, vector: 2, channel: 2 },
+      { x: 2, y: 2, vector: 2, channel: 3 },
+      { x: 3, y: 3, vector: 2, channel: 4 },
+      { x: 0, y: 7, vector: 1, channel: 5 },
+      { x: 1, y: 6, vector: 1, channel: 6 },
+      { x: 2, y: 5, vector: 1, channel: 7 },
+      { x: 3, y: 4, vector: 1, channel: 1 },
+    ],
+    muted: true
+  },
+  // 2 — Spinner: arrows at the corners heading in different directions
+  {
+    name: "Spinner",
+    size: 9,
+    gridType: 'triangle',
+    arrows: [
+      { x: 0, y: 0, vector: 1, channel: 1 },
+      { x: 4, y: 0, vector: 2, channel: 2 },
+      { x: 8, y: 0, vector: 3, channel: 3 },
+      { x: 0, y: 4, vector: 0, channel: 4 },
+      { x: 0, y: 8, vector: 1, channel: 5 },
+      { x: 2, y: 2, vector: 5, channel: 6 },
+      { x: 3, y: 3, vector: 4, channel: 7 },
+    ],
+    muted: true
+  },
+  // 3 — Left Wall: arrows stacked on the left edge hitting left boundary
+  {
+    name: "Left Wall",
+    size: 7,
+    gridType: 'triangle',
+    arrows: [
+      { x: 0, y: 1, vector: 4, channel: 1 },
+      { x: 0, y: 2, vector: 3, channel: 2 },
+      { x: 0, y: 3, vector: 4, channel: 3 },
+      { x: 0, y: 4, vector: 3, channel: 4 },
+      { x: 0, y: 5, vector: 4, channel: 5 },
+      { x: 0, y: 6, vector: 3, channel: 6 },
+      { x: 1, y: 0, vector: 5, channel: 7 },
+    ],
+    muted: true
+  },
+  // 4 — Hypotenuse: arrows along the hypotenuse
+  {
+    name: "Hypotenuse",
+    size: 8,
+    gridType: 'triangle',
+    arrows: [
+      { x: 7, y: 0, vector: 1, channel: 1 },
+      { x: 6, y: 1, vector: 2, channel: 2 },
+      { x: 5, y: 2, vector: 1, channel: 3 },
+      { x: 4, y: 3, vector: 2, channel: 4 },
+      { x: 3, y: 4, vector: 1, channel: 5 },
+      { x: 2, y: 5, vector: 2, channel: 6 },
+      { x: 1, y: 6, vector: 1, channel: 7 },
+    ],
+    muted: true
+  },
+  // 5 — Scatter: random positions, diverse directions
+  {
+    name: "Scatter",
+    size: 10,
+    gridType: 'triangle',
+    arrows: [
+      { x: 2, y: 1, vector: 3, channel: 1 },
+      { x: 5, y: 0, vector: 2, channel: 2 },
+      { x: 0, y: 4, vector: 1, channel: 3 },
+      { x: 3, y: 3, vector: 5, channel: 4 },
+      { x: 1, y: 7, vector: 0, channel: 5 },
+      { x: 4, y: 2, vector: 4, channel: 6 },
+      { x: 0, y: 9, vector: 1, channel: 7 },
+      { x: 6, y: 0, vector: 3, channel: 1 },
+      { x: 7, y: 1, vector: 2, channel: 2 },
+    ],
+    muted: true
+  },
+  // 6 — Arrows converge to the centre
+  {
+    name: "Converge",
+    size: 9,
+    gridType: 'triangle',
+    arrows: [
+      { x: 4, y: 0, vector: 2, channel: 1 },
+      { x: 0, y: 4, vector: 1, channel: 2 },
+      { x: 4, y: 4, vector: 5, channel: 3 },
+      { x: 2, y: 0, vector: 2, channel: 4 },
+      { x: 6, y: 0, vector: 3, channel: 5 },
+      { x: 0, y: 6, vector: 0, channel: 6 },
+      { x: 2, y: 6, vector: 0, channel: 7 },
+    ],
+    muted: true
+  },
+  // 7 — Top Row: all along the top
+  {
+    name: "Top Row",
+    size: 10,
+    gridType: 'triangle',
+    arrows: [
+      { x: 0, y: 0, vector: 2, channel: 1 },
+      { x: 1, y: 0, vector: 2, channel: 2 },
+      { x: 2, y: 0, vector: 2, channel: 3 },
+      { x: 3, y: 0, vector: 2, channel: 4 },
+      { x: 4, y: 0, vector: 2, channel: 5 },
+      { x: 5, y: 0, vector: 2, channel: 6 },
+      { x: 6, y: 0, vector: 2, channel: 7 },
+      { x: 7, y: 0, vector: 2, channel: 1 },
+      { x: 8, y: 0, vector: 2, channel: 2 },
+      { x: 9, y: 0, vector: 2, channel: 3 },
+    ],
+    muted: true
+  },
+];

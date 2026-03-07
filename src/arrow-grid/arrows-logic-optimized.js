@@ -7,14 +7,19 @@
  * 3. Uses numeric hashing instead of string keys
  * 4. Reuses buffers between frames
  * 5. Minimizes garbage collection pressure
+ *
+ * Supports both 'square' and 'triangle' grid types via the geometry module.
  */
 
 import { playSounds } from './play-notes';
+import { getGeometry } from './geometry';
+import * as squareGeo from './geometry/square';
+import * as triangleGeo from './geometry/triangle';
 
 export const NO_BOUNDARY = 0;
 export const BOUNDARY = 1;
 
-// Vector directions: 0=up, 1=right, 2=down, 3=left
+// Vector directions (square): 0=up, 1=right, 2=down, 3=left
 const VECTOR_UP = 0;
 const VECTOR_RIGHT = 1;
 const VECTOR_DOWN = 2;
@@ -39,8 +44,10 @@ const locationHash = (x, y) => (x << 8) | y;
 
 /**
  * Move arrow one step in its direction (mutates arrow)
+ * Uses geometry-specific movement when geo is provided.
  */
-const moveArrowInPlace = (arrow) => {
+const moveArrowInPlace = (arrow, geo) => {
+    if (geo) { geo.moveInPlace(arrow); return; }
     switch (arrow.vector) {
         case VECTOR_UP: arrow.y--; break;
         case VECTOR_RIGHT: arrow.x++; break;
@@ -52,22 +59,26 @@ const moveArrowInPlace = (arrow) => {
 /**
  * Flip arrow direction (mutates arrow)
  */
-const flipArrowInPlace = (arrow) => {
+const flipArrowInPlace = (arrow, geo) => {
+    if (geo) { geo.flipInPlace(arrow); return; }
     arrow.vector = (arrow.vector + 2) & 3;
 };
 
 /**
  * Rotate arrow by offset (mutates arrow)
  */
-const rotateArrowInPlace = (arrow, offset) => {
+const rotateArrowInPlace = (arrow, offset, geo) => {
+    if (geo) { arrow.vector = geo.rotateVector(arrow.vector, offset); return; }
     arrow.vector = (arrow.vector + offset) & 3;
 };
 
 /**
  * Check if arrow is at boundary and pointing outward.
  * Checks both exterior walls and internal walls (if wallSet provided).
+ * When geo is provided, delegates to geometry-specific boundary logic.
  */
-const isAtBoundary = (arrow, size, wallSet) => {
+const isAtBoundary = (arrow, size, wallSet, geo) => {
+    if (geo) return geo.isAtBoundary(arrow, size, wallSet);
     const { x, y, vector } = arrow;
     // Exterior walls
     if (
@@ -89,7 +100,8 @@ const isAtBoundary = (arrow, size, wallSet) => {
 /**
  * Check if arrow is within grid bounds
  */
-const isInBounds = (arrow, size) => {
+const isInBounds = (arrow, size, geo) => {
+    if (geo) return geo.isValidCell(arrow.x, arrow.y, size);
     return arrow.x >= 0 && arrow.y >= 0 && arrow.x < size && arrow.y < size;
 };
 
@@ -106,24 +118,34 @@ const generateId = () => `grid-${++idCounter}`;
 
 /**
  * Create a new grid with random arrows
+ * @param {number} size
+ * @param {number} numberOfArrows
+ * @param {'square'|'triangle'} [gridType='square']
  */
-export const newGrid = (size, numberOfArrows) => {
+export const newGrid = (size, numberOfArrows, gridType = 'square') => {
+    const geo = getGeometry(gridType);
+    const dirs = geo.DIRECTIONS;
     const arrows = [];
     for (let i = 0; i < numberOfArrows; i++) {
-        arrows.push({
-            x: Math.floor(Math.random() * size),
-            y: Math.floor(Math.random() * size),
-            vector: Math.floor(Math.random() * 4)
-        });
+        let x, y;
+        if (gridType === 'triangle') {
+            // Random cell inside the triangle: x >= 0, y >= 0, x + y < size
+            y = Math.floor(Math.random() * size);
+            x = Math.floor(Math.random() * (size - y));
+        } else {
+            x = Math.floor(Math.random() * size);
+            y = Math.floor(Math.random() * size);
+        }
+        arrows.push({ x, y, vector: Math.floor(Math.random() * dirs) });
     }
-    return { size, id: generateId(), arrows, muted: true };
+    return { size, gridType, id: generateId(), arrows, muted: true };
 };
 
 /**
  * Create an empty grid
  */
-export const emptyGrid = (size) => {
-    return { size, id: generateId(), arrows: [], muted: true };
+export const emptyGrid = (size, gridType = 'square') => {
+    return { size, gridType, id: generateId(), arrows: [], muted: true };
 };
 
 /**
@@ -142,10 +164,15 @@ export const removeFromGrid = (grid, x, y) => {
 const MAX_ARROWS = 4000;
 
 /**
- * Add arrows to grid with symmetry support
+ * Add arrows to grid with symmetry support.
+ * Handles both square (4 dirs) and triangle (6 dirs) grids.
  */
 export const addToGrid = (grid, x, y, dir, symmetries, inputNumber, forced, arrowChannel, arrowVelocity) => {
     if (grid.arrows.length > MAX_ARROWS) return grid;
+    const geo = getGeometry(grid.gridType);
+    
+    // Validate cell is in bounds for this geometry
+    if (!geo.isValidCell(x, y, grid.size)) return grid;
     
     // Check for duplicate
     if (!forced && grid.arrows.some(a => a.x === x && a.y === y && a.vector === dir)) {
@@ -160,69 +187,93 @@ export const addToGrid = (grid, x, y, dir, symmetries, inputNumber, forced, arro
         toAdd.push({ x, y, vector: dir, channel: arrowChannel ?? 1, velocity: arrowVelocity ?? 1.0 });
     }
     
-    // Apply symmetries
-    const { horizontalSymmetry, verticalSymmetry, backwardDiagonalSymmetry, forwardDiagonalSymmetry } = symmetries;
-    const skipForth = horizontalSymmetry && verticalSymmetry && backwardDiagonalSymmetry;
-    
-    if (horizontalSymmetry) {
-        const len = toAdd.length;
-        for (let i = 0; i < len; i++) {
-            const a = toAdd[i];
-            toAdd.push({
-                x: a.x,
-                y: getMirror(a.y, grid.size),
-                vector: [2, 1, 0, 3][a.vector],
-                channel: a.channel,
-                velocity: a.velocity
-            });
+    // Apply symmetries — use geometry-specific vector maps
+    if (grid.gridType === 'triangle') {
+        // Triangle: only horizontal symmetry (mirror across vertical median)
+        if (symmetries.horizontalSymmetry) {
+            const hMap = geo.SYMMETRY_VECTOR_MAPS.horizontal;
+            const len = toAdd.length;
+            for (let i = 0; i < len; i++) {
+                const a = toAdd[i];
+                // Mirror position: swap x-coordinate relative to the triangle's vertical axis
+                // For a triangle with x+y<size, mirror of (x,y) is (size-1-y-x+x, ...) → simplified: (size-1-y, y) swapped cleverly
+                // Actually: reflect across the vertical median of the triangle.
+                // The triangle occupies cells where x+y < size. The vertical median connects
+                // the top-center to the bottom vertex. The mirror of (x,y) is (size-1-x-y, y) when x≠mirrored.
+                // Simpler approach: swap roles of x and y coordinates and adjust.
+                // Actually the simplest correct mirror for an equilateral triangle with flat top:
+                // reflect (x, y) → (size - 1 - x - y, y) — this mirrors across the altitude from bottom vertex.
+                // Wait, that's actually the hypotenuse mirror. Let me think...
+                // For the triangle with top edge, the vertical median goes from midpoint of top edge down.
+                // Mirror across that: (x, y) → (max_x_for_row - x, y) where max_x_for_row = size - 1 - y
+                // So mirrored x = (size - 1 - y) - x
+                const mirX = (grid.size - 1 - a.y) - a.x;
+                const mirY = a.y;
+                if (geo.isValidCell(mirX, mirY, grid.size)) {
+                    toAdd.push({
+                        x: mirX, y: mirY, vector: hMap[a.vector],
+                        channel: a.channel, velocity: a.velocity
+                    });
+                }
+            }
+        }
+    } else {
+        // Square symmetries
+        const { horizontalSymmetry, verticalSymmetry, backwardDiagonalSymmetry, forwardDiagonalSymmetry } = symmetries;
+        const skipForth = horizontalSymmetry && verticalSymmetry && backwardDiagonalSymmetry;
+        
+        if (horizontalSymmetry) {
+            const len = toAdd.length;
+            for (let i = 0; i < len; i++) {
+                const a = toAdd[i];
+                toAdd.push({
+                    x: a.x, y: getMirror(a.y, grid.size),
+                    vector: [2, 1, 0, 3][a.vector],
+                    channel: a.channel, velocity: a.velocity
+                });
+            }
+        }
+        
+        if (verticalSymmetry) {
+            const len = toAdd.length;
+            for (let i = 0; i < len; i++) {
+                const a = toAdd[i];
+                toAdd.push({
+                    x: getMirror(a.x, grid.size), y: a.y,
+                    vector: [0, 3, 2, 1][a.vector],
+                    channel: a.channel, velocity: a.velocity
+                });
+            }
+        }
+        
+        if (backwardDiagonalSymmetry) {
+            const len = toAdd.length;
+            for (let i = 0; i < len; i++) {
+                const a = toAdd[i];
+                toAdd.push({
+                    x: a.y, y: a.x,
+                    vector: [3, 2, 1, 0][a.vector],
+                    channel: a.channel, velocity: a.velocity
+                });
+            }
+        }
+        
+        if (forwardDiagonalSymmetry && !skipForth) {
+            const len = toAdd.length;
+            for (let i = 0; i < len; i++) {
+                const a = toAdd[i];
+                toAdd.push({
+                    x: getMirror(a.y, grid.size), y: getMirror(a.x, grid.size),
+                    vector: [1, 0, 3, 2][a.vector],
+                    channel: a.channel, velocity: a.velocity
+                });
+            }
         }
     }
     
-    if (verticalSymmetry) {
-        const len = toAdd.length;
-        for (let i = 0; i < len; i++) {
-            const a = toAdd[i];
-            toAdd.push({
-                x: getMirror(a.x, grid.size),
-                y: a.y,
-                vector: [0, 3, 2, 1][a.vector],
-                channel: a.channel,
-                velocity: a.velocity
-            });
-        }
-    }
-    
-    if (backwardDiagonalSymmetry) {
-        const len = toAdd.length;
-        for (let i = 0; i < len; i++) {
-            const a = toAdd[i];
-            toAdd.push({
-                x: a.y,
-                y: a.x,
-                vector: [3, 2, 1, 0][a.vector],
-                channel: a.channel,
-                velocity: a.velocity
-            });
-        }
-    }
-    
-    if (forwardDiagonalSymmetry && !skipForth) {
-        const len = toAdd.length;
-        for (let i = 0; i < len; i++) {
-            const a = toAdd[i];
-            toAdd.push({
-                x: getMirror(a.y, grid.size),
-                y: getMirror(a.x, grid.size),
-                vector: [1, 0, 3, 2][a.vector],
-                channel: a.channel,
-                velocity: a.velocity
-            });
-        }
-    }
-    
-    // Add all new arrows
+    // Filter arrows outside bounds, then add
     for (const arrow of toAdd) {
-        if (newArrows.length < MAX_ARROWS) {
+        if (newArrows.length < MAX_ARROWS && geo.isValidCell(arrow.x, arrow.y, grid.size)) {
             newArrows.push(arrow);
         }
     }
@@ -242,11 +293,21 @@ const getMirror = (pos, gridSize) => {
 export const arrowKey = arrow => `{x:${arrow.x},y:${arrow.y},vector:${arrow.vector}}`;
 export const locationKey = arrow => `{x:${arrow.x},y:${arrow.y}}`;
 
-export const arrowBoundaryKey = (arrow, size) => {
-    return isAtBoundary(arrow, size) ? 'boundary' : 'no-boundary';
+export const arrowBoundaryKey = (arrow, size, rotations, walls, gridType) => {
+    const geo = gridType === 'triangle' ? triangleGeo : null;
+    return isAtBoundary(arrow, size, null, geo) ? 'boundary' : 'no-boundary';
 };
 
-export const boundaryKey = (arrow, size, rotations = 0, walls) => {
+/**
+ * boundaryKey — returns 'x','y','z' (triangle hyp), or 'no-boundary'.
+ * Used by animations.js for rendering boundary arrows.
+ * @param {string} [gridType] — 'square' or 'triangle'
+ */
+export const boundaryKey = (arrow, size, rotations = 0, walls, gridType) => {
+    if (gridType === 'triangle') {
+        const wallSet = (walls && walls.length > 0) ? (walls._set || (walls._set = new Set(walls))) : null;
+        return triangleGeo.boundaryAxis(arrow, size, rotations, wallSet);
+    }
     const vector = (arrow.vector + rotations) % 4;
     if (arrow.y === 0 && vector === 0) return 'y';
     if (arrow.x === size - 1 && vector === 1) return 'x';
@@ -275,11 +336,16 @@ export const getArrowBoundaryDictionary = (arrows, size, keyFunc, rotations, wal
 
 /**
  * OPTIMIZED: Compute next grid state
- * This is the hot path - heavily optimized for performance
+ * This is the hot path - heavily optimized for performance.
+ * Supports both 'square' and 'triangle' grid types.
  */
 export const nextGrid = (grid, length, scale, musicalKey, globalVelocity, channelSettings) => {
-    const { size, arrows } = grid;
+    const { size, arrows, gridType } = grid;
     const arrowCount = arrows.length;
+    const isTriangle = gridType === 'triangle';
+    const geo = isTriangle ? triangleGeo : null;
+    const dedupMod = isTriangle ? 6 : 4;
+    const dirs = isTriangle ? 6 : 4;
     
     if (arrowCount === 0) {
         return { ...grid, id: generateId() };
@@ -289,17 +355,17 @@ export const nextGrid = (grid, length, scale, musicalKey, globalVelocity, channe
     const walls = grid.walls || [];
     const wallSet = walls.length > 0 ? new Set(walls) : null;
     
-    // Step 1: Group by position+vector+sound and reduce (mod 4)
+    // Step 1: Group by position+vector+channel and reduce (mod dedupMod)
     vectorMap.clear();
     
     for (let i = 0; i < arrowCount; i++) {
         const arrow = arrows[i];
-        // Filter out-of-bounds arrows
-        if (arrow.x < 0 || arrow.y < 0 || arrow.x >= size || arrow.y >= size) continue;
+        // Filter out-of-bounds arrows (geometry-aware)
+        if (!isInBounds(arrow, size, geo)) continue;
         
         const hash = arrowHash(arrow.x, arrow.y, arrow.vector);
         const ch = arrow.channel ?? 1;
-        const key = hash * 17 + ch;  // 17 to avoid collisions with channels 1-16
+        const key = hash * 17 + ch;
         const existing = vectorMap.get(key);
         if (existing === undefined) {
             vectorMap.set(key, { count: 1, channel: ch, x: arrow.x, y: arrow.y, vector: arrow.vector, velocity: arrow.velocity ?? 1.0 });
@@ -308,11 +374,11 @@ export const nextGrid = (grid, length, scale, musicalKey, globalVelocity, channe
         }
     }
     
-    // Step 2: Build reduced arrows array (keep count % 4, or 4 if divisible)
+    // Step 2: Build reduced arrows array (keep count % dedupMod, or dedupMod if divisible)
     let reducedCount = 0;
     
     for (const [, entry] of vectorMap) {
-        const keep = entry.count % 4 || 4;
+        const keep = entry.count % dedupMod || dedupMod;
         
         for (let j = 0; j < keep; j++) {
             if (reducedCount >= arrowBuffer1.length) {
@@ -340,7 +406,7 @@ export const nextGrid = (grid, length, scale, musicalKey, globalVelocity, channe
     let rotatedCount = 0;
     
     for (const group of locationMap.values()) {
-        const rotateBy = (group.length - 1) % 4;
+        const rotateBy = (group.length - 1) % dirs;
         for (const arrow of group) {
             if (rotatedCount >= arrowBuffer2.length) {
                 arrowBuffer2.length = arrowBuffer2.length * 2;
@@ -348,7 +414,7 @@ export const nextGrid = (grid, length, scale, musicalKey, globalVelocity, channe
             arrowBuffer2[rotatedCount++] = {
                 x: arrow.x,
                 y: arrow.y,
-                vector: (arrow.vector + rotateBy) & 3,
+                vector: isTriangle ? (arrow.vector + rotateBy) % 6 : (arrow.vector + rotateBy) & 3,
                 channel: arrow.channel,
                 velocity: arrow.velocity ?? 1.0
             };
@@ -356,32 +422,36 @@ export const nextGrid = (grid, length, scale, musicalKey, globalVelocity, channe
     }
     
     // Step 4: Move arrows (flip if at boundary, then move)
+    // Triangle grids need double-flip at corners (two boundaries hit simultaneously)
     const nextArrows = [];
     const boundaryArrows = [];
     
     for (let i = 0; i < rotatedCount; i++) {
         const arrow = arrowBuffer2[i];
         
-        if (isAtBoundary(arrow, size, wallSet)) {
-            // At boundary: flip direction, then move
-            boundaryArrows.push({ ...arrow }); // For sound
-            flipArrowInPlace(arrow);
+        if (isAtBoundary(arrow, size, wallSet, geo)) {
+            boundaryArrows.push({ ...arrow });
+            flipArrowInPlace(arrow, geo);
+            // Triangle: check for corner double-flip
+            if (isTriangle && isAtBoundary(arrow, size, wallSet, geo)) {
+                flipArrowInPlace(arrow, geo);
+            }
         }
         
-        moveArrowInPlace(arrow);
+        moveArrowInPlace(arrow, geo);
         nextArrows.push(arrow);
     }
     
     // Step 5: Check for arrows hitting boundary after movement (for sound)
     const soundArrows = [];
     for (const arrow of nextArrows) {
-        if (isAtBoundary(arrow, size, wallSet)) {
+        if (isAtBoundary(arrow, size, wallSet, geo)) {
             soundArrows.push(arrow);
         }
     }
     
-    // Play sounds
-    playSounds(soundArrows, size, length, grid.soundOn, grid.midiOn, scale, musicalKey, globalVelocity, channelSettings);
+    // Play sounds (pass gridType so play-notes can use correct note index)
+    playSounds(soundArrows, size, length, grid.soundOn, grid.midiOn, scale, musicalKey, globalVelocity, channelSettings, gridType);
     
     return {
         ...grid,

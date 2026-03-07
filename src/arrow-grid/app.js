@@ -26,10 +26,12 @@ import {
 } from './animations';
 // sliders.js is no longer used (popup-trigger buttons replaced DOM sliders)
 import { rescanMIDI, midiUtils, onMidiConnected, sendProgramChange, makeMIDImessage, isMidiConnected, disposeMIDI } from './midi';
-import presets from './presets';
+import presets, { trianglePresets } from './presets';
 import Chance from 'chance';
 import scales, { scaleGroups } from './scales';
 import { CHANNEL_LABELS, CHANNEL_CSS_CLASSES, CHANNEL_COLORS, MAX_CHANNELS, createChannelSettings } from './channels';
+import { getGeometry } from './geometry';
+import * as triangleGeo from './geometry/triangle';
 
 const chance = new Chance();
 
@@ -44,36 +46,63 @@ const minNoteLength = -500;
 const maxNoteLength = -50;
 
 // Generate a random grid with tame constraints
-const generateRandomGrid = () => {
+const generateRandomGrid = (gridType = 'square') => {
     const size = 5 + Math.floor(Math.random() * 16);        // 5-20
     const numArrows = 5 + Math.floor(Math.random() * 16);    // 5-20
+    const geo = getGeometry(gridType);
     const arrows = [];
     for (let i = 0; i < numArrows; i++) {
-        arrows.push({
-            x: Math.floor(Math.random() * size),
-            y: Math.floor(Math.random() * size),
-            vector: Math.floor(Math.random() * 4),
-            channel: 1 + Math.floor(Math.random() * 9),       // channels 1-9
-        });
+        if (gridType === 'triangle') {
+            // Triangle: valid cells have x + y < size
+            const y = Math.floor(Math.random() * size);
+            const maxX = size - 1 - y;
+            const x = maxX > 0 ? Math.floor(Math.random() * (maxX + 1)) : 0;
+            arrows.push({
+                x,
+                y,
+                vector: Math.floor(Math.random() * 6),
+                channel: 1 + Math.floor(Math.random() * 9),
+            });
+        } else {
+            arrows.push({
+                x: Math.floor(Math.random() * size),
+                y: Math.floor(Math.random() * size),
+                vector: Math.floor(Math.random() * 4),
+                channel: 1 + Math.floor(Math.random() * 9),       // channels 1-9
+            });
+        }
     }
     // Add 0-8 random walls
     const numWalls = Math.floor(Math.random() * 9);
     const walls = [];
-    for (let i = 0; i < numWalls; i++) {
-        const isH = Math.random() > 0.5;
-        if (isH) {
-            const wy = Math.floor(Math.random() * (size - 1));
-            const wx = Math.floor(Math.random() * size);
-            const key = `h:${wy}:${wx}`;
-            if (!walls.includes(key)) walls.push(key);
-        } else {
-            const wy = Math.floor(Math.random() * size);
-            const wx = Math.floor(Math.random() * (size - 1));
-            const key = `v:${wy}:${wx}`;
+    if (gridType === 'triangle') {
+        const wallTypes = ['r', 'br', 'bl'];
+        for (let i = 0; i < numWalls; i++) {
+            const wt = wallTypes[Math.floor(Math.random() * 3)];
+            const y = Math.floor(Math.random() * (size - 1));
+            const maxX = size - 2 - y;
+            if (maxX < 0) continue;
+            const x = Math.floor(Math.random() * (maxX + 1));
+            const key = `${wt}:${y}:${x}`;
             if (!walls.includes(key)) walls.push(key);
         }
+    } else {
+        for (let i = 0; i < numWalls; i++) {
+            const isH = Math.random() > 0.5;
+            if (isH) {
+                const wy = Math.floor(Math.random() * (size - 1));
+                const wx = Math.floor(Math.random() * size);
+                const key = `h:${wy}:${wx}`;
+                if (!walls.includes(key)) walls.push(key);
+            } else {
+                const wy = Math.floor(Math.random() * size);
+                const wx = Math.floor(Math.random() * (size - 1));
+                const key = `v:${wy}:${wx}`;
+                if (!walls.includes(key)) walls.push(key);
+            }
+        }
     }
-    return { size, arrows, walls, muted: true };
+    return { size, arrows, walls, muted: true, gridType };
 };
 const generateRandomSpeed = () => 150 + Math.floor(Math.random() * 251); // 150-400ms
 
@@ -162,6 +191,7 @@ export class Application extends React.Component {
             progCloseConfirm: false,  // show close confirmation warning
             channelsExpanded: false,  // collapsed on mobile by default
             landscapeDrawerOpen: false, // pull-up drawer for landscape phones
+            gridType: 'square',  // 'square' or 'triangle'
         };
     }
 
@@ -772,7 +802,7 @@ export class Application extends React.Component {
             };
         }
         this.setState({
-            grid: generateRandomGrid(),
+            grid: generateRandomGrid(this.state.grid.gridType || 'square'),
             noteLength: generateRandomSpeed(),
             currentPreset: -1,
             channelSettings: newChannelSettings,
@@ -856,7 +886,23 @@ export class Application extends React.Component {
         this.setState({ deleting: !this.state.deleting, eraseTarget: this.state.eraseTarget || 'both' });
     }
     toggleWall = (wallKey) => {
-        // When called from 'closest' mode, convert wallKey to cell+side and use addWallAtCell for symmetry
+        const gridType = this.state.grid.gridType || 'square';
+        
+        if (gridType === 'triangle') {
+            // Triangle mode: direct wall key toggle (r:y:x, br:y:x, bl:y:x)
+            const walls = [...(this.state.grid.walls || [])];
+            const idx = walls.indexOf(wallKey);
+            if (idx >= 0) {
+                walls.splice(idx, 1);
+            } else {
+                walls.push(wallKey);
+            }
+            walls._set = undefined;
+            this.setState({ grid: { ...this.state.grid, walls } });
+            return;
+        }
+        
+        // Square mode: When called from 'closest' mode, convert wallKey to cell+side and use addWallAtCell for symmetry
         const parts = wallKey.split(':');
         const type = parts[0];
         const wy = parseInt(parts[1]);
@@ -890,10 +936,15 @@ export class Application extends React.Component {
         const input = parseInt(value, 10);
         // Filter walls that would be out of bounds for new size
         const oldWalls = this.state.grid.walls || [];
+        const gridType = this.state.grid.gridType || 'square';
         const newWalls = oldWalls.filter(wk => {
             const parts = wk.split(':');
             const wy = parseInt(parts[1]);
             const wx = parseInt(parts[2]);
+            if (gridType === 'triangle') {
+                // Triangle: valid cells have x + y < size
+                return wx >= 0 && wy >= 0 && wx + wy < input - 1;
+            }
             if (parts[0] === 'h') return wy < input - 1 && wx < input;
             return wy < input && wx < input - 1;
         });
@@ -936,13 +987,27 @@ export class Application extends React.Component {
     }
     newGrid = (number, size) => {
         this.setState({
-            grid: newGrid(size, number),
+            grid: newGrid(size, number, this.state.grid.gridType),
         });
     }
     emptyGrid = () => {
         this._pushUndo();
         this.setState({
-            grid: emptyGrid(this.state.grid.size),
+            grid: emptyGrid(this.state.grid.size, this.state.grid.gridType),
+        });
+    }
+    toggleGridType = () => {
+        this._pushUndo();
+        const newType = (this.state.grid.gridType || 'square') === 'square' ? 'triangle' : 'square';
+        const newPresets = newType === 'triangle' ? trianglePresets : presets;
+        // Reset direction to 0 on grid type change (max direction differs)
+        this.setState({
+            grid: { ...emptyGrid(this.state.grid.size, newType), gridType: newType },
+            gridType: newType,
+            presets: newPresets,
+            currentPreset: -1,
+            inputDirection: 0,
+            arrowRotationStep: 0,
         });
     }
     addPreset = () => {
@@ -1104,13 +1169,61 @@ export class Application extends React.Component {
         }
     }
     // ── Binary grid encoding for share URLs ──
-    // Each arrow = 2 bytes: [x(5)|y(5)|vector(2)|channel(4)]
-    // Each wall  = 2 bytes: [type(1)|row(5)|col(5)|padding(5)]
+    // v2: Each arrow = 2 bytes: [x(5)|y(5)|vector(2)|channel(4)]
+    // v3: Header flags include gridType; arrows use 3 bits for vector
+    // Each wall  = 2 bytes: [type(1)|row(5)|col(5)|padding(5)]  (v2)
+    //              triangle: [type(2)|row(5)|col(5)|padding(4)]  (v3)
     // Header: [version(4)|size(6)] [numArrows(8)] [numWalls(8)]
     _encodeGrid = (grid) => {
-        const { size, arrows, walls = [] } = grid;
+        const { size, arrows, walls = [], gridType = 'square' } = grid;
+        const isTri = gridType === 'triangle';
         const numArrows = arrows.length;
         const numWalls = walls.length;
+
+        if (isTri) {
+            // Version 3: triangle-aware encoding
+            // Header: 4 bytes
+            //   buf[0] = (3 << 6) | (size & 0x3F)   version=3
+            //   buf[1] = numArrows
+            //   buf[2] = numWalls
+            //   buf[3] = flags: bit 0 = gridType triangle
+            // Arrow: 2 bytes each — [x(5)|y(3)] [y(2)|vector(3)|channel(4)|pad(0)]
+            //   Actually let's keep it clean:
+            //   hi = (x & 0x1F) << 3 | (y >> 2)
+            //   lo = ((y & 0x3) << 6) | ((vector & 0x7) << 3) | ((channel-1) & 0x7)
+            //   But channel is 1-16 so we need 4 bits. Let's use 3 bytes per arrow for v3.
+            //   Arrow: 3 bytes: [x(5)|y(5)|vector(3)|channel(4)|pad(7)]
+            //   Simpler: byte0 = x, byte1 = y, byte2 = (vector<<4) | (channel-1)
+            const buf = new Uint8Array(4 + numArrows * 3 + numWalls * 2);
+            buf[0] = (3 << 6) | (size & 0x3F);
+            buf[1] = numArrows & 0xFF;
+            buf[2] = numWalls & 0xFF;
+            buf[3] = 1; // gridType=triangle flag
+            for (let i = 0; i < numArrows; i++) {
+                const a = arrows[i];
+                buf[4 + i * 3]     = a.x & 0xFF;
+                buf[4 + i * 3 + 1] = a.y & 0xFF;
+                buf[4 + i * 3 + 2] = ((a.vector & 0x7) << 4) | ((a.channel - 1) & 0xF);
+            }
+            // Triangle walls: type is 'r'=0, 'br'=1, 'bl'=2  (needs 2 bits)
+            const wallTypeMap = { r: 0, br: 1, bl: 2 };
+            const wallOffset = 4 + numArrows * 3;
+            for (let i = 0; i < numWalls; i++) {
+                const parts = walls[i].split(':');
+                const type = wallTypeMap[parts[0]] ?? 0;
+                const row = parseInt(parts[1], 10);
+                const col = parseInt(parts[2], 10);
+                const hi = (type << 6) | (row & 0x3F);
+                const lo = col & 0xFF;
+                buf[wallOffset + i * 2] = hi;
+                buf[wallOffset + i * 2 + 1] = lo;
+            }
+            let b64 = '';
+            for (let i = 0; i < buf.length; i++) b64 += String.fromCharCode(buf[i]);
+            return window.btoa(b64).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+
+        // Version 2: original square format
         // 3 header bytes + 2 per arrow + 2 per wall
         const buf = new Uint8Array(3 + numArrows * 2 + numWalls * 2);
         // Header
@@ -1153,6 +1266,35 @@ export class Application extends React.Component {
             for (let i = 0; i < raw.length; i++) buf[i] = raw.charCodeAt(i);
 
             const version = (buf[0] >> 6) & 0x3;
+            if (version === 3) {
+                // Binary v3 format (triangle support)
+                const size = buf[0] & 0x3F;
+                const numArrows = buf[1];
+                const numWalls = buf[2];
+                const flags = buf[3];
+                const gridType = (flags & 1) ? 'triangle' : 'square';
+                const arrows = [];
+                for (let i = 0; i < numArrows; i++) {
+                    arrows.push({
+                        x: buf[4 + i * 3],
+                        y: buf[4 + i * 3 + 1],
+                        vector: (buf[4 + i * 3 + 2] >> 4) & 0x7,
+                        channel: (buf[4 + i * 3 + 2] & 0xF) + 1,
+                    });
+                }
+                const wallTypeNames = ['r', 'br', 'bl'];
+                const walls = [];
+                const wallOffset = 4 + numArrows * 3;
+                for (let i = 0; i < numWalls; i++) {
+                    const hi = buf[wallOffset + i * 2];
+                    const lo = buf[wallOffset + i * 2 + 1];
+                    const type = wallTypeNames[(hi >> 6) & 0x3] || 'r';
+                    const row = hi & 0x3F;
+                    const col = lo & 0xFF;
+                    walls.push(`${type}:${row}:${col}`);
+                }
+                return { size, arrows, walls, muted: true, gridType };
+            }
             if (version === 2) {
                 // Binary v2 format
                 const size = buf[0] & 0x3F;
@@ -1238,9 +1380,14 @@ export class Application extends React.Component {
 
     render() {
         // Direction labels for the arrow SVG
-        const dirLabels = ["Up","Right","Down","Left"];
-        // Continuous rotation: each step adds 90°. At step 0, direction 0 = Up = -90° from the right-pointing SVG
-        const arrowRotationDeg = 270 + this.state.arrowRotationStep * 90;
+        const isTriangleMode = (this.state.grid.gridType || 'square') === 'triangle';
+        const dirLabels = isTriangleMode
+            ? triangleGeo.DIR_LABELS
+            : ["Up","Right","Down","Left"];
+        const dirCount = isTriangleMode ? 6 : 4;
+        // Continuous rotation: each step adds 90° (square) or 60° (triangle)
+        const stepDeg = isTriangleMode ? 60 : 90;
+        const arrowRotationDeg = 270 + this.state.arrowRotationStep * stepDeg;
         
         return (
             <div className="app-container">
@@ -1439,7 +1586,19 @@ export class Application extends React.Component {
                                     className="popup-trigger-btn popup-trigger-wrap"
                                     onClick={() => this._openPopup('gridSize', 'left')}
                                     title="Adjust grid size"
-                                >{this.state.grid.size}×{this.state.grid.size}</button>
+                                >{isTriangleMode ? `△${this.state.grid.size}` : `${this.state.grid.size}×${this.state.grid.size}`}</button>
+                            </div>
+
+                            {/* Grid Type Toggle */}
+                            <div className="panel-group">
+                                <h3>Grid Type</h3>
+                                <button
+                                    className="popup-trigger-btn popup-trigger-wrap grid-type-toggle"
+                                    onClick={() => this.toggleGridType()}
+                                    title={`Switch to ${isTriangleMode ? 'square' : 'triangle'} grid`}
+                                >
+                                    {isTriangleMode ? '△ Tri' : '□ Sq'}
+                                </button>
                             </div>
 
                                             {/* Channel selector */}
@@ -1823,6 +1982,8 @@ export class Application extends React.Component {
                                 };
                                 return (
                                     <div className="grid-label-wrapper" style={{ position: 'relative' }}>
+                                        {!isTriangleMode && (
+                                        <>
                                         {/* Column labels (top) */}
                                         <div className="grid-labels grid-labels-top">
                                             {range(0, gridSize).map(i => (
@@ -1840,6 +2001,8 @@ export class Application extends React.Component {
                                                 }}>{getNoteLabel(i)}</span>
                                             ))}
                                         </div>
+                                        </>
+                                        )}
                                         <div id="sketch-holder" />
                                     </div>
                                 );
@@ -1944,7 +2107,7 @@ export class Application extends React.Component {
                                             <span className="tool-label">direction</span>
                                             <button
                                                 className="tool-btn"
-                                                onClick={() => this.newInputDirection((this.state.inputDirection + 1) % 4)}
+                                                onClick={() => this.newInputDirection((this.state.inputDirection + 1) % dirCount)}
                                                 title={`Direction: ${dirLabels[this.state.inputDirection]} (click to rotate)`}
                                             >
                                                 <svg viewBox="0 0 24 24" width="18" height="18" style={{transform: `rotate(${arrowRotationDeg}deg)`, transition: 'transform 0.2s ease'}}>
@@ -2003,7 +2166,7 @@ export class Application extends React.Component {
                                 >
                                     <span className="group-label">Wall</span>
                                     <div className="wall-sides-grid">
-                                        {['top','bottom','left','right'].map(side => (
+                                        {!isTriangleMode && ['top','bottom','left','right'].map(side => (
                                             <button
                                                 key={side}
                                                 className={`wall-side-btn ${side} ${this.state.drawMode === 'wall' && this.state.wallSides.has(side) ? 'active' : ''}`}
@@ -2039,18 +2202,24 @@ export class Application extends React.Component {
                                         <div className={`draw-tool-group ${!this.state.deleting && anySym ? 'active-section' : 'inactive-section'}`}>
                                             <span className="group-label">Symmetry</span>
                                             <div className="sym-grid">
+                                                {!isTriangleMode && (
                                                 <button className={`tool-btn ${this.state.verticalSymmetry ? 'active' : ''}`} onClick={() => this.setState({verticalSymmetry: !this.state.verticalSymmetry})} title="Vertical (1)">
                                                     <svg viewBox="0 0 24 24" width="16" height="16"><line x1="12" y1="3" x2="12" y2="21" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>
                                                 </button>
-                                                <button className={`tool-btn ${this.state.horizontalSymmetry ? 'active' : ''}`} onClick={() => this.setState({horizontalSymmetry: !this.state.horizontalSymmetry})} title="Horizontal (2)">
+                                                )}
+                                                <button className={`tool-btn ${this.state.horizontalSymmetry ? 'active' : ''}`} onClick={() => this.setState({horizontalSymmetry: !this.state.horizontalSymmetry})} title={isTriangleMode ? "Mirror symmetry" : "Horizontal (2)"}>
                                                     <svg viewBox="0 0 24 24" width="16" height="16"><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>
                                                 </button>
+                                                {!isTriangleMode && (
+                                                <>
                                                 <button className={`tool-btn ${this.state.forwardDiagonalSymmetry ? 'active' : ''}`} onClick={() => this.setState({forwardDiagonalSymmetry: !this.state.forwardDiagonalSymmetry})} title="Diagonal / (3)">
                                                     <svg viewBox="0 0 24 24" width="16" height="16"><line x1="5" y1="19" x2="19" y2="5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>
                                                 </button>
                                                 <button className={`tool-btn ${this.state.backwardDiagonalSymmetry ? 'active' : ''}`} onClick={() => this.setState({backwardDiagonalSymmetry: !this.state.backwardDiagonalSymmetry})} title="Diagonal \ (4)">
                                                     <svg viewBox="0 0 24 24" width="16" height="16"><line x1="5" y1="5" x2="19" y2="19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>
                                                 </button>
+                                                </>
+                                                )}
                                             </div>
                                         </div>
                                     );

@@ -794,6 +794,12 @@ body:has(.slider-overlay-backdrop) .ch-select-arrow {
   color: var(--text-primary);
 }
 
+/* Grid type toggle */
+.grid-type-toggle {
+  font-size: 0.85em;
+  letter-spacing: 0.04em;
+}
+
 /* Full side-panel overlay with vertical slider */
 .slider-overlay-backdrop {
   position: fixed;

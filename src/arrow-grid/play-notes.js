@@ -1,6 +1,7 @@
 import { makeMIDImessage } from './midi';
 import { SYNTH_PRESETS, initAudio, playTonalNote, playPercussionNote, disposeAudio as disposeSynthEngine, isReady } from './synth-engine';
 import { range } from 'ramda';
+import { getGeometry } from './geometry';
 
 // Musical notes array (A0 to C8)
 export const musicalNotes = range(0, 8).reduce((accum, curr) => {
@@ -9,7 +10,7 @@ export const musicalNotes = range(0, 8).reduce((accum, curr) => {
     }));
 }, []);
 
-// Get note index based on arrow position
+// Get note index based on arrow position (square grid)
 const getIndex = (x, y, size, vector) => {
     if (vector === 1 || vector === 3) {
         return y;
@@ -19,11 +20,20 @@ const getIndex = (x, y, size, vector) => {
     return 0;
 };
 
+/** Get note index - geometry aware */
+const getNoteIndexForArrow = (arrow, size, gridType) => {
+    if (gridType === 'triangle') {
+        const geo = getGeometry('triangle');
+        return geo.getNoteIndex(arrow, size);
+    }
+    return getIndex(arrow.x, arrow.y, size, arrow.vector);
+};
+
 // Play sounds for arrows that hit boundaries
 // Each arrow carries a .channel property (1-16 = channel number)
 // Muted channels make no sound. Otherwise play browser sound and/or send MIDI.
 // channelSettings: { [channelId]: { volume, midiChannel, muted, synthPreset, synth } }
-export const playSounds = async (boundaryArrows, size, length, soundOn, midiOn, scale, musicalKey, globalVelocity, channelSettings) => {
+export const playSounds = async (boundaryArrows, size, length, soundOn, midiOn, scale, musicalKey, globalVelocity, channelSettings, gridType) => {
     const gVel = globalVelocity ?? 1.0;
     const chSettings = channelSettings || {};
     try {
@@ -35,7 +45,7 @@ export const playSounds = async (boundaryArrows, size, length, soundOn, midiOn, 
             if (settings.muted) return;
             const midiChannel = settings.midiChannel || ch;
             const chVolume = settings.volume ?? 1.0;
-            const noteToPlay = getIndex(arrow.x, arrow.y, size, arrow.vector);
+            const noteToPlay = getNoteIndexForArrow(arrow, size, gridType);
             const vel = (arrow.velocity ?? 1.0) * gVel * chVolume;
             makeMIDImessage(
                 musicalKey + scale[noteToPlay % scale.length],
@@ -61,7 +71,7 @@ export const playSounds = async (boundaryArrows, size, length, soundOn, midiOn, 
         const settings = chSettings[ch] || {};
         if (settings.muted) return;
         const chVolume = settings.volume ?? 1.0;
-        const noteIndex = getIndex(arrow.x, arrow.y, size, arrow.vector);
+        const noteIndex = getNoteIndexForArrow(arrow, size, gridType);
         const midiNote = musicalKey + scale[noteIndex % scale.length];
         const vel = (arrow.velocity ?? 1.0) * gVel * chVolume;
 

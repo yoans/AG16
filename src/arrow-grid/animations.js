@@ -7,6 +7,9 @@ import {
     arrowBoundaryKey,
     boundaryKey
 } from './arrows-logic';
+import { getGeometry } from './geometry';
+import * as triangleGeo from './geometry/triangle';
+import * as squareGeo from './geometry/square';
 
 let stateDrawing;
 let previousTime;
@@ -87,6 +90,22 @@ const getParticleColor = (channel) => {
 const convertPixelToIndex = pixel => Math.floor(
     (pixel - gridCanvasBorderSize) / cellSize
 );
+
+/** Convert pixel to cell for the current grid geometry */
+const convertPixelToCell = (px, py) => {
+    if (stateDrawing && stateDrawing.grid && stateDrawing.grid.gridType === 'triangle') {
+        return triangleGeo.pixelToCell(px, py, cellSize, gridCanvasBorderSize);
+    }
+    return { x: convertPixelToIndex(px), y: convertPixelToIndex(py) };
+};
+
+/** Check if cell coords are valid for current grid */
+const isCellInBounds = (cx, cy) => {
+    if (!stateDrawing || !stateDrawing.grid) return false;
+    const geo = getGeometry(stateDrawing.grid.gridType);
+    return geo.isValidCell(cx, cy, stateDrawing.grid.size);
+};
+
 // const nat = () => chance.natural({
 //     min: 0,
 //     max: 255,
@@ -113,9 +132,8 @@ const shouldBlockCanvasInputForSlider = () => isLandscapePhoneViewport() && isSl
 export const getAdderWithMousePosition = (arrowAdder) => (e) => {
     thisArrowAdder = arrowAdder;
     if (mouseIsInSketch()) {
-        const mouseXindex = convertPixelToIndex(mouseX);
-        const mouseYindex = convertPixelToIndex(mouseY);
-        arrowAdder(mouseXindex, mouseYindex, e);
+        const cell = convertPixelToCell(mouseX, mouseY);
+        arrowAdder(cell.x, cell.y, e);
     } else {
     }
 };
@@ -167,6 +185,14 @@ const nearestWallEdge = (px, py, gridSize) => {
     if (candidates.length === 0) return null;
     candidates.sort((a, b) => a.dist - b.dist);
     return candidates[0].key;
+};
+
+/** Geometry-aware nearest wall edge */
+const nearestWallEdgeGeo = (px, py, gridSize) => {
+    if (stateDrawing && stateDrawing.grid && stateDrawing.grid.gridType === 'triangle') {
+        return triangleGeo.nearestWallEdge(px, py, gridSize, gridCanvasSize, gridCanvasBorderSize, cellSize);
+    }
+    return nearestWallEdge(px, py, gridSize);
 };
 export const setUpCanvas = (state) => {
     stateDrawing = state;
@@ -263,41 +289,36 @@ export const setUpCanvas = (state) => {
                     // Erase mode: remove based on eraseTarget
                     const target = stateDrawing.eraseTarget || 'both';
                     if (target === 'arrows' || target === 'both') {
-                        const mouseXindex = convertPixelToIndex(mouseX);
-                        const mouseYindex = convertPixelToIndex(mouseY);
-                        thisArrowAdder(mouseXindex, mouseYindex, e, true);
+                        const cell = convertPixelToCell(mouseX, mouseY);
+                        thisArrowAdder(cell.x, cell.y, e, true);
                     }
                     if (target === 'walls' || target === 'both') {
-                        const wallKey = nearestWallEdge(mouseX, mouseY, stateDrawing.grid.size);
+                        const wallKey = nearestWallEdgeGeo(mouseX, mouseY, stateDrawing.grid.size);
                         if (wallKey) thisWallRemover(wallKey);
                     }
                 } else if (stateDrawing.drawMode === 'wall') {
                     if (!stateDrawing.wallClosest && stateDrawing.wallSides && stateDrawing.wallSides.size > 0) {
                         // Specific side(s) mode: place walls on all selected sides of the clicked cell
-                        const cellX = convertPixelToIndex(mouseX);
-                        const cellY = convertPixelToIndex(mouseY);
-                        if (cellX >= 0 && cellX < stateDrawing.grid.size && cellY >= 0 && cellY < stateDrawing.grid.size) {
-                            thisWallPlacer(cellX, cellY, stateDrawing.wallSides);
+                        const cell = convertPixelToCell(mouseX, mouseY);
+                        if (isCellInBounds(cell.x, cell.y)) {
+                            thisWallPlacer(cell.x, cell.y, stateDrawing.wallSides);
                         }
                     } else {
                         // Closest mode: toggle nearest edge
-                        const wallKey = nearestWallEdge(mouseX, mouseY, stateDrawing.grid.size);
+                        const wallKey = nearestWallEdgeGeo(mouseX, mouseY, stateDrawing.grid.size);
                         if (wallKey) thisWallToggler(wallKey);
                     }
                 } else {
-                    const mouseXindex = convertPixelToIndex(mouseX);
-                    const mouseYindex = convertPixelToIndex(mouseY);
-                    thisArrowAdder(mouseXindex, mouseYindex, e, true);
+                    const cell = convertPixelToCell(mouseX, mouseY);
+                    thisArrowAdder(cell.x, cell.y, e, true);
                 }
             }
             const setMouseStart = (e) => handleCanvasClick(e, false);
             const setTouchStart = (e) => handleCanvasClick(e, true);
             const sameAsStart = ()=>{
-                const mouseXindex = convertPixelToIndex(mouseX);
-                const mouseYindex = convertPixelToIndex(mouseY);
-                const mouseXindexStart = convertPixelToIndex(mouseXstart);
-                const mouseYindexStart = convertPixelToIndex(mouseYstart);
-                return mouseXindexStart === mouseXindex && mouseYindexStart === mouseYindex;
+                const cell = convertPixelToCell(mouseX, mouseY);
+                const cellStart = convertPixelToCell(mouseXstart, mouseYstart);
+                return cellStart.x === cell.x && cellStart.y === cell.y;
             };
             const setMouseEnd = (e) => {
                 mouseXstart=-1000;
@@ -327,13 +348,12 @@ export const setUpCanvas = (state) => {
                         const target = stateDrawing.eraseTarget || 'both';
                         if (target === 'arrows' || target === 'both') {
                             if (!sameAsStart()) {
-                                const mouseXindex = convertPixelToIndex(mouseX);
-                                const mouseYindex = convertPixelToIndex(mouseY);
-                                thisArrowAdder(mouseXindex, mouseYindex, e);
+                                const cell = convertPixelToCell(mouseX, mouseY);
+                                thisArrowAdder(cell.x, cell.y, e);
                             }
                         }
                         if (target === 'walls' || target === 'both') {
-                            const wallKey = nearestWallEdge(mouseX, mouseY, stateDrawing.grid.size);
+                            const wallKey = nearestWallEdgeGeo(mouseX, mouseY, stateDrawing.grid.size);
                             if (wallKey && wallKey !== lastDragWall) {
                                 lastDragWall = wallKey;
                                 thisWallRemover(wallKey);
@@ -342,18 +362,17 @@ export const setUpCanvas = (state) => {
                         if (e.preventDefault) e.preventDefault();
                     } else if (stateDrawing.drawMode === 'wall') {
                         if (!stateDrawing.wallClosest && stateDrawing.wallSides && stateDrawing.wallSides.size > 0) {
-                            const cellX = convertPixelToIndex(mouseX);
-                            const cellY = convertPixelToIndex(mouseY);
-                            if (cellX >= 0 && cellX < stateDrawing.grid.size && cellY >= 0 && cellY < stateDrawing.grid.size) {
-                                const dragKey = `sides:${cellX}:${cellY}`;
+                            const cell = convertPixelToCell(mouseX, mouseY);
+                            if (isCellInBounds(cell.x, cell.y)) {
+                                const dragKey = `sides:${cell.x}:${cell.y}`;
                                 if (dragKey !== lastDragWall) {
                                     lastDragWall = dragKey;
-                                    thisWallPlacer(cellX, cellY, stateDrawing.wallSides);
+                                    thisWallPlacer(cell.x, cell.y, stateDrawing.wallSides);
                                 }
                             }
                             if (e.preventDefault) e.preventDefault();
                         } else {
-                            const wallKey = nearestWallEdge(mouseX, mouseY, stateDrawing.grid.size);
+                            const wallKey = nearestWallEdgeGeo(mouseX, mouseY, stateDrawing.grid.size);
                             if (wallKey && wallKey !== lastDragWall) {
                                 lastDragWall = wallKey;
                                 thisWallToggler(wallKey);
@@ -361,9 +380,8 @@ export const setUpCanvas = (state) => {
                             if (e.preventDefault) e.preventDefault();
                         }
                     } else if (!sameAsStart()) {
-                        const mouseXindex = convertPixelToIndex(mouseX);
-                        const mouseYindex = convertPixelToIndex(mouseY);
-                        thisArrowAdder(mouseXindex, mouseYindex, e);
+                        const cell = convertPixelToCell(mouseX, mouseY);
+                        thisArrowAdder(cell.x, cell.y, e);
                         e.preventDefault()
                     }
                 }
@@ -377,28 +395,75 @@ export const setUpCanvas = (state) => {
             mouseY = sketch.mouseY;
             mouseIsPressed = sketch.mouseIsPressed;
             
-            // draw grid
-            sketch.push()
+            const isTriangleMode = stateDrawing.grid.gridType === 'triangle';
+            const geo = getGeometry(stateDrawing.grid.gridType);
+            const gridType = stateDrawing.grid.gridType || 'square';
+            
+            // draw grid background & border
+            sketch.push();
             sketch.strokeWeight(0);
             sketch.fill(18, 18, 31, 255); // --bg-card match
-            sketch.rect(gridCanvasBorderSize, gridCanvasBorderSize, gridCanvasSize, gridCanvasSize);
+            if (isTriangleMode) {
+                // Triangular background
+                const cw = gridCanvasSize + gridCanvasBorderSize * 2;
+                const ch = gridCanvasSize + gridCanvasBorderSize * 2;
+                sketch.triangle(
+                    cw / 2, gridCanvasBorderSize,                    // top-center... actually flat-top triangle
+                    gridCanvasBorderSize, gridCanvasBorderSize,       // top-left
+                    cw - gridCanvasBorderSize, gridCanvasBorderSize   // top-right
+                );
+                // For a flat-top equilateral triangle pointing down:
+                sketch.rect(gridCanvasBorderSize, gridCanvasBorderSize, gridCanvasSize, gridCanvasSize);
+            } else {
+                sketch.rect(gridCanvasBorderSize, gridCanvasBorderSize, gridCanvasSize, gridCanvasSize);
+            }
             sketch.noFill();
             sketch.strokeWeight(gridCanvasBorderSize*2);
             const wc = getWallColor();
             sketch.stroke(wc[0], wc[1], wc[2], 100); // channel-colored border
-            sketch.rect(0, 0, gridCanvasSize+gridCanvasBorderSize*2, gridCanvasSize+gridCanvasBorderSize*2);
-
+            if (isTriangleMode) {
+                // Draw triangular border
+                const b = gridCanvasBorderSize;
+                const sz = stateDrawing.grid.size;
+                cellSize = (gridCanvasSize * 1.0) / (1.0 * sz);
+                const triW = sz * cellSize;
+                const triH = sz * cellSize * (Math.sqrt(3) / 2);
+                sketch.triangle(
+                    b, b,                           // top-left
+                    b + triW, b,                    // top-right
+                    b + triW / 2, b + triH          // bottom-center
+                );
+            } else {
+                sketch.rect(0, 0, gridCanvasSize+gridCanvasBorderSize*2, gridCanvasSize+gridCanvasBorderSize*2);
+            }
             sketch.pop();
-            //draw grid lines
+
+            //draw grid lines / markers
             cellSize = (gridCanvasSize * 1.0) / (1.0 * stateDrawing.grid.size);
             sketch.push();
             sketch.stroke(255, 255, 255, 20); // Subtle white lines
             sketch.strokeWeight(1);
-            for (var i=1; i<stateDrawing.grid.size; i++) {
-                // horizontal
-                sketch.line(1+gridCanvasBorderSize, 1+gridCanvasBorderSize + i * cellSize, gridCanvasSize, 1 + i * cellSize);
-                // vertical
-                sketch.line(1+gridCanvasBorderSize + i * cellSize, 1+gridCanvasBorderSize, 1 + i * cellSize, gridCanvasSize,);
+            if (isTriangleMode) {
+                // Draw hexagon markers at each valid cell
+                const sz = stateDrawing.grid.size;
+                sketch.noStroke();
+                sketch.fill(255, 255, 255, 15);
+                const markerR = cellSize * 0.2;
+                for (let y = 0; y < sz; y++) {
+                    for (let x = 0; x < sz - y; x++) {
+                        const cp = triangleGeo.cellToPixel(x, y, cellSize, gridCanvasBorderSize);
+                        const cx = cp.px + cellSize / 2;
+                        const cy = cp.py + cellSize * (Math.sqrt(3) / 2) / 3;
+                        triangleGeo.drawHexMarker(sketch, cx, cy, markerR);
+                    }
+                }
+            } else {
+                for (var i=1; i<stateDrawing.grid.size; i++) {
+                    // horizontal
+                    sketch.line(1+gridCanvasBorderSize, 1+gridCanvasBorderSize + i * cellSize, gridCanvasSize, 1 + i * cellSize);
+                    // vertical
+                    sketch.line(1+gridCanvasBorderSize + i * cellSize, 1+gridCanvasBorderSize, 1 + i * cellSize, gridCanvasSize,);
+                }
             }
             sketch.pop();
 
@@ -410,21 +475,44 @@ export const setUpCanvas = (state) => {
                 sketch.stroke(wc[0], wc[1], wc[2], 220); // channel-colored walls
                 sketch.strokeWeight(gridCanvasBorderSize * 1.5);
                 sketch.strokeCap(sketch.SQUARE);
-                for (const wallKey of walls) {
-                    const parts = wallKey.split(':');
-                    const type = parts[0];
-                    const wy = parseInt(parts[1]);
-                    const wx = parseInt(parts[2]);
-                    if (type === 'h') {
-                        // Horizontal wall below cell (wx, wy)
-                        const px = gridCanvasBorderSize + wx * cellSize;
-                        const py = gridCanvasBorderSize + (wy + 1) * cellSize;
-                        sketch.line(px, py, px + cellSize, py);
-                    } else {
-                        // Vertical wall right of cell (wx, wy)
-                        const px = gridCanvasBorderSize + (wx + 1) * cellSize;
-                        const py = gridCanvasBorderSize + wy * cellSize;
-                        sketch.line(px, py, px, py + cellSize);
+                if (isTriangleMode) {
+                    // Triangle wall rendering
+                    const sz = stateDrawing.grid.size;
+                    const SQRT3_2 = Math.sqrt(3) / 2;
+                    for (const wallKey of walls) {
+                        const parts = wallKey.split(':');
+                        const type = parts[0];
+                        const wy = parseInt(parts[1]);
+                        const wx = parseInt(parts[2]);
+                        const cp = triangleGeo.cellToPixel(wx, wy, cellSize, gridCanvasBorderSize);
+                        const cx = cp.px;
+                        const cy = cp.py;
+                        if (type === 'r') {
+                            // Right edge: wall between (wx,wy) and (wx+1,wy)
+                            sketch.line(cx + cellSize, cy, cx + cellSize / 2, cy + cellSize * SQRT3_2);
+                        } else if (type === 'br') {
+                            // Bottom-right: wall between (wx,wy) and (wx,wy+1)
+                            sketch.line(cx + cellSize / 2, cy + cellSize * SQRT3_2, cx, cy + cellSize * SQRT3_2); // approximation
+                        } else if (type === 'bl') {
+                            // Bottom-left: diagonal edge
+                            sketch.line(cx, cy, cx + cellSize / 2, cy + cellSize * SQRT3_2);
+                        }
+                    }
+                } else {
+                    for (const wallKey of walls) {
+                        const parts = wallKey.split(':');
+                        const type = parts[0];
+                        const wy = parseInt(parts[1]);
+                        const wx = parseInt(parts[2]);
+                        if (type === 'h') {
+                            const px = gridCanvasBorderSize + wx * cellSize;
+                            const py = gridCanvasBorderSize + (wy + 1) * cellSize;
+                            sketch.line(px, py, px + cellSize, py);
+                        } else {
+                            const px = gridCanvasBorderSize + (wx + 1) * cellSize;
+                            const py = gridCanvasBorderSize + wy * cellSize;
+                            sketch.line(px, py, px, py + cellSize);
+                        }
                     }
                 }
                 sketch.pop();
@@ -432,9 +520,10 @@ export const setUpCanvas = (state) => {
 
             // Draw hover previews based on draw mode
             if (mouseIsInSketch() && !stateDrawing.deleting) {
-                const hoverCellX = convertPixelToIndex(mouseX);
-                const hoverCellY = convertPixelToIndex(mouseY);
-                const inBounds = hoverCellX >= 0 && hoverCellX < stateDrawing.grid.size && hoverCellY >= 0 && hoverCellY < stateDrawing.grid.size;
+                const hoverCell = convertPixelToCell(mouseX, mouseY);
+                const hoverCellX = hoverCell.x;
+                const hoverCellY = hoverCell.y;
+                const inBounds = isCellInBounds(hoverCellX, hoverCellY);
                 const sz = stateDrawing.grid.size;
 
                 // Symmetry mirror helper
@@ -570,28 +659,52 @@ export const setUpCanvas = (state) => {
                     }
                 } else if (stateDrawing.drawMode === 'arrow' && inBounds) {
                     // Arrow mode: show ghost arrow preview with symmetry
-                    // Vector maps: 0=up, 1=right, 2=down, 3=left
-                    const arrowFlips = {
-                        h:  (p) => ({ dir: [2, 1, 0, 3][p.dir] }),
-                        v:  (p) => ({ dir: [0, 3, 2, 1][p.dir] }),
-                        bd: (p) => ({ dir: [3, 2, 1, 0][p.dir] }),
-                        fd: (p) => ({ dir: [1, 0, 3, 2][p.dir] }),
-                    };
-                    const dir = stateDrawing.inputDirection;
-                    const placements = getSymmetricPlacements(hoverCellX, hoverCellY, { dir }, arrowFlips);
-                    sketch.push();
-                    sketch.strokeWeight(0);
-                    sketch.fill(...getPreviewColor());
-                    for (const p of placements) {
-                        if (p.x >= 0 && p.x < sz && p.y >= 0 && p.y < sz) {
-                            const topLeft = {
-                                x: gridCanvasBorderSize + p.x * cellSize,
-                                y: gridCanvasBorderSize + p.y * cellSize
-                            };
-                            triangleDrawingArray[p.dir](topLeft, cellSize, sketch);
+                    if (isTriangleMode) {
+                        // Triangle mode: 6 directions, no symmetry preview for now (just the base arrow)
+                        const dir = stateDrawing.inputDirection;
+                        sketch.push();
+                        sketch.strokeWeight(0);
+                        sketch.fill(...getPreviewColor());
+                        const cp = triangleGeo.cellToPixel(hoverCellX, hoverCellY, cellSize, gridCanvasBorderSize);
+                        const cx = cp.px + cellSize / 2;
+                        const cy = cp.py + cellSize * (Math.sqrt(3) / 2) / 3;
+                        triangleGeo.drawTriangleArrow(sketch, cx, cy, cellSize, dir);
+                        // Horizontal symmetry mirror
+                        if (stateDrawing.horizontalSymmetry) {
+                            const mirX = (sz - 1 - hoverCellY) - hoverCellX;
+                            const mirY = hoverCellY;
+                            if (geo.isValidCell(mirX, mirY, sz)) {
+                                const mcp = triangleGeo.cellToPixel(mirX, mirY, cellSize, gridCanvasBorderSize);
+                                const mcx = mcp.px + cellSize / 2;
+                                const mcy = mcp.py + cellSize * (Math.sqrt(3) / 2) / 3;
+                                triangleGeo.drawTriangleArrow(sketch, mcx, mcy, cellSize, triangleGeo.SYMMETRY_VECTOR_MAPS.horizontal[dir]);
+                            }
                         }
+                        sketch.pop();
+                    } else {
+                        // Square mode: 4 directions with full symmetry preview
+                        const arrowFlips = {
+                            h:  (p) => ({ dir: [2, 1, 0, 3][p.dir] }),
+                            v:  (p) => ({ dir: [0, 3, 2, 1][p.dir] }),
+                            bd: (p) => ({ dir: [3, 2, 1, 0][p.dir] }),
+                            fd: (p) => ({ dir: [1, 0, 3, 2][p.dir] }),
+                        };
+                        const dir = stateDrawing.inputDirection;
+                        const placements = getSymmetricPlacements(hoverCellX, hoverCellY, { dir }, arrowFlips);
+                        sketch.push();
+                        sketch.strokeWeight(0);
+                        sketch.fill(...getPreviewColor());
+                        for (const p of placements) {
+                            if (p.x >= 0 && p.x < sz && p.y >= 0 && p.y < sz) {
+                                const topLeft = {
+                                    x: gridCanvasBorderSize + p.x * cellSize,
+                                    y: gridCanvasBorderSize + p.y * cellSize
+                                };
+                                triangleDrawingArray[p.dir](topLeft, cellSize, sketch);
+                            }
+                        }
+                        sketch.pop();
                     }
-                    sketch.pop();
                 }
             }
 
@@ -602,6 +715,14 @@ export const setUpCanvas = (state) => {
                     y: convertIndexToPixel(xy.y)
                 }
             );
+            /** Get cell-center pixel position (geometry-aware) */
+            const convertArrowToCenter = (arrow) => {
+                if (isTriangleMode) {
+                    const cp = triangleGeo.cellToPixel(arrow.x, arrow.y, cellSize, gridCanvasBorderSize);
+                    return { x: cp.px + cellSize / 2, y: cp.py + cellSize * (Math.sqrt(3) / 2) / 3 };
+                }
+                return { x: convertIndexToPixel(arrow.x) + cellSize / 2, y: convertIndexToPixel(arrow.y) + cellSize / 2 };
+            };
             const timeDiff = new Date().getTime() - previousTime.getTime();
             let percentage;
             if (stateDrawing.playing) {
@@ -621,12 +742,13 @@ export const setUpCanvas = (state) => {
             const boundaryDictionary = getArrowBoundaryDictionary(
                 stateDrawing.grid.arrows || [],
                 stateDrawing.grid.size,
-                boundaryKey,
+                (arrow, size, rotations, walls) => boundaryKey(arrow, size, rotations, walls, gridType),
                 undefined,
                 stateDrawing.grid.walls || []
             );
             const boundaryDictionaryX = boundaryDictionary['x'] || [];
             const boundaryDictionaryY = boundaryDictionary['y'] || [];
+            const boundaryDictionaryZ = boundaryDictionary['z'] || [];  // triangle hypotenuse
             // Spawn burst particles at wall collisions at start of new grid step
             if (stateDrawing.playing && stateDrawing.showCollisions && lastBurstStep !== stateDrawing.gridStep) {
                 lastBurstStep = stateDrawing.gridStep;
@@ -634,17 +756,23 @@ export const setUpCanvas = (state) => {
                 if (particles.length < 300) {
                 // Since arrows have already bounced, find arrows that just came FROM a wall
                 // i.e., arrows at edge cells pointing inward (they were flipped)
-                const allBoundary = [...boundaryDictionaryX, ...boundaryDictionaryY];
+                const allBoundary = [...boundaryDictionaryX, ...boundaryDictionaryY, ...boundaryDictionaryZ];
                 allBoundary.forEach((arrow) => {
-                    // Position burst at the wall edge, not cell center
-                    let bx = convertIndexToPixel(arrow.x) + cellSize / 2;
-                    let by = convertIndexToPixel(arrow.y) + cellSize / 2;
-                    // Shift burst toward the wall the arrow is heading to
-                    if (arrow.vector === 0) by = convertIndexToPixel(arrow.y);          // top wall
-                    if (arrow.vector === 2) by = convertIndexToPixel(arrow.y) + cellSize; // bottom wall
-                    if (arrow.vector === 3) bx = convertIndexToPixel(arrow.x);          // left wall
-                    if (arrow.vector === 1) bx = convertIndexToPixel(arrow.x) + cellSize; // right wall
-                    spawnBurst(bx, by, cellSize, arrow.channel);
+                    if (isTriangleMode) {
+                        // Triangle mode: position burst at cell center
+                        const center = convertArrowToCenter(arrow);
+                        spawnBurst(center.x, center.y, cellSize, arrow.channel);
+                    } else {
+                        // Square mode
+                        let bx = convertIndexToPixel(arrow.x) + cellSize / 2;
+                        let by = convertIndexToPixel(arrow.y) + cellSize / 2;
+                        // Shift burst toward the wall the arrow is heading to
+                        if (arrow.vector === 0) by = convertIndexToPixel(arrow.y);          // top wall
+                        if (arrow.vector === 2) by = convertIndexToPixel(arrow.y) + cellSize; // bottom wall
+                        if (arrow.vector === 3) bx = convertIndexToPixel(arrow.x);          // left wall
+                        if (arrow.vector === 1) bx = convertIndexToPixel(arrow.x) + cellSize; // right wall
+                        spawnBurst(bx, by, cellSize, arrow.channel);
+                    }
                 });
                 }
             }
@@ -693,7 +821,7 @@ export const setUpCanvas = (state) => {
             const arrowDictionary = getArrowBoundaryDictionary(
                 arrowsToNotRotateDictionary,
                 stateDrawing.grid.size,
-                arrowBoundaryKey,
+                (arrow, size, rotations, walls) => arrowBoundaryKey(arrow, size, rotations, walls, gridType),
                 undefined,
                 stateDrawing.grid.walls || []
             );
@@ -701,13 +829,19 @@ export const setUpCanvas = (state) => {
                 sketch.push();
                 sketch.strokeWeight(0);
                 sketch.fill(...getArrowColor(arrow.channel, arrow.velocity));
-                const shiftedTopLeft = timeShift(
-                    convertArrowToTopLeft(arrow),
-                    arrow.vector,
-                    cellSize * percentage
-                );
-                const triangleDrawer = triangleDrawingArray[arrow.vector];
-                triangleDrawer(shiftedTopLeft, cellSize, sketch);
+                if (isTriangleMode) {
+                    const center = convertArrowToCenter(arrow);
+                    const shifted = triangleGeo.animationShift(center, arrow.vector, percentage, cellSize);
+                    triangleGeo.drawTriangleArrow(sketch, shifted.x, shifted.y, cellSize * 0.75, arrow.vector);
+                } else {
+                    const shiftedTopLeft = timeShift(
+                        convertArrowToTopLeft(arrow),
+                        arrow.vector,
+                        cellSize * percentage
+                    );
+                    const triangleDrawer = triangleDrawingArray[arrow.vector];
+                    triangleDrawer(shiftedTopLeft, cellSize, sketch);
+                }
                 sketch.pop();
                 return undefined;
             });
@@ -716,14 +850,22 @@ export const setUpCanvas = (state) => {
                 sketch.push();
                 sketch.strokeWeight(0);
                 sketch.fill(...getArrowColor(arrow.channel, arrow.velocity));
-                const topLeft = convertArrowToTopLeft(arrow);
-                translateAndRotate(topLeft, sketch, arrow.vector, cellSize);
-                sketch.quad(
-                    0, cellSize,
-                    cellSize / 2, cellSize * percentage,
-                    cellSize, cellSize,
-                    cellSize / 2, cellSize + cellSize * percentage
-                );
+                if (isTriangleMode) {
+                    // Bounce animation: arrow moves toward wall then snaps back
+                    const center = convertArrowToCenter(arrow);
+                    const bounceP = percentage < 0.5 ? percentage : 1 - percentage;
+                    const shifted = triangleGeo.animationShift(center, arrow.vector, bounceP * 0.5, cellSize);
+                    triangleGeo.drawTriangleArrow(sketch, shifted.x, shifted.y, cellSize * 0.75, arrow.vector);
+                } else {
+                    const topLeft = convertArrowToTopLeft(arrow);
+                    translateAndRotate(topLeft, sketch, arrow.vector, cellSize);
+                    sketch.quad(
+                        0, cellSize,
+                        cellSize / 2, cellSize * percentage,
+                        cellSize, cellSize,
+                        cellSize / 2, cellSize + cellSize * percentage
+                    );
+                }
                 sketch.pop();
                 return undefined;
             });
@@ -741,31 +883,49 @@ export const setUpCanvas = (state) => {
                 {}
             );
             Object.keys(arrowsToRotateDictionary).map((arrowsToRotateIndex) => {
+                const dirCount = isTriangleMode ? 6 : 4;
                 const rotations = (
                     (
-                        arrowsToRotateDictionary[arrowsToRotateIndex].length % 4
-                    ) || 4
+                        arrowsToRotateDictionary[arrowsToRotateIndex].length % dirCount
+                    ) || dirCount
                 ) - 1;
-                const bouncedRotation = (rotations + 2) % 4;
+                const bouncedRotation = isTriangleMode
+                    ? (rotations + 3) % 6
+                    : (rotations + 2) % 4;
                 // draw not bounced
                 const bouncingDictionary = getArrowBoundaryDictionary(
                     arrowsToRotateDictionary[arrowsToRotateIndex],
                     stateDrawing.grid.size,
-                    arrowBoundaryKey,
+                    (arrow, size, rots, walls) => arrowBoundaryKey(arrow, size, rots, walls, gridType),
                     rotations,
                     stateDrawing.grid.walls || []
                 );
                 const arrowsNotBouncing = bouncingDictionary[NO_BOUNDARY] || [];
                 arrowsNotBouncing.map((arrow) => {
-                    const topLeft = convertArrowToTopLeft(arrow);
-                    
                     sketch.push();
                     sketch.strokeWeight(0);
                     sketch.fill(...getArrowColor(arrow.channel, arrow.velocity));
-                    translateAndRotate(topLeft, sketch, arrow.vector, cellSize);
-                    
-                    triangleRotatingArray[rotations](cellSize, sketch, percentage);
-                    
+                    if (isTriangleMode) {
+                        const center = convertArrowToCenter(arrow);
+                        // Interpolate rotation animation
+                        const fromVec = arrow.vector;
+                        const toVec = (arrow.vector + rotations) % 6;
+                        const angle0 = -Math.PI / 6 + fromVec * Math.PI / 3;
+                        const angle1 = -Math.PI / 6 + toVec * Math.PI / 3;
+                        let dAngle = angle1 - angle0;
+                        // Shortest rotation path
+                        if (dAngle > Math.PI) dAngle -= 2 * Math.PI;
+                        if (dAngle < -Math.PI) dAngle += 2 * Math.PI;
+                        const angle = angle0 + dAngle * percentage;
+                        sketch.translate(center.x, center.y);
+                        sketch.rotate(angle);
+                        const sz = cellSize * 0.75;
+                        sketch.triangle(0, -sz * 0.4, sz * 0.35, sz * 0.2, -sz * 0.35, sz * 0.2);
+                    } else {
+                        const topLeft = convertArrowToTopLeft(arrow);
+                        translateAndRotate(topLeft, sketch, arrow.vector, cellSize);
+                        triangleRotatingArray[rotations](cellSize, sketch, percentage);
+                    }
                     sketch.pop();
                     return undefined;
                 });
@@ -774,14 +934,28 @@ export const setUpCanvas = (state) => {
 
                 // bounced
                 arrowsBouncing.map((arrow) => {
-                    const topLeft = convertArrowToTopLeft(arrow);
-
                     sketch.push();
                     sketch.strokeWeight(0);
                     sketch.fill(...getArrowColor(arrow.channel, arrow.velocity));
-                    translateAndRotate(topLeft, sketch, arrow.vector, cellSize);
-                    triangleRotatingArray[bouncedRotation](cellSize, sketch, percentage);
-
+                    if (isTriangleMode) {
+                        const center = convertArrowToCenter(arrow);
+                        const fromVec = arrow.vector;
+                        const toVec = (arrow.vector + bouncedRotation) % 6;
+                        const angle0 = -Math.PI / 6 + fromVec * Math.PI / 3;
+                        const angle1 = -Math.PI / 6 + toVec * Math.PI / 3;
+                        let dAngle = angle1 - angle0;
+                        if (dAngle > Math.PI) dAngle -= 2 * Math.PI;
+                        if (dAngle < -Math.PI) dAngle += 2 * Math.PI;
+                        const angle = angle0 + dAngle * percentage;
+                        sketch.translate(center.x, center.y);
+                        sketch.rotate(angle);
+                        const sz = cellSize * 0.75;
+                        sketch.triangle(0, -sz * 0.4, sz * 0.35, sz * 0.2, -sz * 0.35, sz * 0.2);
+                    } else {
+                        const topLeft = convertArrowToTopLeft(arrow);
+                        translateAndRotate(topLeft, sketch, arrow.vector, cellSize);
+                        triangleRotatingArray[bouncedRotation](cellSize, sketch, percentage);
+                    }
                     sketch.pop();
                     return undefined;
                 });
