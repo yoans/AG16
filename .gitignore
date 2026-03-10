@@ -2,6 +2,7 @@ node_modules/
 .playwright-mcp/
 dist/
 build/
+screenshots/
 .venv/
 .DS_Store
 *.log

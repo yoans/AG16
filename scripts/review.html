@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Responsive Screenshot Review</title>
+<style>
+  :root {
+    --bg: #1a1a2e;
+    --card: #16213e;
+    --border: #0f3460;
+    --good: #00b894;
+    --bad: #d63031;
+    --neutral: #636e72;
+    --text: #dfe6e9;
+    --text-dim: #b2bec3;
+    --accent: #6c5ce7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 20px;
+  }
+
+  header { text-align: center; margin-bottom: 24px; }
+  header h1 { font-size: 1.6rem; margin-bottom: 6px; }
+  header p { color: var(--text-dim); font-size: .9rem; }
+
+  .toolbar {
+    display: flex; gap: 10px; justify-content: center;
+    flex-wrap: wrap; margin-bottom: 20px;
+  }
+  .toolbar button, .toolbar select {
+    padding: 8px 16px; border: 1px solid var(--border);
+    border-radius: 6px; background: var(--card);
+    color: var(--text); font-size: .85rem; cursor: pointer;
+  }
+  .toolbar button:hover { border-color: var(--accent); }
+  .toolbar .count { display: inline-flex; align-items: center; gap: 6px; font-size: .85rem; color: var(--text-dim); }
+  .count .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .dot.good { background: var(--good); }
+  .dot.bad  { background: var(--bad); }
+  .dot.ungraded { background: var(--neutral); }
+
+  .group {
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+    overflow: hidden;
+  }
+  .group.all-good { border-color: var(--good); }
+  .group.has-bad  { border-color: var(--bad); }
+
+  .group-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px; cursor: pointer;
+    user-select: none; transition: background .15s;
+  }
+  .group-header:hover { background: rgba(255,255,255,.03); }
+  .group-chevron {
+    font-size: .7em; transition: transform .2s;
+    color: var(--text-dim); flex-shrink: 0;
+  }
+  .group.open .group-chevron { transform: rotate(90deg); }
+  .group-title { font-size: 1rem; font-weight: 700; flex: 1; }
+  .group-desc { font-size: .75rem; color: var(--text-dim); margin-left: 8px; }
+  .group-badge {
+    font-size: .7rem; padding: 3px 10px; border-radius: 12px;
+    font-weight: 700; flex-shrink: 0;
+  }
+  .badge-good { background: var(--good); color: #fff; }
+  .badge-bad  { background: var(--bad); color: #fff; }
+  .badge-mixed { background: var(--neutral); color: #fff; }
+  .badge-ungraded { background: transparent; border: 1px solid var(--neutral); color: var(--neutral); }
+
+  .group-actions {
+    display: flex; gap: 6px; flex-shrink: 0;
+  }
+  .group-actions button {
+    padding: 4px 10px; border: none; border-radius: 5px;
+    font-size: .7rem; font-weight: 600; cursor: pointer;
+  }
+
+  .group-body { display: none; padding: 0 18px 18px; }
+  .group.open .group-body { display: block; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    border: 2px solid var(--border); border-radius: 10px;
+    background: rgba(0,0,0,.2); overflow: hidden;
+    transition: border-color .2s;
+  }
+  .card.good { border-color: var(--good); }
+  .card.bad  { border-color: var(--bad); }
+  .card .img-wrap {
+    position: relative; background: #0d0d1a; cursor: pointer;
+  }
+  .card .img-wrap img { display: block; width: 100%; height: auto; }
+  .card .img-wrap .zoom-hint {
+    position: absolute; bottom: 6px; right: 8px;
+    font-size: .7rem; background: rgba(0,0,0,.6);
+    padding: 2px 6px; border-radius: 4px; color: #ccc; pointer-events: none;
+  }
+  .card .meta { padding: 10px 12px 6px; }
+  .card .meta h3 { font-size: .9rem; margin-bottom: 2px; }
+  .card .meta .dims { font-size: .78rem; color: var(--text-dim); }
+  .card .meta .note { font-size: .72rem; color: var(--accent); margin-top: 2px; }
+  .card .actions { display: flex; gap: 6px; padding: 6px 12px 10px; }
+  .card .actions button {
+    flex: 1; padding: 6px; border: none; border-radius: 6px;
+    font-weight: 600; font-size: .8rem; cursor: pointer;
+    transition: opacity .2s;
+  }
+  .card .actions button:hover { opacity: .85; }
+  .btn-good { background: var(--good); color: #fff; }
+  .btn-bad  { background: var(--bad); color: #fff; }
+  .btn-clear { background: var(--neutral); color: #fff; }
+
+  .card textarea {
+    width: calc(100% - 24px); margin: 0 12px 10px;
+    padding: 6px 8px; border: 1px solid var(--border);
+    border-radius: 6px; background: var(--bg);
+    color: var(--text); font-size: .78rem;
+    resize: vertical; min-height: 32px;
+  }
+
+  #lightbox {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,.92); justify-content: center;
+    align-items: center; cursor: zoom-out;
+  }
+  #lightbox.open { display: flex; }
+  #lightbox img { max-width: 95vw; max-height: 95vh; border: 2px solid var(--border); border-radius: 6px; }
+  #lightbox .lb-label {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,.7); padding: 6px 16px; border-radius: 6px; font-size: .9rem;
+  }
+
+  #summary {
+    margin-top: 30px; padding: 20px; background: var(--card);
+    border: 1px solid var(--border); border-radius: 10px; display: none;
+  }
+  #summary.has-data { display: block; }
+  #summary h2 { margin-bottom: 12px; font-size: 1.1rem; }
+  #summary table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+  #summary th, #summary td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--border); }
+  #summary th { color: var(--text-dim); font-weight: 600; }
+  .grade-good { color: var(--good); font-weight: 700; }
+  .grade-bad  { color: var(--bad); font-weight: 700; }
+  .grade-none { color: var(--neutral); }
+  #summary .export-btn {
+    margin-top: 14px; padding: 10px 20px;
+    background: var(--accent); border: none; border-radius: 6px;
+    color: #fff; font-weight: 600; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📱 Responsive Screenshot Review</h1>
+  <p>Expand a feature group, grade each viewport, then export the report.</p>
+</header>
+
+<div class="toolbar">
+  <label>Filter:
+    <select id="filter">
+      <option value="all">All</option>
+      <option value="good">✓ Good</option>
+      <option value="bad">✗ Bad</option>
+      <option value="ungraded">— Ungraded</option>
+    </select>
+  </label>
+  <button id="btn-expand-bad">Expand Bad Groups</button>
+  <button id="btn-collapse">Collapse All</button>
+  <button id="btn-reset">Reset All Grades</button>
+  <span class="count"><span class="dot good"></span><span id="c-good">0</span></span>
+  <span class="count"><span class="dot bad"></span><span id="c-bad">0</span></span>
+  <span class="count"><span class="dot ungraded"></span><span id="c-ungraded">0</span></span>
+</div>
+
+<div id="groups-container"></div>
+
+<div id="summary">
+  <h2>Review Summary</h2>
+  <table>
+    <thead><tr><th>Group</th><th>Viewport</th><th>Size</th><th>Breakpoint</th><th>Grade</th><th>Notes</th></tr></thead>
+    <tbody id="summary-body"></tbody>
+  </table>
+  <button class="export-btn" id="btn-export">📋 Copy Summary to Clipboard</button>
+  <button class="export-btn" id="btn-save-grades" style="margin-left:8px;background:var(--good);">💾 Save grades.json</button>
+</div>
+
+<div id="lightbox">
+  <span class="lb-label" id="lb-label"></span>
+  <img id="lb-img" src="" alt="">
+</div>
+
+<script>
+const STORAGE_KEY = 'responsive-review-grades-v2';
+const MANIFEST_PATH = '../screenshots/manifest.json';
+
+let manifest = {};
+let grades = {};
+let openGroups = {};
+
+function save() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(grades)); } catch {}
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) grades = JSON.parse(raw);
+  } catch {}
+}
+
+function getGrade(groupId, file) {
+  return (grades[groupId] && grades[groupId][file]) || {};
+}
+function setGrade(groupId, file, grade) {
+  if (!grades[groupId]) grades[groupId] = {};
+  if (!grades[groupId][file]) grades[groupId][file] = {};
+  grades[groupId][file].grade = grade;
+  save();
+}
+function setNotes(groupId, file, notes) {
+  if (!grades[groupId]) grades[groupId] = {};
+  if (!grades[groupId][file]) grades[groupId][file] = {};
+  grades[groupId][file].notes = notes;
+  save();
+}
+
+function groupStatus(groupId) {
+  const group = manifest[groupId];
+  if (!group) return 'ungraded';
+  const grp = grades[groupId] || {};
+  let good = 0, bad = 0, total = group.screenshots.length;
+  for (const s of group.screenshots) {
+    const g = (grp[s.file] || {}).grade;
+    if (g === 'good') good++;
+    else if (g === 'bad') bad++;
+  }
+  if (good === total && total > 0) return 'all-good';
+  if (bad > 0) return 'has-bad';
+  if (good > 0) return 'mixed';
+  return 'ungraded';
+}
+
+function groupCounts(groupId) {
+  const group = manifest[groupId];
+  const grp = grades[groupId] || {};
+  let good = 0, bad = 0, ungraded = 0;
+  for (const s of group.screenshots) {
+    const g = (grp[s.file] || {}).grade;
+    if (g === 'good') good++;
+    else if (g === 'bad') bad++;
+    else ungraded++;
+  }
+  return { good, bad, ungraded, total: group.screenshots.length };
+}
+
+function applyFilter(cards) {
+  const filter = document.getElementById('filter').value;
+  cards.forEach(card => {
+    const grade = card.dataset.grade || 'ungraded';
+    card.style.display = filter === 'all' || filter === grade ? '' : 'none';
+  });
+}
+
+function updateCounters() {
+  let good = 0, bad = 0, ungraded = 0;
+  Object.keys(manifest).forEach(groupId => {
+    const counts = groupCounts(groupId);
+    good += counts.good;
+    bad += counts.bad;
+    ungraded += counts.ungraded;
+  });
+  document.getElementById('c-good').textContent = good;
+  document.getElementById('c-bad').textContent = bad;
+  document.getElementById('c-ungraded').textContent = ungraded;
+  buildSummary();
+}
+
+function badgeForStatus(status, counts) {
+  if (status === 'all-good') return '<span class="group-badge badge-good">ALL GOOD</span>';
+  if (status === 'has-bad') return `<span class="group-badge badge-bad">${counts.bad} BAD</span>`;
+  if (status === 'mixed') return `<span class="group-badge badge-mixed">${counts.good}/${counts.total} GOOD</span>`;
+  return '<span class="group-badge badge-ungraded">UNGRADED</span>';
+}
+
+function createCard(groupId, shot) {
+  const state = getGrade(groupId, shot.file);
+  const grade = state.grade || 'ungraded';
+
+  const card = document.createElement('div');
+  card.className = `card ${grade === 'good' ? 'good' : grade === 'bad' ? 'bad' : ''}`;
+  card.dataset.grade = grade;
+
+  card.innerHTML = `
+    <div class="img-wrap">
+      <img src="./${shot.file}" alt="${shot.label} ${shot.width}x${shot.height}">
+      <span class="zoom-hint">click to zoom</span>
+    </div>
+    <div class="meta">
+      <h3>${shot.label}</h3>
+      <div class="dims">${shot.width} × ${shot.height}</div>
+      <div class="note">${shot.note || ''}</div>
+    </div>
+    <div class="actions">
+      <button class="btn-good">✓ Good</button>
+      <button class="btn-bad">✗ Bad</button>
+      <button class="btn-clear">Clear</button>
+    </div>
+    <textarea placeholder="Notes...">${state.notes || ''}</textarea>
+  `;
+
+  const imgWrap = card.querySelector('.img-wrap');
+  imgWrap.addEventListener('click', () => openLightbox(shot.file, `${manifest[groupId].name} — ${shot.label}`));
+
+  card.querySelector('.btn-good').addEventListener('click', () => {
+    setGrade(groupId, shot.file, 'good');
+    refresh();
+  });
+  card.querySelector('.btn-bad').addEventListener('click', () => {
+    setGrade(groupId, shot.file, 'bad');
+    refresh();
+  });
+  card.querySelector('.btn-clear').addEventListener('click', () => {
+    setGrade(groupId, shot.file, undefined);
+    delete grades[groupId][shot.file].grade;
+    if (!grades[groupId][shot.file].notes) delete grades[groupId][shot.file];
+    if (Object.keys(grades[groupId]).length === 0) delete grades[groupId];
+    save();
+    refresh();
+  });
+  card.querySelector('textarea').addEventListener('input', (e) => {
+    setNotes(groupId, shot.file, e.target.value);
+    buildSummary();
+  });
+
+  return card;
+}
+
+function buildGroups() {
+  const container = document.getElementById('groups-container');
+  container.innerHTML = '';
+
+  Object.keys(manifest).forEach(groupId => {
+    const group = manifest[groupId];
+    const status = groupStatus(groupId);
+    const counts = groupCounts(groupId);
+
+    const wrapper = document.createElement('section');
+    wrapper.className = `group ${status} ${openGroups[groupId] ? 'open' : ''}`;
+
+    wrapper.innerHTML = `
+      <div class="group-header">
+        <span class="group-chevron">▶</span>
+        <div class="group-title">${group.name}<span class="group-desc">${group.description || ''}</span></div>
+        ${badgeForStatus(status, counts)}
+        <div class="group-actions">
+          <button class="mark-good">All Good</button>
+          <button class="mark-bad">All Bad</button>
+        </div>
+      </div>
+      <div class="group-body">
+        <div class="grid"></div>
+      </div>
+    `;
+
+    const header = wrapper.querySelector('.group-header');
+    const body = wrapper.querySelector('.group-body');
+    const grid = wrapper.querySelector('.grid');
+
+    header.addEventListener('click', (e) => {
+      if (e.target.closest('.group-actions')) return;
+      openGroups[groupId] = !openGroups[groupId];
+      wrapper.classList.toggle('open', openGroups[groupId]);
+    });
+
+    wrapper.querySelector('.mark-good').addEventListener('click', () => {
+      group.screenshots.forEach(s => setGrade(groupId, s.file, 'good'));
+      refresh();
+    });
+    wrapper.querySelector('.mark-bad').addEventListener('click', () => {
+      group.screenshots.forEach(s => setGrade(groupId, s.file, 'bad'));
+      refresh();
+    });
+
+    group.screenshots.forEach(shot => grid.appendChild(createCard(groupId, shot)));
+
+    container.appendChild(wrapper);
+    applyFilter([...grid.children]);
+    if (openGroups[groupId]) body.style.display = 'block';
+  });
+
+  updateCounters();
+}
+
+function refresh() {
+  buildGroups();
+}
+
+function buildSummary() {
+  const summary = document.getElementById('summary');
+  const tbody = document.getElementById('summary-body');
+  tbody.innerHTML = '';
+
+  let rows = 0;
+  Object.keys(manifest).forEach(groupId => {
+    const group = manifest[groupId];
+    group.screenshots.forEach(shot => {
+      const state = getGrade(groupId, shot.file);
+      if (!state.grade && !state.notes) return;
+      rows++;
+      const tr = document.createElement('tr');
+      const gradeClass = state.grade === 'good' ? 'grade-good' : state.grade === 'bad' ? 'grade-bad' : 'grade-none';
+      tr.innerHTML = `
+        <td>${group.name}</td>
+        <td>${shot.label}</td>
+        <td>${shot.width}×${shot.height}</td>
+        <td>${shot.note || ''}</td>
+        <td class="${gradeClass}">${state.grade || '—'}</td>
+        <td>${(state.notes || '').replace(/</g, '&lt;')}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  });
+
+  summary.classList.toggle('has-data', rows > 0);
+}
+
+function openLightbox(file, label) {
+  document.getElementById('lb-img').src = `./${file}`;
+  document.getElementById('lb-label').textContent = label;
+  document.getElementById('lightbox').classList.add('open');
+}
+
+document.getElementById('lightbox').addEventListener('click', () => {
+  document.getElementById('lightbox').classList.remove('open');
+});
+
+document.getElementById('filter').addEventListener('change', refresh);
+document.getElementById('btn-collapse').addEventListener('click', () => {
+  openGroups = {};
+  refresh();
+});
+document.getElementById('btn-expand-bad').addEventListener('click', () => {
+  Object.keys(manifest).forEach(groupId => {
+    openGroups[groupId] = groupStatus(groupId) === 'has-bad';
+  });
+  refresh();
+});
+document.getElementById('btn-reset').addEventListener('click', () => {
+  grades = {};
+  save();
+  refresh();
+});
+document.getElementById('btn-export').addEventListener('click', async () => {
+  const rows = [];
+  Object.keys(manifest).forEach(groupId => {
+    const group = manifest[groupId];
+    group.screenshots.forEach(shot => {
+      const state = getGrade(groupId, shot.file);
+      if (!state.grade && !state.notes) return;
+      rows.push(`${group.name}\t${shot.label}\t${shot.width}x${shot.height}\t${shot.note || ''}\t${state.grade || ''}\t${state.notes || ''}`);
+    });
+  });
+  await navigator.clipboard.writeText(rows.join('\n'));
+  const btn = document.getElementById('btn-export');
+  const old = btn.textContent;
+  btn.textContent = '✓ Copied!';
+  setTimeout(() => btn.textContent = old, 1500);
+});
+document.getElementById('btn-save-grades').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(grades, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'grades.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  const btn = document.getElementById('btn-save-grades');
+  btn.textContent = '✓ Saved!';
+  setTimeout(() => btn.textContent = '💾 Save grades.json', 2000);
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+});
+
+function initFromManifest(m) {
+  manifest = m;
+  buildGroups();
+}
+
+// ── Init ──
+load();
+fetch(MANIFEST_PATH)
+  .then((response) => {
+    if (!response.ok) throw new Error(`Failed to load manifest: ${response.status}`);
+    return response.json();
+  })
+  .then(initFromManifest)
+  .catch((error) => {
+    const container = document.getElementById('groups-container');
+    container.innerHTML = `<p style="text-align:center;color:var(--bad)">Could not load screenshot manifest. ${error.message}</p>`;
+  });
+</script>
+</body>
+</html>
